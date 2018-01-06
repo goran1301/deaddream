@@ -26,6 +26,7 @@ public class LoadingScreen implements Screen {
 	
 	private void queueAssets() {
 		game.assets.load("12april.png", Texture.class);
+		//it's working!!!!!
 	}
 	
 	@Override
