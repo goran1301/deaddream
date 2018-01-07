@@ -35,6 +35,13 @@ public class StartScreen implements Screen {
 	public void show() {
 		System.out.println("Start");
         Gdx.input.setInputProcessor(this.stage);
+        
+        Runnable transitionRunnable = new Runnable() {
+        	@Override
+        	public void run() {
+        		game.setScreen(game.mainMenuScreen);
+        	}
+        };
 		
 		//Texture logoTxt = new Texture(Gdx.files.internal("12april.png"));
 		Texture logoTxt = game.assets.get("12april.png", Texture.class);
@@ -43,7 +50,7 @@ public class StartScreen implements Screen {
 		stage.addActor(this.logo);
 		
 		this.logo.setPosition(stage.getWidth()/2 - 100, stage.getHeight()/2 - 100);
-		this.logo.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3.5f)/*, Actions.rotateBy(360, 3.5f)*/));
+		this.logo.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3.5f), Actions.run(transitionRunnable)/*, Actions.rotateBy(360, 3.5f)*/));
 		//this.logo.addAction(Actions.fadeIn(3.5f));
 	}
 
@@ -62,6 +69,7 @@ public class StartScreen implements Screen {
 	
 	public void update(float delta) {
 		stage.act(delta);
+		//this.logo.
 	}
 
 	@Override
