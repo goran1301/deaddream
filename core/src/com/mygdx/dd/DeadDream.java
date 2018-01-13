@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import deaddream.screens.GameScreen;
 import deaddream.screens.LoadingScreen;
 import deaddream.screens.MainMenuScreen;
 import deaddream.screens.StartScreen;
@@ -28,7 +29,8 @@ public class DeadDream extends Game {
 	
 	public LoadingScreen loadingScreen;
 	public StartScreen startScreen;
-	public MainMenuScreen mainMenuScreen; 
+	public MainMenuScreen mainMenuScreen;
+	public GameScreen gameScreen;
 	
 	@Override
 	public void create() {
@@ -45,6 +47,7 @@ public class DeadDream extends Game {
 		this.loadingScreen = new LoadingScreen(this);
 		this.startScreen = new StartScreen(this);
 		this.mainMenuScreen = new MainMenuScreen(this);
+		this.gameScreen = new GameScreen(this);
 	}
 	
 	@Override
@@ -55,6 +58,7 @@ public class DeadDream extends Game {
 		loadingScreen.dispose();
 		startScreen.dispose();
 		mainMenuScreen.dispose();
+		gameScreen.dispose();
 		//this.getScreen().dispose();
 	}
 	

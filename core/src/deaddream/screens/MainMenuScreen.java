@@ -46,7 +46,7 @@ public class MainMenuScreen implements Screen{
 		this.buttonPlay.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("PLay click");
+				game.setScreen(game.gameScreen);
 			}
 		});
 		this.stage.addActor(this.buttonPlay);
