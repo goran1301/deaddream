@@ -20,8 +20,8 @@ import deaddream.screens.StartScreen;
 
 public class DeadDream extends Game {
 
-	final public int V_WIDTH = 720;
-	final public int V_HEIGHT = 480;
+	final public int V_WIDTH = 1024;
+	final public int V_HEIGHT = 780;
 	public OrthographicCamera camera;
 	public AssetManager assets;
 	public BitmapFont font;
