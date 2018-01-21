@@ -29,7 +29,7 @@ public class Unit {
 	protected Vector2 currentMoveGoal;
 	protected final float goalPointFaultRange = 0.5f;
 	protected boolean isMoving;
-	
+	protected Vector2 currentMoveVector;
 	
 	public Unit(World world, Texture staticTexture, Vector2 position, float angle) {
 		constructor(world, staticTexture, position.x, position.y, angle);
@@ -41,6 +41,7 @@ public class Unit {
 	
 	private void constructor(World world, Texture staticTexture, float x, float y, float angle) {
 		this.currentMoveGoal = new Vector2();
+		this.currentMoveVector = new Vector2();
 		this.isMoving = false;
 		this.staticTexture = new Sprite(staticTexture);
 		this.body = this.createUnit(world, x, y, angle);
@@ -136,11 +137,20 @@ public class Unit {
 	 * @param delta
 	 */
 	public void update(float delta) {
-		if(this.isMoving && (Math.abs(Math.abs(this.currentMoveGoal.x) - Math.abs(this.body.getPosition().x)) <= this.goalPointFaultRange)
-				&& (Math.abs(Math.abs(this.currentMoveGoal.y) - Math.abs(this.body.getPosition().y)) <= this.goalPointFaultRange )) {
+		
+		this.moveUpdate(delta);
+	}
+	
+	/**
+	 * Move logic
+	 * @param delta
+	 */
+	protected void moveUpdate(float delta) {
+		this.currentMoveVector.x = this.currentMoveGoal.x - this.body.getPosition().x;
+		this.currentMoveVector.y = this.currentMoveGoal.y - this.body.getPosition().y;
+		if(this.isMoving && this.currentMoveVector.len2() <= this.goalPointFaultRange) {
 			System.out.println("Stopped body position: " + String.valueOf(body.getPosition().x) + " : " + String.valueOf(body.getPosition().y));
 			System.out.println("Stopped goal position: " + String.valueOf(this.currentMoveGoal.x) + " : " + String.valueOf(this.currentMoveGoal.y));
-			System.out.println("Stopped range: " + String.valueOf(Math.abs(this.currentMoveGoal.x) - Math.abs(this.body.getPosition().x)) + " : " + String.valueOf(Math.abs(this.currentMoveGoal.y) - Math.abs(this.body.getPosition().y)));
 			this.stopMove();
 		}
 	}
