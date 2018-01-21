@@ -89,8 +89,11 @@ public class GameScreen implements Screen {
 	private void renderBackground() {
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		this.game.batch.draw(this.background, 0, 0,
-                this.game.V_WIDTH, this.game.V_HEIGHT);
+		this.game.batch.draw(this.background, 
+				this.game.camera.position.x - this.game.V_WIDTH / 2, 
+				this.game.camera.position.y - this.game.V_HEIGHT / 2,
+                this.game.V_WIDTH, this.game.V_HEIGHT
+                );
 	}
 	
 	public void update(float delta) {
