@@ -13,6 +13,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.dd.Constants;
 import com.mygdx.dd.DeadDream;
 
+import deaddream.units.Protector;
+import deaddream.units.Stone;
 import deaddream.units.Unit;
 
 
@@ -22,7 +24,7 @@ public class GameScreen implements Screen {
 	
 	private World world;
 	
-	private Unit unit00, unit01;
+	private Unit unit00, unit01, stone;
 	
 	private Box2DDebugRenderer b2ddr;
 	
@@ -44,8 +46,9 @@ public class GameScreen implements Screen {
 	public void show() {
 		System.out.println("Game");
 		this.loadTextures();
-		this.unit00 = new Unit(this.world, game.assets.get("skins/units/protector.png", Texture.class), 0.0f, 0.0f, 0.0f);
-		this.unit01 = new Unit(this.world, game.assets.get("skins/units/protector.png", Texture.class), 10f, 10f, 1f);
+		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 0.0f, 0.0f, 0.0f);
+		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 10f, 10f, 1f);
+		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 15f, 15f, 1f);
 	
 	}
 	
@@ -78,6 +81,7 @@ public class GameScreen implements Screen {
 	private void renderUnits() {
 		this.unit00.render(this.game.batch);
 		this.unit01.render(this.game.batch);
+		this.stone.render(this.game.batch);
 	}
 	
 	private void beginBatch() {

@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.dd.Constants;
 
@@ -20,33 +19,23 @@ import com.mygdx.dd.Constants;
  * @author goran
  *
  */
-public class Unit {
+public abstract class Unit {
 	protected Sprite staticTexture;
 	protected Body body;
-	protected final int width = 40;
-	protected final int height = 60;
-	protected final float velocity = 5f;
+	protected float velocity = 0.0f;
 	protected Vector2 currentMoveGoal;
-	protected final float goalPointFaultRange = 0.5f;
+	protected float goalPointFaultRange = 0.0f;
 	protected boolean isMoving;
 	protected Vector2 currentMoveVector;
 	
-	public Unit(World world, Texture staticTexture, Vector2 position, float angle) {
-		constructor(world, staticTexture, position.x, position.y, angle);
-	}
-	
-	public Unit(World world, Texture staticTexture, float x, float y, float angle) {
-		constructor(world, staticTexture, x, y, angle);
-	}
-	
-	private void constructor(World world, Texture staticTexture, float x, float y, float angle) {
+	public Unit(World world, Texture staticTexture, float x, float y, float angle, BodyDef def, PolygonShape shape) {
 		this.currentMoveGoal = new Vector2();
 		this.currentMoveVector = new Vector2();
 		this.isMoving = false;
 		this.staticTexture = new Sprite(staticTexture);
-		this.body = this.createUnit(world, x, y, angle);
+		this.body = this.createUnit(world, x, y, angle, def, shape);
 	}
-	
+		
 	/**
 	 * Box2D body creation
 	 * 
@@ -56,14 +45,11 @@ public class Unit {
 	 * @param angle
 	 * @return
 	 */
-	protected Body createUnit(World world, float x, float y, float angle) {
+	private Body createUnit(World world, float x, float y, float angle, BodyDef def, PolygonShape shape) {
 		
-		BodyDef def = new BodyDef();
 		def.position.set(x, y);
 		def.angle = angle;
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(this.width / 2 / Constants.PPM, this.height / 2 / Constants.PPM);
-		def.type = BodyType.DynamicBody;
+		
 		Body body = world.createBody(def);
 		body.createFixture(shape, 1.0f);
 		shape.dispose();
