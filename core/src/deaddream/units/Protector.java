@@ -18,7 +18,7 @@ public final class Protector extends Unit {
 		super(world, staticTexture, x, y, angle, createBodyDef(), createFixtureDef());
 		this.goalPointFaultRange = 0.5f;
 		this.goalAngleFaultRange = 5.0f;
-		this.angularVelocity = 180.0f;
+		this.angularVelocity = 360.0f;
 		this.velocity = 5f;
 		// TODO Auto-generated constructor stub
 	}

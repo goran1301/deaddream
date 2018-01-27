@@ -75,7 +75,7 @@ public class GameScreen implements Screen {
 		
 		// TODO Auto-generated method stub
 		
-		//this.b2ddr.render(this.world, this.debugMatrix);
+		this.b2ddr.render(this.world, this.debugMatrix);
 	}
 	
 	private void renderUnits() {
