@@ -146,17 +146,24 @@ public abstract class Unit {
 		this.updateLinearMove();
 		this.updateRotatingMove();
 	}
-	
+	private float standartAngle(float angle){
+		angle = angle%360;
+		if (angle<0){
+			angle = angle+360;
+		} 
+		return angle;
+	}
 	protected void updateRotatingMove() {
-		if (this.rotating && this.body.getAngle() * Math.abs(MathUtils.radiansToDegrees - this.angleGoal) <= this.goalAngleFaultRange) {
+		float bodyAngle = this.standartAngle(this.body.getAngle()* Math.abs(MathUtils.radiansToDegrees )+90);
+		if (this.rotating && Math.abs(bodyAngle - this.angleGoal)<= this.goalAngleFaultRange) {
 			this.body.setAngularVelocity(0.0f);
-			System.out.println("Stop rotating. Current angle: " + String.valueOf(this.body.getAngle() * MathUtils.radiansToDegrees) + "; goal: " + String.valueOf(angleGoal));
-			System.out.println("difference: " + String.valueOf(this.body.getAngle() * MathUtils.radiansToDegrees - this.angleGoal));
+			//System.out.println("Stop rotating. Current angle: " + String.valueOf(bodyAngle) + "; goal: " + String.valueOf(angleGoal));
+			//System.out.println("difference: " + String.valueOf(bodyAngle - this.angleGoal));
 			this.rotating = false;
 			return;
 		}
 		if (this.rotating){
-			System.out.println("Do rotation. Current angle: " + String.valueOf(Math.abs(this.body.getAngle() * MathUtils.radiansToDegrees)) + "; goal: " + String.valueOf(angleGoal));
+			//System.out.println("Do rotation. Current angle: " + String.valueOf(bodyAngle) + "; goal: " + String.valueOf(angleGoal));
 			this.rotateTo(this.angleGoal);
 		} 
 		return;
@@ -164,9 +171,16 @@ public abstract class Unit {
 	
 	
 	protected void rotateTo(float angle) {
+		
 		this.angleGoal = angle;
 		System.out.println("rotate velocity: " + String.valueOf(MathUtils.degreesToRadians * this.angularVelocity));
-		body.setAngularVelocity(MathUtils.degreesToRadians * this.angularVelocity);
+		float bodyAngle = this.standartAngle(this.body.getAngle()* Math.abs(MathUtils.radiansToDegrees )+90);
+		if((this.angleGoal - bodyAngle<0)){
+			if((Math.abs(this.angleGoal - bodyAngle)<180))body.setAngularVelocity(-MathUtils.degreesToRadians * this.angularVelocity); else body.setAngularVelocity(MathUtils.degreesToRadians * this.angularVelocity);
+		}else{
+			if((Math.abs(this.angleGoal - bodyAngle)<180))body.setAngularVelocity(MathUtils.degreesToRadians * this.angularVelocity); else body.setAngularVelocity(-MathUtils.degreesToRadians * this.angularVelocity);
+			
+		}
 		this.rotating = true;
 	}
 	
