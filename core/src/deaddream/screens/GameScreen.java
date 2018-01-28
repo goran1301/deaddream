@@ -115,7 +115,6 @@ public class GameScreen implements Screen {
 		    Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		    this.unit00.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
 		}
-		this.unit00.move();
 	}
 	
 	public void setCameraToMeters(float x, float y) {

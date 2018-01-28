@@ -75,33 +75,6 @@ public abstract class Unit {
 	}
 	
 
-	public void move() {
-		if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-        	this.moveTo(5f, 5f);
-        	return;
-        }
-		
-		int horizontalForce = 0;
-		int verticalForce = 0;
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			horizontalForce -= 1;
-		} 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			horizontalForce += 1;
-		}
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			verticalForce += 1;
-		} 
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			verticalForce -= 1;
-		}
-        
-        this.body.setLinearVelocity(horizontalForce * 5, verticalForce * 5);
-	}
-	
 	/**
 	 * Set new point to move
 	 * 
