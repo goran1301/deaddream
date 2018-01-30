@@ -1,7 +1,5 @@
 package deaddream.units;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +18,7 @@ import com.mygdx.dd.Constants;
  *
  */
 public abstract class Unit {
+	
 	protected Sprite staticTexture;
 	protected Body body;
 	protected float velocity = 0.0f;
@@ -32,12 +31,12 @@ public abstract class Unit {
 	protected float angularVelocity = 0.0f;
 	private boolean rotating = false;
 	
-	public Unit(World world, Texture staticTexture, float x, float y, float angle, BodyDef def, FixtureDef fixtureDef) {
+	public Unit(World world, Texture staticTexture, float x, float y, float angle) {
 		this.currentMoveGoal = new Vector2();
 		this.currentMoveVector = new Vector2();
 		this.isMoving = false;
 		this.staticTexture = new Sprite(staticTexture);
-		this.body = this.createUnit(world, x, y, angle, def, fixtureDef);
+		this.body = this.createUnit(world, x, y, angle);
 	}
 		
 	/**
@@ -49,7 +48,9 @@ public abstract class Unit {
 	 * @param angle
 	 * @return
 	 */
-	private Body createUnit(World world, float x, float y, float angle, BodyDef def, FixtureDef fixtureDef) {
+	private Body createUnit(World world, float x, float y, float angle) {
+		BodyDef def = bodyDefFactory();
+		FixtureDef fixtureDef = fixtureDefFactory();
 		
 		def.position.set(x, y);
 		def.angle = angle;
@@ -61,6 +62,19 @@ public abstract class Unit {
 		
 		return body;
 	}
+	
+	/**
+	 * Construct BodyDef for each unit 
+	 * @return
+	 */
+	protected abstract BodyDef bodyDefFactory();
+	
+	/**
+	 * Construct Fixture for each unit
+	 * @return
+	 */
+	protected abstract FixtureDef fixtureDefFactory();
+	
 	
 	/**
 	 * render unit on screen

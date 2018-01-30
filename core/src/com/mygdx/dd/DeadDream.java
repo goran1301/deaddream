@@ -42,12 +42,14 @@ public class DeadDream extends Game {
 		
 		this.camera = new OrthographicCamera();
 		this.camera.setToOrtho(false, this.V_WIDTH, this.V_HEIGHT);
-		this.setScreen(new LoadingScreen(this));
+		
 		
 		this.loadingScreen = new LoadingScreen(this);
 		this.startScreen = new StartScreen(this);
 		this.mainMenuScreen = new MainMenuScreen(this);
 		this.gameScreen = new GameScreen(this);
+		
+		this.setScreen(loadingScreen);
 	}
 	
 	@Override

@@ -5,6 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -32,6 +35,10 @@ public class GameScreen implements Screen {
 	
 	private Texture background;
 	
+	public OrthogonalTiledMapRenderer tmr;
+	
+	public TiledMap map;
+	
 	
 	
 	public GameScreen(final DeadDream game) {
@@ -45,11 +52,12 @@ public class GameScreen implements Screen {
 	@Override
 	public void show() {
 		System.out.println("Game");
+		map = new TmxMapLoader().load("maps/test.tmx");
+		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
-		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 0.0f, 0.0f, 0.0f);
-		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 10f, 10f, 1f);
-		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 15f, 15f, 1f);
-	
+		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 23f, 23f, 0.0f);
+		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 18f, 18f, 1f);
+		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
 	}
 	
 	private void loadTextures() {
@@ -61,21 +69,18 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		update(delta);
+		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		beginBatch();
 		renderBackground();
-		renderUnits();
-		//this.game.batch.draw(this.testUnitSkin, this.testUnit.getPosition().x * Constants.PPM - (this.testUnitSkin.getWidth() /2) , this.testUnit.getPosition().y * Constants.PPM - (this.testUnitSkin.getHeight() /2));
-		//this.game.batch.draw(this.testUnitSkin, this.platform.getPosition().x * Constants.PPM - (this.testUnitSkin.getWidth() /2) , this.platform.getPosition().y * Constants.PPM - (this.testUnitSkin.getHeight() /2));
-		//game.font.setColor(Color.WHITE);
-		//game.font.draw(game.batch, "Skin X" + String.valueOf(this.testUnit.getPosition().x * Constants.PPM - (this.testUnitSkin.getWidth() /2)) + " Skin Y" + String.valueOf(testUnit.getPosition().y * Constants.PPM - (testUnitSkin.getHeight() /2) + " Body X" + String.valueOf(testUnit.getPosition().x)) + " Body Y" + String.valueOf(testUnit.getPosition().y), 0, 0);
+		this.game.batch.end();
+
+		tmr.render();
 		
+		beginBatch();
+		renderUnits();
 		this.game.batch.end();
 		
-		
-		
-		// TODO Auto-generated method stub
-		
-		//this.b2ddr.render(this.world, this.debugMatrix);
 	}
 	
 	private void renderUnits() {
@@ -91,8 +96,7 @@ public class GameScreen implements Screen {
 	}
 	
 	private void renderBackground() {
-		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		this.game.batch.draw(this.background, 
 				this.game.camera.position.x - this.game.V_WIDTH / 2, 
 				this.game.camera.position.y - this.game.V_HEIGHT / 2,
@@ -106,6 +110,7 @@ public class GameScreen implements Screen {
 		unit01.update(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
 		this.setCameraToMeters(unit00.getBody().getPosition().x, unit00.getBody().getPosition().y);
+		tmr.setView(game.camera);
 		this.updateInput();
 	}
 	
@@ -161,6 +166,8 @@ public class GameScreen implements Screen {
 		this.unit01.dispose();
 		world.dispose();
 		b2ddr.dispose();
+		map.dispose();
+		tmr.dispose();
 		// TODO Auto-generated method stub
 		
 	}

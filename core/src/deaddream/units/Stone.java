@@ -20,24 +20,32 @@ public final class Stone extends Unit {
 	protected static final int height = 120;
 
 	public Stone(World world, Texture staticTexture, float x, float y, float angle) {
-		super(world, staticTexture, x, y, angle, createBodyDef(), createFixtureDef());
-		// TODO Auto-generated constructor stub
+		super(world, staticTexture, x, y, angle);
 	}
 	
-	
-	private static FixtureDef createFixtureDef() {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected BodyDef bodyDefFactory() {
+		BodyDef def = new BodyDef();
+		def.type = BodyType.KinematicBody;
+		return def;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected FixtureDef fixtureDefFactory() {
 		FixtureDef def = new FixtureDef();
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(Stone.width / 2 / Constants.PPM, Stone.height / 2 / Constants.PPM);
 		def.shape = shape;
 		def.friction = 10f;
 		def.density = 10f;
-		return def;
-	}
-	
-	private static BodyDef createBodyDef() {
-		BodyDef def = new BodyDef();
-		def.type = BodyType.KinematicBody;
 		return def;
 	}
 	
