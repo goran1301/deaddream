@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.dd.Constants;
 import com.mygdx.dd.DeadDream;
 
+import deaddream.maps.TiledObjectUtil;
 import deaddream.units.Protector;
 import deaddream.units.Stone;
 import deaddream.units.Unit;
@@ -58,6 +60,8 @@ public class GameScreen implements Screen {
 		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 23f, 23f, 0.0f);
 		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 18f, 18f, 1f);
 		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
+		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
+		TiledObjectUtil.parseTiledObjectLayer(world, objects);
 	}
 	
 	private void loadTextures() {
