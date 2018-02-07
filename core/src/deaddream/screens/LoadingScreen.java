@@ -63,8 +63,8 @@ public class LoadingScreen implements Screen {
 	private void update(float delta) {
 		//if assets loaded, change Screen
 		if (game.assets.update()) {
-			//game.setScreen(game.startScreen);
-			game.setScreen(game.gameScreen);
+			game.setScreen(game.startScreen);
+			//game.setScreen(game.gameScreen);
 		}
 	}
 

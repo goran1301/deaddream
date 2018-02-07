@@ -1,5 +1,6 @@
 package deaddream.maps;
 
+import com.badlogic.gdx.ai.pfa.Graph;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;

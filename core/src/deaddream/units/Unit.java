@@ -36,7 +36,7 @@ public abstract class Unit {
 		this.currentMoveVector = new Vector2();
 		this.isMoving = false;
 		this.staticTexture = new Sprite(staticTexture);
-		this.body = this.createUnit(world, x, y, angle);
+		this.createUnit(world, x, y, angle);
 	}
 		
 	/**
@@ -48,19 +48,19 @@ public abstract class Unit {
 	 * @param angle
 	 * @return
 	 */
-	private Body createUnit(World world, float x, float y, float angle) {
+	private void createUnit(World world, float x, float y, float angle) {
 		BodyDef def = bodyDefFactory();
-		FixtureDef fixtureDef = fixtureDefFactory();
+		
 		
 		def.position.set(x, y);
 		def.angle = angle;
 		
-		Body body = world.createBody(def);
-		body.createFixture(fixtureDef);
-		fixtureDef.shape.dispose();
-		
-		
-		return body;
+		body = world.createBody(def);
+		FixtureDef fixtureDef = fixtureDefFactory();
+		if (fixtureDef != null) {
+			body.createFixture(fixtureDef);
+			fixtureDef.shape.dispose();
+		}
 	}
 	
 	/**
@@ -84,6 +84,10 @@ public abstract class Unit {
 	public void render(SpriteBatch batch) {
 		this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
 				this.body.getPosition().y * Constants.PPM - (this.staticTexture.getHeight() /2));
+		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
+				this.body.getPosition().y * Constants.PPM);*/
+		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
+				this.body.getPosition().y * Constants.PPM);*/
 		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
 		this.staticTexture.draw(batch);
 	}

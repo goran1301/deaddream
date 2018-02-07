@@ -3,6 +3,7 @@ package deaddream.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapObjects;
@@ -41,6 +42,8 @@ public class GameScreen implements Screen {
 	
 	public TiledMap map;
 	
+	private IndexedAStarPathFinder pathFinder;
+	
 	
 	
 	public GameScreen(final DeadDream game) {
@@ -62,6 +65,7 @@ public class GameScreen implements Screen {
 		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
+        //pathFinder = new IndexedAStarPathFinder(null, false);
 	}
 	
 	private void loadTextures() {
@@ -84,7 +88,7 @@ public class GameScreen implements Screen {
 		beginBatch();
 		renderUnits();
 		this.game.batch.end();
-		
+		b2ddr.render(world, debugMatrix);
 	}
 	
 	private void renderUnits() {
