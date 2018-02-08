@@ -52,12 +52,18 @@ public final class Protector extends Unit {
 	protected FixtureDef fixtureDefFactory() {
 		BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("skins/units/protectorBody"));
 		FixtureDef def = new FixtureDef();
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(Protector.width / 2 / Constants.PPM, Protector.height / 2 / Constants.PPM);
-		def.shape = shape;
+		
+		//PolygonShape shape = new PolygonShape();
+		//shape.setAsBox(Protector.width / 2 / Constants.PPM, Protector.height / 2 / Constants.PPM);
+		//def.shape = shape;
 		def.friction = 10f;
 		def.density = 10f;
-		return def;
+		//MassData massData = body.getMassData();
+		//massData.center.set(0, 0);
+		
+		//body.setMassData(massData);
+		loader.attachFixture(body, "protector", def, width / Constants.PPM);
+		return null;
 	}
 	
 	/*@Override
@@ -77,11 +83,14 @@ public final class Protector extends Unit {
 	 */
 	@Override
 	public void render(SpriteBatch batch) {
-		
-		staticTexture.setPosition(
+		this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
+				this.body.getPosition().y * Constants.PPM - (this.staticTexture.getHeight() /2));
+		/*staticTexture.setPosition(
 				body.getPosition().x * Constants.PPM,
 				body.getPosition().y * Constants.PPM
-			);/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
+			);*/
+		
+		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
 				this.body.getPosition().y * Constants.PPM);*/
 		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
 				this.body.getPosition().y * Constants.PPM);*/

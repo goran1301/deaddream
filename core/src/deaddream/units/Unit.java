@@ -36,7 +36,7 @@ public abstract class Unit {
 		this.currentMoveVector = new Vector2();
 		this.isMoving = false;
 		this.staticTexture = new Sprite(staticTexture);
-		this.body = this.createUnit(world, x, y, angle);
+		this.createUnit(world, x, y, angle);
 	}
 		
 	/**
@@ -50,14 +50,16 @@ public abstract class Unit {
 	 */
 	private Body createUnit(World world, float x, float y, float angle) {
 		BodyDef def = bodyDefFactory();
+		body = world.createBody(def);
 		FixtureDef fixtureDef = fixtureDefFactory();
 		
 		def.position.set(x, y);
 		def.angle = angle;
 		
-		Body body = world.createBody(def);
-		body.createFixture(fixtureDef);
-		fixtureDef.shape.dispose();
+		if (fixtureDef != null) {
+			body.createFixture(fixtureDef);
+			fixtureDef.shape.dispose();
+		}
 		
 		
 		return body;
