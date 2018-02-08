@@ -84,6 +84,7 @@ public class GameScreen implements Screen {
 		beginBatch();
 		renderUnits();
 		this.game.batch.end();
+		b2ddr.render(world, debugMatrix);
 		
 	}
 	
