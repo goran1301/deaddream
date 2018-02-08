@@ -58,7 +58,7 @@ public class GameScreen implements Screen {
 		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
 		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 23f, 23f, 0.0f);
-		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 18f, 18f, 1f);
+		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 35f, 40f, 1f);
 		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
 		this.UCMothership = new deaddream.units.UCMothership(this.world, game.assets.get("skins/units/ucmothership.png", Texture.class), 40f, 40f, 1f);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
@@ -85,8 +85,7 @@ public class GameScreen implements Screen {
 		beginBatch();
 		renderUnits();
 		this.game.batch.end();
-		//b2ddr.unproject( game.camera.position );
-		b2ddr.render(world, debugMatrix);
+		//b2ddr.render(world, debugMatrix);
 		
 	}
 	

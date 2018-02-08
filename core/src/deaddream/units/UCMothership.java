@@ -14,8 +14,8 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 
 public class UCMothership extends Unit {
 	
-	protected static final int width = 594;
-	protected static final int height = 669;
+	protected static final int width = 600;
+	protected static final int height = 680;
 	
 	public UCMothership(World world, Texture staticTexture, float x, float y, float angle) {
 		super(world, staticTexture, x, y, angle);
