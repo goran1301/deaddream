@@ -29,6 +29,7 @@ public class LoadingScreen implements Screen {
 		game.assets.load("backgrounds/bg1.jpg", Texture.class);
 		game.assets.load("skins/units/protector.png", Texture.class);
 		game.assets.load("skins/units/stone.png", Texture.class);
+		game.assets.load("skins/units/ucmothership.png", Texture.class);
 	}
 	
 	@Override

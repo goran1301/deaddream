@@ -48,21 +48,19 @@ public abstract class Unit {
 	 * @param angle
 	 * @return
 	 */
-	private Body createUnit(World world, float x, float y, float angle) {
+	private void createUnit(World world, float x, float y, float angle) {
 		BodyDef def = bodyDefFactory();
-		body = world.createBody(def);
-		FixtureDef fixtureDef = fixtureDefFactory();
+		
 		
 		def.position.set(x, y);
 		def.angle = angle;
 		
+		body = world.createBody(def);
+		FixtureDef fixtureDef = fixtureDefFactory();
 		if (fixtureDef != null) {
 			body.createFixture(fixtureDef);
 			fixtureDef.shape.dispose();
 		}
-		
-		
-		return body;
 	}
 	
 	/**

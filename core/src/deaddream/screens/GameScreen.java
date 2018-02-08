@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
 	
 	private World world;
 	
-	private Unit unit00, unit01, stone;
+	private Unit unit00, unit01, stone, UCMothership;
 	
 	private Box2DDebugRenderer b2ddr;
 	
@@ -60,6 +60,7 @@ public class GameScreen implements Screen {
 		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 23f, 23f, 0.0f);
 		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 18f, 18f, 1f);
 		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
+		this.UCMothership = new deaddream.units.UCMothership(this.world, game.assets.get("skins/units/ucmothership.png", Texture.class), 40f, 40f, 1f);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
 	}
@@ -84,11 +85,13 @@ public class GameScreen implements Screen {
 		beginBatch();
 		renderUnits();
 		this.game.batch.end();
+		//b2ddr.unproject( game.camera.position );
 		b2ddr.render(world, debugMatrix);
 		
 	}
 	
 	private void renderUnits() {
+		this.UCMothership.render(this.game.batch);
 		this.unit00.render(this.game.batch);
 		this.unit01.render(this.game.batch);
 		this.stone.render(this.game.batch);
@@ -113,8 +116,9 @@ public class GameScreen implements Screen {
 		world.step(1/60f, 6, 2);
 		unit00.update(delta);
 		unit01.update(delta);
+		UCMothership.update(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
-		this.setCameraToMeters(unit00.getBody().getPosition().x, unit00.getBody().getPosition().y);
+		this.setCameraToMeters(this.UCMothership.getBody().getPosition().x, this.UCMothership.getBody().getPosition().y);
 		tmr.setView(game.camera);
 		this.updateInput();
 	}
@@ -123,7 +127,7 @@ public class GameScreen implements Screen {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 		{
 		    Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		    this.unit00.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
+		    this.UCMothership.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
 		}
 	}
 	
@@ -136,7 +140,8 @@ public class GameScreen implements Screen {
 		position.x = x;
 		position.y = y;
 		game.camera.position.set(position);
-		
+		this.debugMatrix = this.game.camera.combined.cpy();
+		this.debugMatrix.scale(Constants.PPM, Constants.PPM, 0.0f);
 		game.camera.update();
 	}
 
