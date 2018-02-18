@@ -160,7 +160,7 @@ public abstract class Unit {
 	protected void rotateTo(float angle) {
 		
 		this.angleGoal = angle;
-		System.out.println("rotate velocity: " + String.valueOf(MathUtils.degreesToRadians * this.angularVelocity));
+		//System.out.println("rotate velocity: " + String.valueOf(MathUtils.degreesToRadians * this.angularVelocity));
 		float bodyAngle = this.standartAngle(this.body.getAngle()* Math.abs(MathUtils.radiansToDegrees )+90);
 		if((this.angleGoal - bodyAngle<0)){
 			if((Math.abs(this.angleGoal - bodyAngle)<180))body.setAngularVelocity(-MathUtils.degreesToRadians * this.angularVelocity); else body.setAngularVelocity(MathUtils.degreesToRadians * this.angularVelocity);

@@ -3,6 +3,7 @@ package deaddream.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapObjects;
@@ -63,6 +64,7 @@ public class GameScreen implements Screen {
 		this.UCMothership = new deaddream.units.UCMothership(this.world, game.assets.get("skins/units/ucmothership.png", Texture.class), 40f, 40f, 1f);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
+		//IndexedAStarPathFinder<IndexedNode> p;
 	}
 	
 	private void loadTextures() {
@@ -112,15 +114,37 @@ public class GameScreen implements Screen {
 	}
 	
 	public void update(float delta) {
+		Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+		
+				
 		world.step(1/60f, 6, 2);
 		unit00.update(delta);
 		unit01.update(delta);
 		UCMothership.update(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
-		this.setCameraToMeters(this.UCMothership.getBody().getPosition().x, this.UCMothership.getBody().getPosition().y);
 		tmr.setView(game.camera);
 		this.updateInput();
+		
+		float cameraX = this.game.camera.position.x;
+		float cameraY = this.game.camera.position.y;
+		if (tmp.x >= cameraX + game.V_WIDTH / 2 - 5){
+			cameraX += 10f;
+		}
+		if (tmp.x <= cameraX - game.V_WIDTH / 2 + 5){
+			cameraX -= 10f;
+		}
+		if (tmp.y >= cameraY + game.V_HEIGHT / 2 - 5){
+			cameraY += 10f;
+		}
+		if (tmp.y <= cameraY - game.V_HEIGHT / 2 + 5){
+			cameraY -= 10f;
+		}
+		
+		this.cameraUpdate(cameraX, cameraY);
+		
 	}
+	
+	
 	
 	private void updateInput() {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
