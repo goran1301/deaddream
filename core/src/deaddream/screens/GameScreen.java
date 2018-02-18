@@ -30,7 +30,7 @@ public class GameScreen implements Screen {
 	
 	private World world;
 	
-	private Unit unit00, unit01, stone;
+	private Unit unit00, unit01, stone, UCMothership;
 	
 	private Box2DDebugRenderer b2ddr;
 	
@@ -61,11 +61,14 @@ public class GameScreen implements Screen {
 		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
 		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 23f, 23f, 0.0f);
-		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 18f, 18f, 1f);
+		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 35f, 40f, 1f);
 		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
+		this.UCMothership = new deaddream.units.UCMothership(this.world, game.assets.get("skins/units/ucmothership.png", Texture.class), 40f, 40f, 1f);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
+
         //pathFinder = new IndexedAStarPathFinder(null, false);
+
 	}
 	
 	private void loadTextures() {
@@ -88,10 +91,13 @@ public class GameScreen implements Screen {
 		beginBatch();
 		renderUnits();
 		this.game.batch.end();
+
 		b2ddr.render(world, debugMatrix);
+
 	}
 	
 	private void renderUnits() {
+		this.UCMothership.render(this.game.batch);
 		this.unit00.render(this.game.batch);
 		this.unit01.render(this.game.batch);
 		this.stone.render(this.game.batch);
@@ -113,20 +119,43 @@ public class GameScreen implements Screen {
 	}
 	
 	public void update(float delta) {
+		Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+		
+				
 		world.step(1/60f, 6, 2);
 		unit00.update(delta);
 		unit01.update(delta);
+		UCMothership.update(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
-		this.setCameraToMeters(unit00.getBody().getPosition().x, unit00.getBody().getPosition().y);
 		tmr.setView(game.camera);
 		this.updateInput();
+		
+		float cameraX = this.game.camera.position.x;
+		float cameraY = this.game.camera.position.y;
+		if (tmp.x >= cameraX + game.V_WIDTH / 2 - 5){
+			cameraX += 10f;
+		}
+		if (tmp.x <= cameraX - game.V_WIDTH / 2 + 5){
+			cameraX -= 10f;
+		}
+		if (tmp.y >= cameraY + game.V_HEIGHT / 2 - 5){
+			cameraY += 10f;
+		}
+		if (tmp.y <= cameraY - game.V_HEIGHT / 2 + 5){
+			cameraY -= 10f;
+		}
+		
+		this.cameraUpdate(cameraX, cameraY);
+		
 	}
+	
+	
 	
 	private void updateInput() {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 		{
 		    Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		    this.unit00.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
+		    this.UCMothership.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
 		}
 	}
 	
@@ -139,7 +168,8 @@ public class GameScreen implements Screen {
 		position.x = x;
 		position.y = y;
 		game.camera.position.set(position);
-		
+		this.debugMatrix = this.game.camera.combined.cpy();
+		this.debugMatrix.scale(Constants.PPM, Constants.PPM, 0.0f);
 		game.camera.update();
 	}
 
