@@ -15,9 +15,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.Constants;
 import com.mygdx.dd.DeadDream;
-
 import deaddream.maps.TiledObjectUtil;
 import deaddream.units.Protector;
 import deaddream.units.Stone;
@@ -44,7 +48,9 @@ public class GameScreen implements Screen {
 	
 	private IndexedAStarPathFinder pathFinder;
 	
+	private Stage stage;
 	
+	private Unit selectedUnit;
 	
 	public GameScreen(final DeadDream game) {
 		this.game = game;
@@ -52,11 +58,13 @@ public class GameScreen implements Screen {
 		this.b2ddr = new Box2DDebugRenderer();
 		this.debugMatrix = this.game.camera.combined.cpy();//new Matrix4(this.game.camera.combined.cpy());
 		this.debugMatrix.scale(Constants.PPM, Constants.PPM, 0.0f);
+		this.stage = new Stage(new StretchViewport(this.game.V_WIDTH, this.game.V_HEIGHT, this.game.camera));
 	}	
 
 	@Override
 	public void show() {
 		System.out.println("Game");
+		Gdx.input.setInputProcessor(this.stage);
 		map = new TmxMapLoader().load("maps/test.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
@@ -66,9 +74,62 @@ public class GameScreen implements Screen {
 		this.UCMothership = new deaddream.units.UCMothership(this.world, game.assets.get("skins/units/ucmothership.png", Texture.class), 40f, 40f, 1f);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
-
+		
+		Group group = new Group();
+		group.addActor(UCMothership);
+		group.addActor(unit00);
+		group.addActor(unit01);
+		
+		//stage.addActor(UCMothership);
+		//stage.addActor(unit00);
+		//stage.addActor(unit01);
+		stage.addActor(group);
+		stage.addActor(stone);
+		
+		unit00.setZIndex(1);
+		unit01.setZIndex(2);
+		UCMothership.setZIndex(0);
+		
+		UCMothership.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("UCMothership selected" + String.valueOf(UCMothership.getZIndex()));
+				selectUnit(UCMothership);
+			}
+		});
+		
+		unit00.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Unit00 selected" + String.valueOf(unit00.getZIndex()));
+				selectUnit(unit00);
+			}
+		});
+		
+		unit01.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Unit01 selected" + String.valueOf(unit01.getZIndex()));
+				selectUnit(unit01);
+			}
+		});
+		
+		
+		
+		
+		
+		/*this.buttonExit.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				Gdx.app.exit();
+			}
+		});*/
         //pathFinder = new IndexedAStarPathFinder(null, false);
 
+	}
+	
+	private void selectUnit(Unit unit) {
+		selectedUnit = unit;
 	}
 	
 	private void loadTextures() {
@@ -87,20 +148,11 @@ public class GameScreen implements Screen {
 		this.game.batch.end();
 
 		tmr.render();
+		stage.draw();
 		
-		beginBatch();
-		renderUnits();
-		this.game.batch.end();
+		
+		//b2ddr.render(world, debugMatrix);
 
-		b2ddr.render(world, debugMatrix);
-
-	}
-	
-	private void renderUnits() {
-		this.UCMothership.render(this.game.batch);
-		this.unit00.render(this.game.batch);
-		this.unit01.render(this.game.batch);
-		this.stone.render(this.game.batch);
 	}
 	
 	private void beginBatch() {
@@ -123,9 +175,7 @@ public class GameScreen implements Screen {
 		
 				
 		world.step(1/60f, 6, 2);
-		unit00.update(delta);
-		unit01.update(delta);
-		UCMothership.update(delta);
+		stage.act(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
 		tmr.setView(game.camera);
 		this.updateInput();
@@ -155,7 +205,9 @@ public class GameScreen implements Screen {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 		{
 		    Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		    this.UCMothership.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
+		    if (selectedUnit != null) {
+		    	selectedUnit.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
+		    }
 		}
 	}
 	
