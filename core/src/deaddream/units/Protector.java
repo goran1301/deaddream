@@ -2,6 +2,7 @@ package deaddream.units;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -31,6 +32,7 @@ public final class Protector extends Unit {
 		this.goalAngleFaultRange = 5.0f;
 		this.angularVelocity = 360.0f;
 		this.velocity = 5f;
+		setSize(width, height);
 	}
 
 	/**
@@ -84,7 +86,7 @@ public final class Protector extends Unit {
 	 * @param batch
 	 */
 	@Override
-	public void render(SpriteBatch batch) {
+	public void draw(Batch batch, float parentAlpha) {
 		this.staticTexture.setPosition(
 				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
 				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)

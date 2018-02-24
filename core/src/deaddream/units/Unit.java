@@ -1,6 +1,7 @@
 package deaddream.units;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -9,6 +10,13 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Disableable;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.badlogic.gdx.utils.Pools;
 import com.mygdx.dd.Constants;
 
 /**
@@ -17,7 +25,7 @@ import com.mygdx.dd.Constants;
  * @author goran
  *
  */
-public abstract class Unit {
+public abstract class Unit extends Actor implements Disableable {
 	
 	protected Sprite staticTexture;
 	protected Body body;
@@ -30,6 +38,9 @@ public abstract class Unit {
 	protected Vector2 currentMoveVector;
 	protected float angularVelocity = 0.0f;
 	private boolean rotating = false;
+	private ClickListener clickListener;
+	boolean isChecked, isDisabled;
+	private boolean programmaticChangeEvents = true;
 	
 	public Unit(World world, Texture staticTexture, float x, float y, float angle) {
 		this.currentMoveGoal = new Vector2();
@@ -37,6 +48,21 @@ public abstract class Unit {
 		this.isMoving = false;
 		this.staticTexture = new Sprite(staticTexture);
 		this.createUnit(world, x, y, angle);
+	}
+	
+	public void setProgrammaticChangeEvents (boolean programmaticChangeEvents) {
+		this.programmaticChangeEvents = programmaticChangeEvents;
+	}
+	
+
+	public void setDisabled(boolean isDisabled) {
+		this.isDisabled = isDisabled;
+		
+	}
+
+
+	public boolean isDisabled() {
+		return isDisabled;
 	}
 		
 	/**
@@ -61,7 +87,49 @@ public abstract class Unit {
 			body.createFixture(fixtureDef);
 			fixtureDef.shape.dispose();
 		}
+		setTouchable(Touchable.enabled);
+		addListener(clickListener = new ClickListener() {
+			public void clicked (InputEvent event, float x, float y) {
+				if (isDisabled()) return;
+				setChecked(!isChecked, true);
+			}
+		});
+		isDisabled = false;
+		//setDebug(true);
 	}
+	
+	public void setChecked (boolean isChecked) {
+		setChecked(isChecked, programmaticChangeEvents);
+	}
+
+	void setChecked (boolean isChecked, boolean fireEvent) {
+		if (this.isChecked == isChecked) return;
+		this.isChecked = isChecked;
+
+		if (fireEvent) {
+			ChangeEvent changeEvent = Pools.obtain(ChangeEvent.class);
+			if (fire(changeEvent)) this.isChecked = !isChecked;
+			Pools.free(changeEvent);
+		}
+	}
+	
+	
+	public boolean isChecked () {
+		return isChecked;
+	}
+
+	public boolean isPressed () {
+		return clickListener.isVisualPressed();
+	}
+
+	public boolean isOver () {
+		return clickListener.isOver();
+	}
+
+	public ClickListener getClickListener () {
+		return clickListener;
+	}
+
 	
 	/**
 	 * Construct BodyDef for each unit 
@@ -81,7 +149,8 @@ public abstract class Unit {
 	 * 
 	 * @param batch
 	 */
-	public void render(SpriteBatch batch) {
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
 		this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
 				this.body.getPosition().y * Constants.PPM - (this.staticTexture.getHeight() /2));
 		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
@@ -117,6 +186,15 @@ public abstract class Unit {
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void act(float delta) {
+		super.act(delta);
+		update(delta);
+	}
+	
+	/**
 	 * logic for current delta
 	 * 
 	 * @param delta
@@ -124,6 +202,15 @@ public abstract class Unit {
 	public void update(float delta) {
 		
 		this.moveUpdate(delta);
+		setPosition (
+				body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
+				body.getPosition().y * Constants.PPM - (this.staticTexture.getHeight() /2)
+			);
+		setOrigin(
+				(this.staticTexture.getWidth() /2),
+				(this.staticTexture.getHeight() /2)
+				);
+		setRotation (standartAngle(body.getAngle() * Math.abs(MathUtils.radiansToDegrees )));
 	}
 	
 	/**

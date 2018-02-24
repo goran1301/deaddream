@@ -2,6 +2,7 @@ package deaddream.units;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -23,6 +24,7 @@ public class UCMothership extends Unit {
 		this.goalAngleFaultRange = 5.0f;
 		this.angularVelocity = 10.0f;
 		this.velocity = 0.5f;
+		setSize(width, height);
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class UCMothership extends Unit {
 	 * @param batch
 	 */
 	@Override
-	public void render(SpriteBatch batch) {
+	public void draw(Batch batch, float parentAlpha) {
 		this.staticTexture.setPosition(
 				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
 				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
@@ -72,5 +74,7 @@ public class UCMothership extends Unit {
 		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
 		this.staticTexture.draw(batch);
 	}
+
+	
 
 }
