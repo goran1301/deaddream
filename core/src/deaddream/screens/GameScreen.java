@@ -3,9 +3,14 @@ package deaddream.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ai.pfa.PathSmoother;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -22,10 +27,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.Constants;
 import com.mygdx.dd.DeadDream;
+import deaddream.logic.pathfinding.BaseIndexedGraph;
+import deaddream.logic.pathfinding.MapBaseIndexedGraphFactory;
+import deaddream.logic.pathfinding.PathCoordinator;
+import deaddream.logic.pathfinding.TiledManhattanDistance;
+import deaddream.logic.pathfinding.TiledNode;
+import deaddream.logic.pathfinding.TiledSmoothableGraphPath;
 import deaddream.maps.TiledObjectUtil;
 import deaddream.units.Protector;
 import deaddream.units.Stone;
 import deaddream.units.Unit;
+import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 
 
 public class GameScreen implements Screen {
@@ -46,11 +58,22 @@ public class GameScreen implements Screen {
 	
 	public TiledMap map;
 	
-	private IndexedAStarPathFinder pathFinder;
+	private IndexedAStarPathFinder<TiledNode> pathFinder;
+	
+	private BaseIndexedGraph<TiledNode> graph;
+	
+	private PathSmoother<TiledNode, Vector2> pathSmoother;
 	
 	private Stage stage;
 	
 	private Unit selectedUnit;
+	
+	private BaseGraphDebugRenderer graphDebugRenderer;
+	
+	TiledManhattanDistance<TiledNode> heuristic = new TiledManhattanDistance<TiledNode>();
+	
+	TiledSmoothableGraphPath<TiledNode> path = new TiledSmoothableGraphPath<TiledNode>();
+	
 	
 	public GameScreen(final DeadDream game) {
 		this.game = game;
@@ -65,15 +88,25 @@ public class GameScreen implements Screen {
 	public void show() {
 		System.out.println("Game");
 		Gdx.input.setInputProcessor(this.stage);
+		game.shapeRenderer.setProjectionMatrix(game.camera.combined);
 		map = new TmxMapLoader().load("maps/test.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
-		this.unit00 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 23f, 23f, 0.0f);
-		this.unit01 = new Protector(this.world, game.assets.get("skins/units/protector.png", Texture.class), 35f, 40f, 1f);
-		this.stone = new Stone(this.world, game.assets.get("skins/units/stone.png", Texture.class), 25f, 25f, 1f);
-		this.UCMothership = new deaddream.units.UCMothership(this.world, game.assets.get("skins/units/ucmothership.png", Texture.class), 40f, 40f, 1f);
+		Texture protecterTexture = game.assets.get("skins/units/protector.png", Texture.class);
+		protecterTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Texture stoneTexture = game.assets.get("skins/units/stone.png", Texture.class);
+		stoneTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Texture UCMothershipTexture = game.assets.get("skins/units/ucmothership.png", Texture.class);
+		UCMothershipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		this.unit00 = new Protector(this.world, new Sprite(protecterTexture), 23f, 23f, 0.0f);
+		this.unit01 = new Protector(this.world, new Sprite(protecterTexture), 35f, 40f, 1f);
+		this.stone = new Stone(this.world, new Sprite(stoneTexture), 25f, 25f, 1f);
+		this.UCMothership = new deaddream.units.UCMothership(world, new Sprite(UCMothershipTexture), 40f, 40f, 1f);
+		
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
+		graph = MapBaseIndexedGraphFactory.create(map);
+		graphDebugRenderer = new BaseGraphDebugRenderer(graph);
 		
 		Group group = new Group();
 		group.addActor(UCMothership);
@@ -120,11 +153,13 @@ public class GameScreen implements Screen {
 		
 		/*this.buttonExit.addListener(new ClickListener(){
 			@Override
-			public void clicked(InputEvent event, float x, float y) {
+			public void clicked(rendererInputEvent event, float x, float y) {
 				Gdx.app.exit();
 			}
 		});*/
-        //pathFinder = new IndexedAStarPathFinder(null, false);
+        pathFinder = new IndexedAStarPathFinder<TiledNode>(graph, true);
+        pathSmoother = new PathSmoother<TiledNode, Vector2>(new deaddream.logic.pathfinding.TiledRaycastCollisionDetector<TiledNode>(graph));
+        
 
 	}
 	
@@ -134,6 +169,7 @@ public class GameScreen implements Screen {
 	
 	private void loadTextures() {
 		this.background = game.assets.get("backgrounds/bg1.jpg", Texture.class);
+		this.background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		//this.testUnitSkin = game.assets.get("skins/units/protector.png", Texture.class);
 		//this.background = new Image(background);
 	}
@@ -145,13 +181,21 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		beginBatch();
 		renderBackground();
-		this.game.batch.end();
-
+		game.batch.end();
 		tmr.render();
 		stage.draw();
 		
 		
-		//b2ddr.render(world, debugMatrix);
+		graphDebugRenderer.render(game.shapeRenderer);
+		if (selectedUnit != null) {
+			game.shapeRenderer.begin(ShapeType.Line);
+			TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
+					selectedUnit.getBody().getPosition().y * Constants.PPM);
+			graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
+			game.shapeRenderer.end();
+		}
+		graphDebugRenderer.renderPath(path, game.shapeRenderer);
+		
 
 	}
 	
@@ -171,6 +215,8 @@ public class GameScreen implements Screen {
 	}
 	
 	public void update(float delta) {
+		
+		game.shapeRenderer.setProjectionMatrix(game.camera.combined);
 		Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		
 				
@@ -204,9 +250,18 @@ public class GameScreen implements Screen {
 	private void updateInput() {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
 		{
+			
 		    Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		    if (selectedUnit != null) {
-		    	selectedUnit.moveTo(tmp.x / Constants.PPM, tmp.y / Constants.PPM);
+		    	path.clear();
+				graph.startNode = graph.getNodeByCoordinates(
+						selectedUnit.getBody().getPosition().x * Constants.PPM,
+						selectedUnit.getBody().getPosition().y * Constants.PPM
+					);
+				
+				pathFinder.searchNodePath(graph.startNode, graph.getNodeByCoordinates(tmp.x, tmp.y), heuristic, path);
+				pathSmoother.smoothPath(path);
+				selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY()));
 		    }
 		}
 	}
@@ -252,8 +307,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void dispose() {
 		this.background.dispose();
-		this.unit00.dispose();
-		this.unit01.dispose();
+		this.stage.dispose();
 		world.dispose();
 		b2ddr.dispose();
 		map.dispose();

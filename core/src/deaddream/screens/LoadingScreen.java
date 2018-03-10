@@ -26,6 +26,9 @@ public class LoadingScreen implements Screen {
 	
 	private void queueAssets() {
 		game.assets.load("12april.png", Texture.class);
+		game.assets.load("main_menu/Astra.png", Texture.class);
+		game.assets.load("main_menu/background.png", Texture.class);
+		game.assets.load("main_menu/proection.png", Texture.class);
 		game.assets.load("backgrounds/bg1.jpg", Texture.class);
 		game.assets.load("skins/units/protector.png", Texture.class);
 		game.assets.load("skins/units/stone.png", Texture.class);

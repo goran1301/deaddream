@@ -3,6 +3,7 @@ package deaddream.units;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
+import deaddream.units.utilities.MovementControllerInterface;
 
 /**
  * Static stone object
@@ -25,7 +27,7 @@ public final class Stone extends Unit {
 	protected static final int width = 80;
 	protected static final int height = 120;
 
-	public Stone(World world, Texture staticTexture, float x, float y, float angle) {
+	public Stone(World world, Sprite staticTexture, float x, float y, float angle) {
 		super(world, staticTexture, x, y, angle);
 		setSize(width, height);
 	}
@@ -79,6 +81,13 @@ public final class Stone extends Unit {
 				this.body.getPosition().y * Constants.PPM);*/
 		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
 		this.staticTexture.draw(batch);
+	}
+
+
+	@Override
+	protected MovementControllerInterface movementControllerFactory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

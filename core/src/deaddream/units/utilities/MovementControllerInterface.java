@@ -6,7 +6,7 @@ package deaddream.units.utilities;
  * @author goran
  *
  */
-public interface MovementControllerInterface {
+public interface MovementControllerInterface <P> {
 	
 	/**
 	 * Move to point
@@ -15,6 +15,13 @@ public interface MovementControllerInterface {
 	 * @param y
 	 */
 	public void moveTo(float x, float y);
+	
+	/**
+	 * Move to point
+	 * 
+	 * @param move to by path
+	 */
+	public void moveTo(P path);
 	
 	/**
 	 * stop movement to point
@@ -33,5 +40,12 @@ public interface MovementControllerInterface {
 	 * Stop rotation
 	 */
 	public void stopRotation();
+	
+	/**
+	 * update movement logic
+	 * 
+	 * @param delta
+	 */
+	public void update(float delta);
 	
 }

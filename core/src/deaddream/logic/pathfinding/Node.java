@@ -3,7 +3,7 @@ package deaddream.logic.pathfinding;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.utils.Array;
 
-public class Node {
+public class Node <N extends Node<N>> {
 	/** A constant representing an empty tile */
 	public static final int TILE_EMPTY = 0;
 
@@ -21,22 +21,28 @@ public class Node {
 
 	/** The type of this tile, see {@link #TILE_EMPTY}, {@link #TILE_FLOOR} and {@link #TILE_WALL} */
 	public final int type;
+	
+	public final int sizeY;
 
-	protected Array<Connection<Node>> connections;
+	protected Array<Connection<N>> connections;
 
-	public Node (int x, int y, int type, Array<Connection<Node>> connections) {
+	public Node (int x, int y, int sizeY, int type, Array<Connection<N>> connections) {
 		this.x = x;
 		this.y = y;
+		this.sizeY = sizeY;
 		this.type = type;
 		this.connections = connections;
 	}
 
 	public int getIndex () {
-		//return x * IndexedGraph.sizeY + y;
-		return 0;
+		return x * sizeY + y;
 	}
 
-	public Array<Connection<Node>> getConnections () {
+	public Array<Connection<N>> getConnections () {
 		return this.connections;
+	}
+	
+	public void setConnections (Array<Connection<N>> connections) {
+		this.connections = connections;
 	}
 }

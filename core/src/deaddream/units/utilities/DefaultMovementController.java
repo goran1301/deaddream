@@ -3,6 +3,8 @@ package deaddream.units.utilities;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Array;
+
 
 /**
  * Movement controller abstract class
@@ -10,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.Body;
  * @author goran
  *
  */
-public class DefaultMovementController implements MovementControllerInterface {
+public class DefaultMovementController implements MovementControllerInterface <Array<Vector2>> {
 
 	protected Body body;
 	
@@ -18,7 +20,7 @@ public class DefaultMovementController implements MovementControllerInterface {
 	
 	protected Vector2 currentMoveVector;
 
-	protected boolean isMoving;
+	protected boolean isMoving = false;
 	
 	protected float goalPointFaultRange;
 	
@@ -28,13 +30,27 @@ public class DefaultMovementController implements MovementControllerInterface {
 
 	protected float angularVelocity;
 
-	protected boolean isRotating;
+	protected boolean isRotating = false;
 
 	protected float goalAngleFaultRange;
 	
 	protected float bodyAngle;
 	
 	protected int angularDirection;
+	
+	protected Array<Vector2> path;
+	
+	protected int currentPathIndex = 0;
+	
+	public DefaultMovementController(Body body, float linearVelocity, float goalPointFaultRange, float angularVelocity, float goalAngleFaultRange) {
+		this.body = body;
+		this.linearVelocity = linearVelocity;
+		this.goalPointFaultRange = goalPointFaultRange;
+		this.angularVelocity = angularVelocity;
+		this.goalAngleFaultRange = goalAngleFaultRange;
+		this.currentMoveGoal = new Vector2();
+		this.currentMoveVector = new Vector2();
+	}
 
 	
 	@Override
@@ -50,13 +66,43 @@ public class DefaultMovementController implements MovementControllerInterface {
 		this.currentMoveVector.y = this.currentMoveGoal.y - this.body.getPosition().y;
 		
 		this.rotateTo(this.currentMoveVector.angle());
-		this.isMoving = true;
+		isMoving = true;
+	}
+	
+	public void keepMove(float x, float y) {
+		this.currentMoveGoal.x = x;
+		this.currentMoveGoal.y = y;
+		float rangeX = x - body.getPosition().x;
+		float rangeY = y - body.getPosition().y;
+		float maxXY= Math.max(Math.abs( rangeX ), Math.abs( rangeY ));
+		body.setLinearVelocity(rangeX / maxXY * linearVelocity, rangeY / maxXY * linearVelocity);
+		
+		this.currentMoveVector.x = this.currentMoveGoal.x - this.body.getPosition().x;
+		this.currentMoveVector.y = this.currentMoveGoal.y - this.body.getPosition().y;
+		
+		this.rotateTo(this.currentMoveVector.angle());
+		isMoving = true;
+	}
+	
+	@Override
+	public void moveTo(Array<Vector2> path) {
+		if (path != null) {
+			if (path.size > 0) {
+				this.path = path;
+				currentPathIndex = 0;
+				currentMoveGoal = path.get(0);
+				keepMove(currentMoveGoal.x, currentMoveGoal.y);
+			}
+		}
+		
 	}
 
 	@Override
 	public void stopMove() {
 		body.setLinearVelocity(0f, 0f);
-		this.isMoving = false;
+		currentPathIndex = 0;
+		path = null;
+		isMoving = false;
 	}
 
 	@Override
@@ -73,13 +119,14 @@ public class DefaultMovementController implements MovementControllerInterface {
 	}
 	
 	protected void updateRotatingMove() {
-		if (stopRotateCondition()) {
-			stopRotation();
-			return;
-		}
 		if (isRotating){
 			updateBodyAngle();
-			body.setAngularVelocity(angularDirection * MathUtils.degreesToRadians * this.angularVelocity);
+			if (stopRotateCondition()) {
+				stopRotation();
+				return;
+			}else{
+				body.setAngularVelocity(angularDirection * MathUtils.degreesToRadians * this.angularVelocity);
+			}
 		} 
 		return;
 	}
@@ -106,31 +153,40 @@ public class DefaultMovementController implements MovementControllerInterface {
 
 
 	public void update(float delta) {
-		this.currentMoveVector.x = this.currentMoveGoal.x - body.getPosition().x;
-		this.currentMoveVector.y = this.currentMoveGoal.y - body.getPosition().y;
-		
-		this.updateLinearMove();
+		if (isMoving){
+			this.currentMoveVector.x = this.currentMoveGoal.x - body.getPosition().x;
+			this.currentMoveVector.y = this.currentMoveGoal.y - body.getPosition().y;
+			this.updateLinearMove();
+			
+		}
 		this.updateRotatingMove();
-		
 	}
 	
     protected void updateLinearMove() {
-    	
-		if(stopMoveCondition()) {
-			stopMove();
-			return;
-		}
-		
-		if (this.isMoving) {
-			moveTo(this.currentMoveGoal.x, this.currentMoveGoal.y);
+		if (isMoving) {
+			updateCurrentPathGoal();
+			if(stopMoveCondition()) {
+				stopMove();
+				return;
+			}
+			keepMove(currentMoveGoal.x, currentMoveGoal.y);
 		}
 		return;
 	}
     
+    public void updateCurrentPathGoal() {
+    	if (stopMoveCondition() && path != null) {
+    		if (path.size > currentPathIndex + 1) {
+    			currentMoveGoal = path.get(currentPathIndex + 1);
+    			currentPathIndex++;
+    			keepMove(currentMoveGoal.x, currentMoveGoal.y);
+    		}
+    	}
+    }
 	
 	
 	public boolean stopMoveCondition() {
-		return this.isMoving && this.currentMoveVector.len2() <= this.goalPointFaultRange;
+		return currentMoveVector.len2() <= goalPointFaultRange;
 	}
 
 	public boolean stopRotateCondition() {
@@ -142,5 +198,8 @@ public class DefaultMovementController implements MovementControllerInterface {
 	public boolean isMoving() {
 		return isMoving;
 	}
+
+
+
 	
 }

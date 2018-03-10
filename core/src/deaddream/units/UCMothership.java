@@ -3,6 +3,7 @@ package deaddream.units;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -12,18 +13,16 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
+import deaddream.units.utilities.DefaultMovementController;
+import deaddream.units.utilities.MovementControllerInterface;
 
 public class UCMothership extends Unit {
 	
 	protected static final int width = 600;
 	protected static final int height = 680;
 	
-	public UCMothership(World world, Texture staticTexture, float x, float y, float angle) {
+	public UCMothership(World world, Sprite staticTexture, float x, float y, float angle) {
 		super(world, staticTexture, x, y, angle);
-		this.goalPointFaultRange = 0.5f;
-		this.goalAngleFaultRange = 5.0f;
-		this.angularVelocity = 10.0f;
-		this.velocity = 0.5f;
 		setSize(width, height);
 	}
 
@@ -73,6 +72,11 @@ public class UCMothership extends Unit {
 				this.body.getPosition().y * Constants.PPM);*/
 		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
 		this.staticTexture.draw(batch);
+	}
+
+	@Override
+	protected MovementControllerInterface movementControllerFactory() {
+		return new DefaultMovementController(body, 0.5f, 0.5f, 10.f, 5.0f);
 	}
 
 	

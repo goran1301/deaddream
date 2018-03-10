@@ -5,9 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 //import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 //import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import deaddream.screens.GameScreen;
 import deaddream.screens.LoadingScreen;
@@ -26,7 +28,7 @@ public class DeadDream extends Game {
 	public AssetManager assets;
 	public BitmapFont font;
 	public SpriteBatch batch;
-	
+	public ShapeRenderer shapeRenderer;
 	public LoadingScreen loadingScreen;
 	public StartScreen startScreen;
 	public MainMenuScreen mainMenuScreen;
@@ -37,6 +39,10 @@ public class DeadDream extends Game {
 		this.assets = new AssetManager();
 		this.batch = new SpriteBatch();
 		this.font = new BitmapFont();
+		this.font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		this.font.getData().setScale(5);
+		
+		this.shapeRenderer = new ShapeRenderer();
 		//AssetLoader.load();
 		Gdx.app.log("TheGame", "created");
 		

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import deaddream.renderers.MenuRenderer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 //import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -45,6 +46,7 @@ public class StartScreen implements Screen {
 		
 		//Texture logoTxt = new Texture(Gdx.files.internal("12april.png"));
 		Texture logoTxt = game.assets.get("12april.png", Texture.class);
+		logoTxt.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		this.logo = new Image(logoTxt);
 		
 		stage.addActor(this.logo);
@@ -62,7 +64,7 @@ public class StartScreen implements Screen {
 		stage.draw();
 		game.batch.begin();
 		game.font.setColor(0, 0, 0, 1);
-		game.font.draw(game.batch, "presents", 290, 100);
+		//game.font.draw(game.batch, "presents", 290, 100);
 		game.batch.end();
 		//this.renderer.render();
 	}
