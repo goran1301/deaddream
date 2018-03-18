@@ -1,13 +1,14 @@
 package deaddream.units;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 import aurelienribon.bodyeditor.BodyEditorLoader;
@@ -40,6 +41,7 @@ public final class Protector extends Unit {
 	protected BodyDef bodyDefFactory() {
 		BodyDef def = new BodyDef();
 		def.type = BodyType.DynamicBody;
+		//def.type = BodyType.KinematicBody;
 		def.angularDamping = 1f;
 		def.linearDamping = 7f;
 		return def;
@@ -107,7 +109,7 @@ public final class Protector extends Unit {
 	}
 
 	@Override
-	protected MovementControllerInterface movementControllerFactory() {
+	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {
 		return new DefaultMovementController(body, 5.0f, 0.5f, 360.0f, 5.0f);
 	}
 }

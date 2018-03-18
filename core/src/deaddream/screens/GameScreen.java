@@ -186,17 +186,18 @@ public class GameScreen implements Screen {
 		stage.draw();
 		
 		
-		graphDebugRenderer.render(game.shapeRenderer);
-		if (selectedUnit != null) {
-			game.shapeRenderer.begin(ShapeType.Line);
-			TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
-					selectedUnit.getBody().getPosition().y * Constants.PPM);
-			graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
-			game.shapeRenderer.end();
+		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+			graphDebugRenderer.render(game.shapeRenderer);
+			if (selectedUnit != null) {
+				game.shapeRenderer.begin(ShapeType.Line);
+				TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
+						selectedUnit.getBody().getPosition().y * Constants.PPM);
+				graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
+				game.shapeRenderer.end();
+			}
+			graphDebugRenderer.renderPath(path, game.shapeRenderer);
 		}
-		graphDebugRenderer.renderPath(path, game.shapeRenderer);
 		
-
 	}
 	
 	private void beginBatch() {
@@ -223,7 +224,7 @@ public class GameScreen implements Screen {
 		world.step(1/60f, 6, 2);
 		stage.act(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
-		tmr.setView(game.camera);
+		
 		this.updateInput();
 		
 		float cameraX = this.game.camera.position.x;
@@ -242,6 +243,7 @@ public class GameScreen implements Screen {
 		}
 		
 		this.cameraUpdate(cameraX, cameraY);
+		tmr.setView(game.camera);
 		
 	}
 	
@@ -258,10 +260,15 @@ public class GameScreen implements Screen {
 						selectedUnit.getBody().getPosition().x * Constants.PPM,
 						selectedUnit.getBody().getPosition().y * Constants.PPM
 					);
+				graph.unitSize.x = selectedUnit.getWidth();
+				graph.unitSize.y = selectedUnit.getHeight();
 				
-				pathFinder.searchNodePath(graph.startNode, graph.getNodeByCoordinates(tmp.x, tmp.y), heuristic, path);
-				pathSmoother.smoothPath(path);
-				selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY()));
+				TiledNode endNode = graph.getNodeByCoordinates(tmp.x, tmp.y);
+				if (endNode != null) {
+					pathFinder.searchNodePath(graph.startNode, endNode, heuristic, path);
+					pathSmoother.smoothPath(path);
+					selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY()));
+				}
 		    }
 		}
 	}

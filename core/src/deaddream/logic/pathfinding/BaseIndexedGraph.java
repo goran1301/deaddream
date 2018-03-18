@@ -2,6 +2,7 @@ package deaddream.logic.pathfinding;
 
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
@@ -13,6 +14,7 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 	protected int pixelNodeSizeX;
 	protected int pixelNodeSizeY;
 	protected Array<N> nodes; 
+	public Vector2 unitSize = new Vector2();
 	
 	public BaseIndexedGraph(int sizeX, int sizeY, Array<N> nodes, int pixelNodeSizeX, int pixelNodeSizeY) {
 		this.sizeX = sizeX;
@@ -74,6 +76,9 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 	}
 	
 	public N getNode(int x, int y) {
+		if (x * sizeY + y >= nodes.size || x * sizeY + y < 0) {
+			return null;
+		}
 		return nodes.get(x * sizeY + y);
 	}
 	
