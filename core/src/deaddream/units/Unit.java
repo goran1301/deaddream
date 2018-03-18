@@ -1,6 +1,5 @@
 package deaddream.units;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,6 +28,7 @@ import deaddream.units.utilities.MovementControllerInterface;
 public abstract class Unit extends Actor implements Disableable {
 	
 	protected Sprite staticTexture;
+	protected Sprite staticNormalTexture;
 	protected Body body;
 	private ClickListener clickListener;
 	boolean isChecked, isDisabled;
@@ -36,8 +36,9 @@ public abstract class Unit extends Actor implements Disableable {
 	private MovementControllerInterface<Array<Vector2>> movementController;
 	
 	
-	public Unit(World world, Sprite staticTexture, float x, float y, float angle) {
+	public Unit(World world, Sprite staticTexture, Sprite staticNormalTexture, float x, float y, float angle) {
 		this.staticTexture = staticTexture;
+		this.staticNormalTexture = staticNormalTexture;
 		this.createUnit(world, x, y, angle);
 		movementController = movementControllerFactory();
 	}
@@ -143,14 +144,48 @@ public abstract class Unit extends Actor implements Disableable {
 	 * 
 	 * @param batch
 	 */
-	@Override
+	/*@Override
 	public void draw(Batch batch, float parentAlpha) {
+		
 		this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
 				this.body.getPosition().y * Constants.PPM - (this.staticTexture.getHeight() /2));
 		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
+		this.staticNormalTexture.setRotation(this.staticTexture.getRotation());
+		this.staticNormalTexture.setPosition(this.body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
+				this.body.getPosition().y * Constants.PPM - (this.staticTexture.getHeight() /2));
+		this.staticNormalTexture.getTexture().bind(1);
+		this.staticTexture.getTexture().bind(0);
+		System.out.println(batch+":2");
+		this.staticTexture.draw(batch);
+	}*/
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		this.staticTexture.setPosition(
+				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
+				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
+			);
+		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
+		//System.out.println("Body's coordinate: " + String.valueOf(body.getPosition().x * Constants.PPM) + " : " + String.valueOf(body.getPosition().y * Constants.PPM));
+		//System.out.println("Body's worldCenter coordinate: " + String.valueOf(body.getWorldCenter().x * Constants.PPM) + " : " + String.valueOf(body.getWorldCenter().y * Constants.PPM));
+			
+		/*staticTexture.setPosition(
+				body.getPosition().x * Constants.PPM,
+				body.getPosition().y * Constants.PPM
+			);*/
+		
+		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
+				this.body.getPosition().y * Constants.PPM);*/
+		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
+				this.body.getPosition().y * Constants.PPM);*/
+		this.staticNormalTexture.setRotation(this.staticTexture.getRotation());
+		this.staticNormalTexture.setPosition(
+				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
+				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
+			);
+		this.staticNormalTexture.getTexture().bind(0);
+		this.staticTexture.getTexture().bind(1);
 		this.staticTexture.draw(batch);
 	}
-	
 
 	/**
 	 * Set new point to move

@@ -1,5 +1,8 @@
 package deaddream.screens;
 
+import java.text.DecimalFormat;
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -7,9 +10,13 @@ import com.badlogic.gdx.ai.pfa.PathSmoother;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -37,6 +44,7 @@ import deaddream.maps.TiledObjectUtil;
 import deaddream.units.Protector;
 import deaddream.units.Stone;
 import deaddream.units.Unit;
+import deaddream.units.UCMothership;
 import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 
 
@@ -74,6 +82,45 @@ public class GameScreen implements Screen {
 	
 	TiledSmoothableGraphPath<TiledNode> path = new TiledSmoothableGraphPath<TiledNode>();
 	
+	boolean flipY = true;
+	
+	Matrix4 transform = new Matrix4();
+
+
+	// position of our light
+	final Vector3 DEFAULT_LIGHT_POS = new Vector3(0f, 0f, 0.07f);
+	// the color of our light
+	final Vector3 DEFAULT_LIGHT_COLOR = new Vector3(1f, 0.7f, 0.6f);
+	// the ambient color (color to use when unlit)
+	final Vector3 DEFAULT_AMBIENT_COLOR = new Vector3(0.3f, 0.3f, 1f);
+	// the attenuation factor: x=constant, y=linear, z=quadratic
+	final Vector3 DEFAULT_ATTENUATION = new Vector3(0.4f, 3f, 20f);
+	// the ambient intensity (brightness to use when unlit)
+	final float DEFAULT_AMBIENT_INTENSITY = 0.6f;
+	final float DEFAULT_STRENGTH = 1f;
+	
+	final Color NORMAL_VCOLOR = new Color(1f,1f,1f,DEFAULT_STRENGTH);
+	
+	// the position of our light in 3D space
+	Vector3 lightPos = new Vector3(DEFAULT_LIGHT_POS);
+	// the resolution of our game/graphics
+	Vector2 resolution = new Vector2();
+	// the current attenuation
+	Vector3 attenuation = new Vector3(DEFAULT_ATTENUATION);
+	// the current ambient intensity
+	float ambientIntensity = DEFAULT_AMBIENT_INTENSITY;
+	float strength = DEFAULT_STRENGTH;
+	
+	// whether to use attenuation/shadows
+	boolean useShadow = true;
+
+	// whether to use lambert shading (with our normal map)
+	boolean useNormals = true;
+	
+	ShaderProgram program;
+	
+	SpriteBatch fxBatch;
+	
 	
 	public GameScreen(final DeadDream game) {
 		this.game = game;
@@ -81,7 +128,8 @@ public class GameScreen implements Screen {
 		this.b2ddr = new Box2DDebugRenderer();
 		this.debugMatrix = this.game.camera.combined.cpy();//new Matrix4(this.game.camera.combined.cpy());
 		this.debugMatrix.scale(Constants.PPM, Constants.PPM, 0.0f);
-		this.stage = new Stage(new StretchViewport(this.game.V_WIDTH, this.game.V_HEIGHT, this.game.camera));
+		this.stage = new Stage(new StretchViewport(this.game.V_WIDTH, this.game.V_HEIGHT, this.game.camera), this.game.batch);
+		this.create();
 	}	
 
 	@Override
@@ -94,14 +142,20 @@ public class GameScreen implements Screen {
 		this.loadTextures();
 		Texture protecterTexture = game.assets.get("skins/units/protector.png", Texture.class);
 		protecterTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Texture protecterNormalTexture = game.assets.get("skins/units/protectorNormal.png", Texture.class);
+		protecterNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture stoneTexture = game.assets.get("skins/units/stone.png", Texture.class);
 		stoneTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Texture stoneNormalTexture = game.assets.get("skins/units/stoneNormal.png", Texture.class);
+		stoneNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture UCMothershipTexture = game.assets.get("skins/units/ucmothership.png", Texture.class);
 		UCMothershipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		this.unit00 = new Protector(this.world, new Sprite(protecterTexture), 23f, 23f, 0.0f);
-		this.unit01 = new Protector(this.world, new Sprite(protecterTexture), 35f, 40f, 1f);
-		this.stone = new Stone(this.world, new Sprite(stoneTexture), 25f, 25f, 1f);
-		this.UCMothership = new deaddream.units.UCMothership(world, new Sprite(UCMothershipTexture), 40f, 40f, 1f);
+		Texture UCMothershipNormalTexture = game.assets.get("skins/units/ucmothershipNormal.png", Texture.class);
+		UCMothershipNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		this.unit00 = new Protector(this.world, new Sprite(protecterTexture), new Sprite(protecterNormalTexture), 23f, 23f, 0.0f);
+		this.unit01 = new Protector(this.world, new Sprite(protecterTexture), new Sprite(protecterNormalTexture), 35f, 40f, 1f);
+		this.stone = new Stone(this.world, new Sprite(stoneTexture), new Sprite(stoneNormalTexture), 25f, 25f, 1f);
+		this.UCMothership = new UCMothership(world, new Sprite(UCMothershipTexture), new Sprite(UCMothershipNormalTexture), 40f, 40f, 1f);
 		
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
@@ -182,19 +236,36 @@ public class GameScreen implements Screen {
 		beginBatch();
 		renderBackground();
 		game.batch.end();
+		// start our FX batch, which will bind our shader program
+				fxBatch.begin();
+				
+				// get y-down light position based on mouse/touch
+				lightPos.x = Gdx.input.getX();
+				lightPos.y = Gdx.graphics.getHeight() - Gdx.input.getY();
+				
+				
+				// update our uniforms
+				program.setUniformf("ambientIntensity", ambientIntensity);
+				program.setUniformf("attenuation", attenuation);
+				program.setUniformf("light", lightPos);
+				program.setUniformi("useNormals", useNormals ? 1 : 0);
+				program.setUniformi("useShadow", useShadow ? 1 : 0);
+				program.setUniformf("strength", strength);
+				fxBatch.end();
 		tmr.render();
+		stage.getBatch().setShader(program);
 		stage.draw();
 		
 		
-		graphDebugRenderer.render(game.shapeRenderer);
-		if (selectedUnit != null) {
+		//graphDebugRenderer.render(game.shapeRenderer);
+		/*if (selectedUnit != null) {
 			game.shapeRenderer.begin(ShapeType.Line);
 			TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
 					selectedUnit.getBody().getPosition().y * Constants.PPM);
 			graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
 			game.shapeRenderer.end();
-		}
-		graphDebugRenderer.renderPath(path, game.shapeRenderer);
+		}*/
+		//graphDebugRenderer.renderPath(path, game.shapeRenderer);
 		
 
 	}
@@ -303,6 +374,111 @@ public class GameScreen implements Screen {
 		// TODO Auto-generated method stub
 		
 	}
+	public void create() {
+		// create our shader program...
+				program = createShader();
+
+				// now we create our sprite batch for our shader
+				fxBatch = new SpriteBatch(100, program);
+				// setShader is needed; perhaps this is a LibGDX bug?
+				fxBatch.setShader(program);
+	}
+	
+	private ShaderProgram createShader() {
+		// see the code here: http://pastebin.com/7fkh1ax8
+		// simple illumination model using ambient, diffuse (lambert) and attenuation
+		// see here: http://nccastaff.bournemouth.ac.uk/jmacey/CGF/slides/IlluminationModels4up.pdf
+		String vert = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+				+ "uniform mat4 u_proj;\n" //
+				+ "uniform mat4 u_trans;\n" //
+				+ "uniform mat4 u_projTrans;\n" //
+				+ "varying vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "\n" //
+				+ "void main()\n" //
+				+ "{\n" //
+				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+				+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+				+ "}\n";
+		
+		String frag = "#ifdef GL_ES\n" +
+				"precision mediump float;\n" +
+				"#endif\n" +
+				"varying vec4 v_color;\n" +
+				"varying vec2 v_texCoords;\n" +
+				
+				"uniform sampler2D u_texture;\n" +
+				"uniform sampler2D u_normals;\n" +
+				"uniform vec3 light;\n" + 
+				"uniform vec3 ambientColor;\n" + 
+				"uniform float ambientIntensity; \n" + 
+				"uniform vec2 resolution;\n" + 
+				"uniform vec3 lightColor;\n" + 
+				"uniform bool useNormals;\n" + 
+				"uniform bool useShadow;\n" + 
+				"uniform vec3 attenuation;\n" + 
+				"uniform float strength;\n" +
+				"uniform bool yInvert;\n"+ 
+				"\n" + 
+				"void main() {\n" +
+				"	//sample color & normals from our textures\n" +
+				"	vec4 color = texture2D(u_texture, v_texCoords.st);\n" +
+				"	vec3 nColor = texture2D(u_normals, v_texCoords.st).rgb;\n\n" +
+				"	//some bump map programs will need the Y value flipped..\n" +
+				"	nColor.g = yInvert ? 1.0 - nColor.g : nColor.g;\n\n" +
+				"	//this is for debugging purposes, allowing us to lower the intensity of our bump map\n" +
+				"	vec3 nBase = vec3(0.5, 0.5, 1.0);\n" +
+				"	nColor = mix(nBase, nColor, strength);\n\n" +
+				"	//normals need to be converted to [-1.0, 1.0] range and normalized\n" +
+				"	vec3 normal = normalize(nColor * 2.0 - 1.0);\n\n" +
+				"	//here we do a simple distance calculation\n" +
+				"	vec3 deltaPos = vec3( (light.xy - gl_FragCoord.xy) / resolution.xy, light.z );\n\n" +
+				"	vec3 lightDir = normalize(deltaPos);\n" + 
+				"	float lambert = useNormals ? clamp(dot(normal, lightDir), 0.0, 1.0) : 1.0;\n" + 
+				"	\n" + 
+				"	//now let's get a nice little falloff\n" + 
+				"	float d = sqrt(dot(deltaPos, deltaPos));"+ 
+				"	\n" + 
+				"	float att = useShadow ? 1.0 / ( attenuation.x + (attenuation.y*d) + (attenuation.z*d*d) ) : 1.0;\n" + 
+				"	\n" + 
+				"	vec3 result = (ambientColor * ambientIntensity) + (lightColor.rgb * lambert) * att;\n" + 
+				"	result *= color.rgb;\n" + 
+				"	\n" + 
+				"	gl_FragColor = v_color * vec4(result, color.a);\n" + 
+				"}";
+		System.out.println("VERTEX PROGRAM:\n------------\n\n"+vert);
+		System.out.println("FRAGMENT PROGRAM:\n------------\n\n"+frag);
+		ShaderProgram program = new ShaderProgram(vert, frag);
+		// u_proj and u_trans will not be active but SpriteBatch will still try to set them...
+		program.pedantic = false;
+		if (program.isCompiled() == false)
+			throw new IllegalArgumentException("couldn't compile shader: "
+					+ program.getLog());
+
+		// set resolution vector
+		resolution.set(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+		// we are only using this many uniforms for testing purposes...!!
+		program.begin();
+		program.setUniformi("u_texture", 0);
+		program.setUniformi("u_normals", 1);
+		program.setUniformf("light", lightPos);
+		program.setUniformf("strength", strength);
+		program.setUniformf("ambientIntensity", ambientIntensity);
+		program.setUniformf("ambientColor", DEFAULT_AMBIENT_COLOR);
+		program.setUniformf("resolution", resolution);
+		program.setUniformf("lightColor", DEFAULT_LIGHT_COLOR);
+		program.setUniformf("attenuation", attenuation);
+		program.setUniformi("useShadow", useShadow ? 1 : 0);
+		program.setUniformi("useNormals", useNormals ? 1 : 0);
+		program.setUniformi("yInvert", flipY ? 1 : 0);
+		program.end();
+
+		return program;
+	}
 
 	@Override
 	public void dispose() {
@@ -312,6 +488,7 @@ public class GameScreen implements Screen {
 		b2ddr.dispose();
 		map.dispose();
 		tmr.dispose();
+		fxBatch.dispose();
 		// TODO Auto-generated method stub
 		
 	}

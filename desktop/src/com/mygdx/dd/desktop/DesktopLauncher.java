@@ -12,7 +12,7 @@ public class DesktopLauncher {
 		config.title = "Dead Dream";
 		config.width = 1366;
 		config.height = 768;
-		config.fullscreen = true;
+		config.fullscreen = false;
 		new LwjglApplication(new DeadDream(), config);
 	}
 }
