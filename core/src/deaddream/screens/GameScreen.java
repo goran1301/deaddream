@@ -27,6 +27,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.Constants;
 import com.mygdx.dd.DeadDream;
+
+import deaddream.backgrounds.BackgroundInterface;
+import deaddream.backgrounds.DarkSpaceBackground;
+import deaddream.backgrounds.WorldBackground;
 import deaddream.logic.pathfinding.BaseIndexedGraph;
 import deaddream.logic.pathfinding.MapBaseIndexedGraphFactory;
 import deaddream.logic.pathfinding.PathCoordinator;
@@ -73,6 +77,8 @@ public class GameScreen implements Screen {
 	TiledManhattanDistance<TiledNode> heuristic = new TiledManhattanDistance<TiledNode>();
 	
 	TiledSmoothableGraphPath<TiledNode> path = new TiledSmoothableGraphPath<TiledNode>();
+	
+	BackgroundInterface bg;
 	
 	
 	public GameScreen(final DeadDream game) {
@@ -168,8 +174,14 @@ public class GameScreen implements Screen {
 	}
 	
 	private void loadTextures() {
-		this.background = game.assets.get("backgrounds/bg1.jpg", Texture.class);
+		this.background = game.assets.get("backgrounds/world_background/stars.png", Texture.class);
 		this.background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		bg = new WorldBackground(
+				game.assets.get("backgrounds/world_background/stars.png", Texture.class),
+				game.assets.get("backgrounds/world_background/middle_layer.png", Texture.class),
+				game.batch
+			);
+		bg.setResolution(game.camera.viewportWidth, game.camera.viewportHeight);
 		//this.testUnitSkin = game.assets.get("skins/units/protector.png", Texture.class);
 		//this.background = new Image(background);
 	}
@@ -179,9 +191,7 @@ public class GameScreen implements Screen {
 		update(delta);
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		beginBatch();
-		renderBackground();
-		game.batch.end();
+		bg.render();
 		tmr.render();
 		stage.draw();
 		
@@ -200,33 +210,18 @@ public class GameScreen implements Screen {
 		
 	}
 	
-	private void beginBatch() {
-		this.game.batch.begin();
-		this.game.batch.enableBlending();
-		
-	}
-	
-	private void renderBackground() {
-		
-		this.game.batch.draw(this.background, 
-				this.game.camera.position.x - this.game.V_WIDTH / 2, 
-				this.game.camera.position.y - this.game.V_HEIGHT / 2,
-                this.game.V_WIDTH, this.game.V_HEIGHT
-                );
-	}
-	
 	public void update(float delta) {
 		
 		game.shapeRenderer.setProjectionMatrix(game.camera.combined);
 		Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		
+	    	
 				
 		world.step(1/60f, 6, 2);
 		stage.act(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
 		
 		this.updateInput();
-		
+		bg.updateCameraPosition(game.camera.position.x, game.camera.position.y);
 		float cameraX = this.game.camera.position.x;
 		float cameraY = this.game.camera.position.y;
 		if (tmp.x >= cameraX + game.V_WIDTH / 2 - 5){
@@ -243,6 +238,7 @@ public class GameScreen implements Screen {
 		}
 		
 		this.cameraUpdate(cameraX, cameraY);
+		
 		tmr.setView(game.camera);
 		
 	}
