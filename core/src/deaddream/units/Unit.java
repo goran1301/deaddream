@@ -2,6 +2,7 @@ package deaddream.units;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -34,13 +35,17 @@ public abstract class Unit extends Actor implements Disableable {
 	boolean isChecked, isDisabled;
 	private boolean programmaticChangeEvents = true;
 	private MovementControllerInterface<Array<Vector2>> movementController;
-	
+	private ShaderProgram shaderProgram;
 	
 	public Unit(World world, Sprite staticTexture, Sprite staticNormalTexture, float x, float y, float angle) {
 		this.staticTexture = staticTexture;
 		this.staticNormalTexture = staticNormalTexture;
 		this.createUnit(world, x, y, angle);
 		movementController = movementControllerFactory();
+	}
+	
+	public void setShaderProgram(ShaderProgram shaderProgram) {
+		this.shaderProgram = shaderProgram;
 	}
 	
 	protected abstract MovementControllerInterface<Array<Vector2>> movementControllerFactory();
@@ -160,11 +165,13 @@ public abstract class Unit extends Actor implements Disableable {
 	}*/
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
+		batch.setShader(shaderProgram);
 		this.staticTexture.setPosition(
 				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
 				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
 			);
 		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
+		
 		//System.out.println("Body's coordinate: " + String.valueOf(body.getPosition().x * Constants.PPM) + " : " + String.valueOf(body.getPosition().y * Constants.PPM));
 		//System.out.println("Body's worldCenter coordinate: " + String.valueOf(body.getWorldCenter().x * Constants.PPM) + " : " + String.valueOf(body.getWorldCenter().y * Constants.PPM));
 			
@@ -177,14 +184,17 @@ public abstract class Unit extends Actor implements Disableable {
 				this.body.getPosition().y * Constants.PPM);*/
 		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
 				this.body.getPosition().y * Constants.PPM);*/
-		this.staticNormalTexture.setRotation(this.staticTexture.getRotation());
-		this.staticNormalTexture.setPosition(
-				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
-				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
-			);
-		this.staticNormalTexture.getTexture().bind(0);
-		this.staticTexture.getTexture().bind(1);
+		if (shaderProgram != null) {
+			this.staticNormalTexture.setRotation(this.staticTexture.getRotation());
+			this.staticNormalTexture.setPosition(
+					this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
+					this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
+				);
+			this.staticNormalTexture.getTexture().bind(1);
+			this.staticTexture.getTexture().bind(0);
+		}
 		this.staticTexture.draw(batch);
+		batch.setShader(null);
 	}
 
 	/**

@@ -90,13 +90,13 @@ public class GameScreen implements Screen {
 	// position of our light
 	final Vector3 DEFAULT_LIGHT_POS = new Vector3(0f, 0f, 0.07f);
 	// the color of our light
-	final Vector3 DEFAULT_LIGHT_COLOR = new Vector3(1f, 0.7f, 0.6f);
+	final Vector3 DEFAULT_LIGHT_COLOR = new Vector3(0.5f, 0.7f, 0.8f);
 	// the ambient color (color to use when unlit)
-	final Vector3 DEFAULT_AMBIENT_COLOR = new Vector3(0.3f, 0.3f, 1f);
+	final Vector3 DEFAULT_AMBIENT_COLOR = new Vector3(0.7f, 0.7f, 0.7f);
 	// the attenuation factor: x=constant, y=linear, z=quadratic
 	final Vector3 DEFAULT_ATTENUATION = new Vector3(0.4f, 3f, 20f);
 	// the ambient intensity (brightness to use when unlit)
-	final float DEFAULT_AMBIENT_INTENSITY = 0.6f;
+	final float DEFAULT_AMBIENT_INTENSITY = 0.9f;
 	final float DEFAULT_STRENGTH = 1f;
 	
 	final Color NORMAL_VCOLOR = new Color(1f,1f,1f,DEFAULT_STRENGTH);
@@ -214,6 +214,7 @@ public class GameScreen implements Screen {
         pathFinder = new IndexedAStarPathFinder<TiledNode>(graph, true);
         pathSmoother = new PathSmoother<TiledNode, Vector2>(new deaddream.logic.pathfinding.TiledRaycastCollisionDetector<TiledNode>(graph));
         
+        
 
 	}
 	
@@ -253,7 +254,10 @@ public class GameScreen implements Screen {
 				program.setUniformf("strength", strength);
 				fxBatch.end();
 		tmr.render();
-		stage.getBatch().setShader(program);
+		this.UCMothership.setShaderProgram(program);
+		this.unit00.setShaderProgram(program);
+		this.unit01.setShaderProgram(program);
+		this.stone.setShaderProgram(program);
 		stage.draw();
 		
 		
