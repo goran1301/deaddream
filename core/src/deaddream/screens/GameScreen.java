@@ -38,7 +38,8 @@ import deaddream.units.Protector;
 import deaddream.units.Stone;
 import deaddream.units.Unit;
 import deaddream.units.utilities.map.BaseGraphDebugRenderer;
-
+import deaddream.units.utilities.map.MothershipDebugRenderer;
+import deaddream.units.UCMothership;
 
 public class GameScreen implements Screen {
 	
@@ -70,6 +71,8 @@ public class GameScreen implements Screen {
 	
 	private BaseGraphDebugRenderer graphDebugRenderer;
 	
+	private MothershipDebugRenderer msDebugRenderer;
+	
 	TiledManhattanDistance<TiledNode> heuristic = new TiledManhattanDistance<TiledNode>();
 	
 	TiledSmoothableGraphPath<TiledNode> path = new TiledSmoothableGraphPath<TiledNode>();
@@ -89,7 +92,7 @@ public class GameScreen implements Screen {
 		System.out.println("Game");
 		Gdx.input.setInputProcessor(this.stage);
 		game.shapeRenderer.setProjectionMatrix(game.camera.combined);
-		map = new TmxMapLoader().load("maps/test.tmx");
+		map = new TmxMapLoader().load("maps/test2.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
 		Texture protecterTexture = game.assets.get("skins/units/protector.png", Texture.class);
@@ -101,8 +104,9 @@ public class GameScreen implements Screen {
 		this.unit00 = new Protector(this.world, new Sprite(protecterTexture), 23f, 23f, 0.0f);
 		this.unit01 = new Protector(this.world, new Sprite(protecterTexture), 35f, 40f, 1f);
 		this.stone = new Stone(this.world, new Sprite(stoneTexture), 25f, 25f, 1f);
-		this.UCMothership = new deaddream.units.UCMothership(world, new Sprite(UCMothershipTexture), 40f, 40f, 1f);
-		
+		UCMothership mc = new UCMothership(world, new Sprite(UCMothershipTexture), 40f, 40f, 1f);
+		this.UCMothership = mc;
+		msDebugRenderer = new MothershipDebugRenderer(mc);
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
 		graph = MapBaseIndexedGraphFactory.create(map);
@@ -185,7 +189,6 @@ public class GameScreen implements Screen {
 		tmr.render();
 		stage.draw();
 		
-		
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			graphDebugRenderer.render(game.shapeRenderer);
 			if (selectedUnit != null) {
@@ -196,6 +199,7 @@ public class GameScreen implements Screen {
 				game.shapeRenderer.end();
 			}
 			graphDebugRenderer.renderPath(path, game.shapeRenderer);
+			msDebugRenderer.render(delta, game.shapeRenderer);
 		}
 		
 	}

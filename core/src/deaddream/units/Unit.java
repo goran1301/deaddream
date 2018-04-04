@@ -190,9 +190,9 @@ public abstract class Unit extends Actor implements Disableable {
 	}
 	
 	
-	protected void rotateTo(float angle) {
+	/*protected void rotateTo(float angle) {
 		this.movementController.rotateTo(angle);
-	}
+	}*/
 	
     public void stopMove() {
 		movementController.stopMove();

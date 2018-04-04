@@ -53,7 +53,7 @@ public class DefaultMovementController implements MovementControllerInterface <A
 	}
 
 	
-	@Override
+	//@Override
 	public void moveTo(float x, float y) {
 		this.currentMoveGoal.x = x;
 		this.currentMoveGoal.y = y;
@@ -84,6 +84,7 @@ public class DefaultMovementController implements MovementControllerInterface <A
 		isMoving = true;
 	}
 	
+	
 	@Override
 	public void moveTo(Array<Vector2> path) {
 		if (path != null) {
@@ -105,7 +106,7 @@ public class DefaultMovementController implements MovementControllerInterface <A
 		isMoving = false;
 	}
 
-	@Override
+	//@Override
 	public void rotateTo(float angle) {
 		angleGoal = angle;
 		updateBodyAngle();
@@ -145,7 +146,7 @@ public class DefaultMovementController implements MovementControllerInterface <A
 		bodyAngle = standartAngle(body.getAngle()* Math.abs(MathUtils.radiansToDegrees )+90); 
 	}
 
-	@Override
+	//@Override
 	public void stopRotation() {
 		body.setAngularVelocity(0.0f);
 		isRotating = false;
@@ -198,8 +199,5 @@ public class DefaultMovementController implements MovementControllerInterface <A
 	public boolean isMoving() {
 		return isMoving;
 	}
-
-
-
 	
 }
