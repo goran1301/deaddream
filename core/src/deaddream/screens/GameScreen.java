@@ -88,15 +88,15 @@ public class GameScreen implements Screen {
 
 
 	// position of our light
-	final Vector3 DEFAULT_LIGHT_POS = new Vector3(0f, 0f, 0.07f);
+	final Vector3 DEFAULT_LIGHT_POS = new Vector3(50f, 50f, 0.07f);
 	// the color of our light
-	final Vector3 DEFAULT_LIGHT_COLOR = new Vector3(0.5f, 0.7f, 0.8f);
+	final Vector3 DEFAULT_LIGHT_COLOR = new Vector3(3f, 3f, 3f);
 	// the ambient color (color to use when unlit)
 	final Vector3 DEFAULT_AMBIENT_COLOR = new Vector3(0.7f, 0.7f, 0.7f);
 	// the attenuation factor: x=constant, y=linear, z=quadratic
-	final Vector3 DEFAULT_ATTENUATION = new Vector3(0.4f, 3f, 20f);
+	final Vector3 DEFAULT_ATTENUATION = new Vector3(0.4f, 0.4f, 0.1f);
 	// the ambient intensity (brightness to use when unlit)
-	final float DEFAULT_AMBIENT_INTENSITY = 0.9f;
+	final float DEFAULT_AMBIENT_INTENSITY = 1f;
 	final float DEFAULT_STRENGTH = 1f;
 	
 	final Color NORMAL_VCOLOR = new Color(1f,1f,1f,DEFAULT_STRENGTH);
@@ -241,8 +241,8 @@ public class GameScreen implements Screen {
 				fxBatch.begin();
 				
 				// get y-down light position based on mouse/touch
-				lightPos.x = Gdx.input.getX();
-				lightPos.y = Gdx.graphics.getHeight() - Gdx.input.getY();
+				//lightPos.x = Gdx.input.getX();
+				//lightPos.y = Gdx.graphics.getHeight() - Gdx.input.getY();
 				
 				
 				// update our uniforms
@@ -261,15 +261,15 @@ public class GameScreen implements Screen {
 		stage.draw();
 		
 		
-		//graphDebugRenderer.render(game.shapeRenderer);
-		/*if (selectedUnit != null) {
+		/*graphDebugRenderer.render(game.shapeRenderer);
+		if (selectedUnit != null) {
 			game.shapeRenderer.begin(ShapeType.Line);
 			TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
 					selectedUnit.getBody().getPosition().y * Constants.PPM);
 			graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
 			game.shapeRenderer.end();
-		}*/
-		//graphDebugRenderer.renderPath(path, game.shapeRenderer);
+		}
+		graphDebugRenderer.renderPath(path, game.shapeRenderer);*/
 		
 
 	}
