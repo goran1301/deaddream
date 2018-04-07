@@ -1,6 +1,5 @@
 package deaddream.logic.pathfinding;
 
-import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
@@ -9,9 +8,11 @@ import com.badlogic.gdx.math.Vector2;
 public class TiledRaycastCollisionDetector<N extends Node<N>> implements RaycastCollisionDetector<Vector2> {
 
 	BaseIndexedGraph<N> worldMap;
+	PathCollitionDetector<N> pathCollisionDetector;
 	
 	public TiledRaycastCollisionDetector (BaseIndexedGraph<N> worldMap) {
 		this.worldMap = worldMap;
+		pathCollisionDetector = new PathCollitionDetector<N>(worldMap);
 	}
 
 	// See http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
@@ -53,8 +54,9 @@ public class TiledRaycastCollisionDetector<N extends Node<N>> implements Raycast
 		for (int x = x0; x <= x1; x++) {
 			N tile = steep ? worldMap.getNode(y, x) : worldMap.getNode(x, y);
 			//if (tile.type != TiledNode.TILE_FLOOR) return true; // We've hit a wall
-			if (tile.type != TiledNode.TILE_FLOOR || collitionPossibility(tile)) {
-				return true;
+			//if (tile.type != TiledNode.TILE_FLOOR || collitionPossibility(tile)) {
+			if (tile.type != TiledNode.TILE_FLOOR || pathCollisionDetector.detect(tile)) {
+			    return true;
 			}
 			error += deltay;
 			if (error + error >= deltax) {

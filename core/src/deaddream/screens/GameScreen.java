@@ -34,6 +34,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.Constants;
 import com.mygdx.dd.DeadDream;
+
+import deaddream.backgrounds.BackgroundInterface;
+import deaddream.backgrounds.DarkSpaceBackground;
+import deaddream.backgrounds.WorldBackground;
 import deaddream.logic.pathfinding.BaseIndexedGraph;
 import deaddream.logic.pathfinding.MapBaseIndexedGraphFactory;
 import deaddream.logic.pathfinding.PathCoordinator;
@@ -82,6 +86,7 @@ public class GameScreen implements Screen {
 	
 	TiledSmoothableGraphPath<TiledNode> path = new TiledSmoothableGraphPath<TiledNode>();
 	
+
 	boolean flipY = true;
 	
 	Matrix4 transform = new Matrix4();
@@ -120,6 +125,8 @@ public class GameScreen implements Screen {
 	ShaderProgram program;
 	
 	SpriteBatch fxBatch;
+	
+	BackgroundInterface bg;
 	
 	
 	public GameScreen(final DeadDream game) {
@@ -223,8 +230,14 @@ public class GameScreen implements Screen {
 	}
 	
 	private void loadTextures() {
-		this.background = game.assets.get("backgrounds/bg1.jpg", Texture.class);
+		this.background = game.assets.get("backgrounds/world_background/stars.png", Texture.class);
 		this.background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		bg = new WorldBackground(
+				game.assets.get("backgrounds/world_background/stars.png", Texture.class),
+				game.assets.get("backgrounds/world_background/middle_layer.png", Texture.class),
+				game.batch
+			);
+		bg.setResolution(game.camera.viewportWidth, game.camera.viewportHeight);
 		//this.testUnitSkin = game.assets.get("skins/units/protector.png", Texture.class);
 		//this.background = new Image(background);
 	}
@@ -232,10 +245,11 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		update(delta);
+		
+		game.batch.begin();
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		beginBatch();
-		renderBackground();
+
 		game.batch.end();
 		// start our FX batch, which will bind our shader program
 				fxBatch.begin();
@@ -253,6 +267,7 @@ public class GameScreen implements Screen {
 				program.setUniformi("useShadow", useShadow ? 1 : 0);
 				program.setUniformf("strength", strength);
 				fxBatch.end();
+		bg.render();
 		tmr.render();
 		this.UCMothership.setShaderProgram(program);
 		this.unit00.setShaderProgram(program);
@@ -261,46 +276,33 @@ public class GameScreen implements Screen {
 		stage.draw();
 		
 		
-		/*graphDebugRenderer.render(game.shapeRenderer);
-		if (selectedUnit != null) {
-			game.shapeRenderer.begin(ShapeType.Line);
-			TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
-					selectedUnit.getBody().getPosition().y * Constants.PPM);
-			graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
-			game.shapeRenderer.end();
-		}
-		graphDebugRenderer.renderPath(path, game.shapeRenderer);*/
-		
 
-	}
-	
-	private void beginBatch() {
-		this.game.batch.begin();
-		this.game.batch.enableBlending();
+		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+			graphDebugRenderer.render(game.shapeRenderer);
+			if (selectedUnit != null) {
+				game.shapeRenderer.begin(ShapeType.Line);
+				TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
+						selectedUnit.getBody().getPosition().y * Constants.PPM);
+				graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
+				game.shapeRenderer.end();
+			}
+			graphDebugRenderer.renderPath(path, game.shapeRenderer);
+		}
 		
-	}
-	
-	private void renderBackground() {
-		
-		this.game.batch.draw(this.background, 
-				this.game.camera.position.x - this.game.V_WIDTH / 2, 
-				this.game.camera.position.y - this.game.V_HEIGHT / 2,
-                this.game.V_WIDTH, this.game.V_HEIGHT
-                );
 	}
 	
 	public void update(float delta) {
 		
 		game.shapeRenderer.setProjectionMatrix(game.camera.combined);
 		Vector3 tmp = this.game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		
+	    	
 				
 		world.step(1/60f, 6, 2);
 		stage.act(delta);
 		this.game.batch.setProjectionMatrix(this.game.camera.combined);
-		tmr.setView(game.camera);
-		this.updateInput();
 		
+		this.updateInput();
+		bg.updateCameraPosition(game.camera.position.x, game.camera.position.y);
 		float cameraX = this.game.camera.position.x;
 		float cameraY = this.game.camera.position.y;
 		if (tmp.x >= cameraX + game.V_WIDTH / 2 - 5){
@@ -318,6 +320,8 @@ public class GameScreen implements Screen {
 		
 		this.cameraUpdate(cameraX, cameraY);
 		
+		tmr.setView(game.camera);
+		
 	}
 	
 	
@@ -333,10 +337,15 @@ public class GameScreen implements Screen {
 						selectedUnit.getBody().getPosition().x * Constants.PPM,
 						selectedUnit.getBody().getPosition().y * Constants.PPM
 					);
+				graph.unitSize.x = selectedUnit.getWidth();
+				graph.unitSize.y = selectedUnit.getHeight();
 				
-				pathFinder.searchNodePath(graph.startNode, graph.getNodeByCoordinates(tmp.x, tmp.y), heuristic, path);
-				pathSmoother.smoothPath(path);
-				selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY()));
+				TiledNode endNode = graph.getNodeByCoordinates(tmp.x, tmp.y);
+				if (endNode != null) {
+					pathFinder.searchNodePath(graph.startNode, endNode, heuristic, path);
+					pathSmoother.smoothPath(path);
+					selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY()));
+				}
 		    }
 		}
 	}
