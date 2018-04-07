@@ -241,8 +241,8 @@ public class GameScreen implements Screen {
 				fxBatch.begin();
 				
 				// get y-down light position based on mouse/touch
-				//lightPos.x = Gdx.input.getX();
-				//lightPos.y = Gdx.graphics.getHeight() - Gdx.input.getY();
+				lightPos.x = 100;//Gdx.input.getX();
+				lightPos.y = 100;//Gdx.graphics.getHeight() - Gdx.input.getY();
 				
 				
 				// update our uniforms
