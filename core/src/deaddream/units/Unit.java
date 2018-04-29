@@ -44,6 +44,13 @@ public abstract class Unit extends Actor implements Disableable {
 		movementController = movementControllerFactory();
 	}
 	
+	public float getLargestSize(){
+		if (getWidth() > getHeight()) {
+			return getWidth();
+		}
+		return getHeight();
+	}
+	
 	public void setShaderProgram(ShaderProgram shaderProgram) {
 		this.shaderProgram = shaderProgram;
 	}

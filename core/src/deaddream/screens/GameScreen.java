@@ -167,7 +167,7 @@ public class GameScreen implements Screen {
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
 		graph = MapBaseIndexedGraphFactory.create(map);
-		graphDebugRenderer = new BaseGraphDebugRenderer(graph);
+		graphDebugRenderer = new BaseGraphDebugRenderer(graph, game.batch);
 		
 		Group group = new Group();
 		group.addActor(UCMothership);
@@ -221,7 +221,7 @@ public class GameScreen implements Screen {
         pathFinder = new IndexedAStarPathFinder<TiledNode>(graph, true);
         pathSmoother = new PathSmoother<TiledNode, Vector2>(new deaddream.logic.pathfinding.TiledRaycastCollisionDetector<TiledNode>(graph));
         
-        
+        game.font.getData().setScale(1);
 
 	}
 	
@@ -278,15 +278,16 @@ public class GameScreen implements Screen {
 		
 
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-			graphDebugRenderer.render(game.shapeRenderer);
+			game.font.setColor(Color.WHITE);
+			graphDebugRenderer.render(game.shapeRenderer, game.font);
 			if (selectedUnit != null) {
 				game.shapeRenderer.begin(ShapeType.Line);
 				TiledNode node = graph.getNodeByCoordinates(selectedUnit.getBody().getPosition().x * Constants.PPM,
 						selectedUnit.getBody().getPosition().y * Constants.PPM);
-				graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE);
+				graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE, game.font);
 				game.shapeRenderer.end();
 			}
-			graphDebugRenderer.renderPath(path, game.shapeRenderer);
+			graphDebugRenderer.renderPath(path, game.shapeRenderer, game.font);
 		}
 		
 	}
@@ -342,9 +343,11 @@ public class GameScreen implements Screen {
 				
 				TiledNode endNode = graph.getNodeByCoordinates(tmp.x, tmp.y);
 				if (endNode != null) {
+					graph.setBodyWeight((int) Math.ceil(selectedUnit.getLargestSize() / Constants.PPM));
+					System.out.println("Unit WEIGHT" + String.valueOf(graph.getBodyWeight()));
 					pathFinder.searchNodePath(graph.startNode, endNode, heuristic, path);
 					pathSmoother.smoothPath(path);
-					selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY()));
+					selectedUnit.moveTo(PathCoordinator.getCoordinatesPath(path, tmp.x, tmp.y, graph.getPixelNodeSizeX(), graph.getPixelNodeSizeY(), graph.getBodyWeight() % 2 == 0));
 				}
 		    }
 		}

@@ -86,4 +86,6 @@ public final class Protector extends Unit {
 	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {
 		return new DefaultMovementController(body, 5.0f, 0.5f, 360.0f, 5.0f);
 	}
+
+	
 }
