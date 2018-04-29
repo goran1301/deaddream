@@ -50,7 +50,8 @@ import deaddream.units.Stone;
 import deaddream.units.Unit;
 import deaddream.units.UCMothership;
 import deaddream.units.utilities.map.BaseGraphDebugRenderer;
-
+import deaddream.units.utilities.map.MothershipDebugRenderer;
+import deaddream.units.UCMothership;
 
 public class GameScreen implements Screen {
 	
@@ -81,6 +82,8 @@ public class GameScreen implements Screen {
 	private Unit selectedUnit;
 	
 	private BaseGraphDebugRenderer graphDebugRenderer;
+	
+	private MothershipDebugRenderer msDebugRenderer;
 	
 	TiledManhattanDistance<TiledNode> heuristic = new TiledManhattanDistance<TiledNode>();
 	
@@ -144,7 +147,7 @@ public class GameScreen implements Screen {
 		System.out.println("Game");
 		Gdx.input.setInputProcessor(this.stage);
 		game.shapeRenderer.setProjectionMatrix(game.camera.combined);
-		map = new TmxMapLoader().load("maps/test.tmx");
+		map = new TmxMapLoader().load("maps/test2.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
 		this.loadTextures();
 		Texture protecterTexture = game.assets.get("skins/units/protector.png", Texture.class);
@@ -157,13 +160,16 @@ public class GameScreen implements Screen {
 		stoneNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture UCMothershipTexture = game.assets.get("skins/units/ucmothership.png", Texture.class);
 		UCMothershipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
 		Texture UCMothershipNormalTexture = game.assets.get("skins/units/ucmothershipNormal.png", Texture.class);
 		UCMothershipNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		this.unit00 = new Protector(this.world, new Sprite(protecterTexture), new Sprite(protecterNormalTexture), 23f, 23f, 0.0f);
 		this.unit01 = new Protector(this.world, new Sprite(protecterTexture), new Sprite(protecterNormalTexture), 35f, 40f, 1f);
 		this.stone = new Stone(this.world, new Sprite(stoneTexture), new Sprite(stoneNormalTexture), 25f, 25f, 1f);
-		this.UCMothership = new UCMothership(world, new Sprite(UCMothershipTexture), new Sprite(UCMothershipNormalTexture), 40f, 40f, 1f);
-		
+		UCMothership ms = new UCMothership(world, new Sprite(UCMothershipTexture), new Sprite(UCMothershipNormalTexture), 40f, 40f, 1f);
+		this.UCMothership = ms;
+		msDebugRenderer = new MothershipDebugRenderer(ms);
+
 		MapObjects objects =  map.getLayers().get("collision-layer").getObjects();
 		TiledObjectUtil.parseTiledObjectLayer(world, objects);
 		graph = MapBaseIndexedGraphFactory.create(map);
@@ -275,8 +281,6 @@ public class GameScreen implements Screen {
 		this.stone.setShaderProgram(program);
 		stage.draw();
 		
-		
-
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			game.font.setColor(Color.WHITE);
 			graphDebugRenderer.render(game.shapeRenderer, game.font);
@@ -287,7 +291,11 @@ public class GameScreen implements Screen {
 				graphDebugRenderer.renderNode(node, game.shapeRenderer, Color.BLUE, game.font);
 				game.shapeRenderer.end();
 			}
+
+		
 			graphDebugRenderer.renderPath(path, game.shapeRenderer, game.font);
+			msDebugRenderer.render(delta, game.shapeRenderer);
+
 		}
 		
 	}

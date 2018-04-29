@@ -12,7 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 import aurelienribon.bodyeditor.BodyEditorLoader;
-import deaddream.units.utilities.DefaultMovementController;
+import deaddream.units.utilities.DefaultMoveController;
+//import deaddream.units.utilities.DefaultMovementController;
 import deaddream.units.utilities.MovementControllerInterface;
 
 //import aurelienribon.bodyeditor.BodyEditorLoader;
@@ -84,7 +85,7 @@ public final class Protector extends Unit {
 
 	@Override
 	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {
-		return new DefaultMovementController(body, 5.0f, 0.5f, 360.0f, 5.0f);
+		return new DefaultMoveController(body, 5.0f, 0.5f, 360.0f, 5.0f);
 	}
 
 	

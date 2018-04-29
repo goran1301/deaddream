@@ -61,7 +61,7 @@ public class PathCollitionDetector<N extends Node<N>> {
 		//System.out.println("unit width: " + String.valueOf(worldMap.unitSize.x) + " - unit height: " + String.valueOf(worldMap.unitSize.x));
 		int tiledUnitHeight = (int)Math.ceil(worldMap.unitSize.y / worldMap.pixelNodeSizeY)/2;
 		int tiledUnitWidth = (int)Math.ceil(worldMap.unitSize.x / worldMap.pixelNodeSizeX)/2;
-		if (tiledUnitHeight <= tiledUnitWidth) {
+		if (tiledUnitHeight >= tiledUnitWidth) {
 			//System.out.println("tiledUnitHeight: " + String.valueOf(tiledUnitHeight));
 			return tiledUnitHeight;
 		}

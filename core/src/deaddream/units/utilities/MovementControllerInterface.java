@@ -14,7 +14,7 @@ public interface MovementControllerInterface <P> {
 	 * @param x
 	 * @param y
 	 */
-	public void moveTo(float x, float y);
+	//public void moveTo(float x, float y);
 	
 	/**
 	 * Move to point
@@ -34,12 +34,12 @@ public interface MovementControllerInterface <P> {
 	 * 
 	 * @param angle degrees
 	 */
-	public void rotateTo(float angle);
+	//public void rotateTo(float angle);
 	
 	/**
 	 * Stop rotation
 	 */
-	public void stopRotation();
+	//public void stopRotation();
 	
 	/**
 	 * update movement logic

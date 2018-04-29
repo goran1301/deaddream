@@ -13,8 +13,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
-import deaddream.units.utilities.DefaultMovementController;
+//import deaddream.units.utilities.DefaultMovementController;
 import deaddream.units.utilities.MovementControllerInterface;
+import deaddream.units.utilities.move.UCMothershipMoveController;
 
 public class UCMothership extends Unit {
 	
@@ -29,7 +30,7 @@ public class UCMothership extends Unit {
 	@Override
 	protected BodyDef bodyDefFactory() {
 		BodyDef def = new BodyDef();
-		def.type = BodyType.DynamicBody;
+		def.type = BodyType.KinematicBody;
 		def.angularDamping = 1f;
 		def.linearDamping = 7f;
 		return def;
@@ -50,7 +51,7 @@ public class UCMothership extends Unit {
 
 	@Override
 	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {
-		return new DefaultMovementController(body, 0.5f, 0.5f, 10.f, 5.0f);
+		return new UCMothershipMoveController(body, 0.5f, 0.5f, 10.f, 0.2f, height / Constants.PPM);
 	}
 
 	
