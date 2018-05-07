@@ -158,10 +158,10 @@ public class GameScreen implements Screen {
 		stoneTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture stoneNormalTexture = game.assets.get("skins/units/stoneNormal.png", Texture.class);
 		stoneNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		Texture UCMothershipTexture = game.assets.get("skins/units/ucmothership.png", Texture.class);
+		Texture UCMothershipTexture = game.assets.get("skins/units/materinskiy.png", Texture.class);
 		UCMothershipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-		Texture UCMothershipNormalTexture = game.assets.get("skins/units/ucmothershipNormal.png", Texture.class);
+		Texture UCMothershipNormalTexture = game.assets.get("skins/units/materinskiyNormal.png", Texture.class);
 		UCMothershipNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		this.unit00 = new Protector(this.world, new Sprite(protecterTexture), new Sprite(protecterNormalTexture), 23f, 23f, 0.0f);
 		this.unit01 = new Protector(this.world, new Sprite(protecterTexture), new Sprite(protecterNormalTexture), 35f, 40f, 1f);
