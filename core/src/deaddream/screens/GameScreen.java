@@ -102,10 +102,10 @@ public class GameScreen implements Screen {
 	// the ambient color (color to use when unlit)
 	final Vector3 DEFAULT_AMBIENT_COLOR = new Vector3(0.7f, 0.7f, 0.7f);
 	// the attenuation factor: x=constant, y=linear, z=quadratic
-	final Vector3 DEFAULT_ATTENUATION = new Vector3(0.4f, 0.4f, 0.1f);
+	final Vector3 DEFAULT_ATTENUATION = new Vector3(0.4f, 0.4f, 0.3f);
 	// the ambient intensity (brightness to use when unlit)
-	final float DEFAULT_AMBIENT_INTENSITY = 1f;
-	final float DEFAULT_STRENGTH = 1f;
+	final float DEFAULT_AMBIENT_INTENSITY = 0.8f;
+	final float DEFAULT_STRENGTH = 0.1f;
 	
 	final Color NORMAL_VCOLOR = new Color(1f,1f,1f,DEFAULT_STRENGTH);
 	
@@ -261,8 +261,8 @@ public class GameScreen implements Screen {
 				fxBatch.begin();
 				
 				// get y-down light position based on mouse/touch
-				lightPos.x = 100;//Gdx.input.getX();
-				lightPos.y = 100;//Gdx.graphics.getHeight() - Gdx.input.getY();
+				lightPos.x = -50;//Gdx.input.getX();
+				lightPos.y = -50;//Gdx.graphics.getHeight() - Gdx.input.getY();
 				
 				
 				// update our uniforms
