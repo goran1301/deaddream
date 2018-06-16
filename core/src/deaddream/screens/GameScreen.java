@@ -281,6 +281,8 @@ public class GameScreen implements Screen {
 		this.stone.setShaderProgram(program);
 		stage.draw();
 		
+		this.b2ddr.render(this.world, this.debugMatrix);
+		
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			game.font.setColor(Color.WHITE);
 			graphDebugRenderer.render(game.shapeRenderer, game.font);
