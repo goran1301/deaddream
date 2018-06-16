@@ -55,7 +55,9 @@ public class TiledRaycastCollisionDetector<N extends Node<N>> implements Raycast
 			N tile = steep ? worldMap.getNode(y, x) : worldMap.getNode(x, y);
 			//if (tile.type != TiledNode.TILE_FLOOR) return true; // We've hit a wall
 			//if (tile.type != TiledNode.TILE_FLOOR || collitionPossibility(tile)) {
-			if (tile.type != TiledNode.TILE_FLOOR || pathCollisionDetector.detect(tile) || collitionPossibility(tile)) {
+
+			//if (tile.type != TiledNode.TILE_FLOOR || pathCollisionDetector.detect(tile)) {
+			if (tile.type != TiledNode.TILE_FLOOR || tile.getWeight() < worldMap.getBodyWeight()) {
 			    return true;
 			}
 			error += deltay;

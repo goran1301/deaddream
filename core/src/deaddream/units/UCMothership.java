@@ -22,8 +22,8 @@ public class UCMothership extends Unit {
 	protected static final int width = 600;
 	protected static final int height = 680;
 	
-	public UCMothership(World world, Sprite staticTexture, float x, float y, float angle) {
-		super(world, staticTexture, x, y, angle);
+	public UCMothership(World world, Sprite staticTexture, Sprite staticNormalTexture, float x, float y, float angle) {
+		super(world, staticTexture, staticNormalTexture, x, y, angle);
 		setSize(width, height);
 	}
 
@@ -47,33 +47,7 @@ public class UCMothership extends Unit {
 		return null;
 	}
 	
-	/**
-	 * render unit on screen
-	 * 
-	 * @param batch
-	 */
-	@Override
-	public void draw(Batch batch, float parentAlpha) {
-		this.staticTexture.setPosition(
-				this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),
-				this.body.getWorldCenter().y * Constants.PPM - (this.staticTexture.getHeight() /2)
-			);
-		
-		//System.out.println("Body's coordinate: " + String.valueOf(body.getPosition().x * Constants.PPM) + " : " + String.valueOf(body.getPosition().y * Constants.PPM));
-		//System.out.println("Body's worldCenter coordinate: " + String.valueOf(body.getWorldCenter().x * Constants.PPM) + " : " + String.valueOf(body.getWorldCenter().y * Constants.PPM));
-			
-		/*staticTexture.setPosition(
-				body.getPosition().x * Constants.PPM,
-				body.getPosition().y * Constants.PPM
-			);*/
-		
-		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
-				this.body.getPosition().y * Constants.PPM);*/
-		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
-				this.body.getPosition().y * Constants.PPM);*/
-		this.staticTexture.setRotation(MathUtils.radiansToDegrees * this.body.getAngle());
-		this.staticTexture.draw(batch);
-	}
+	
 
 	@Override
 	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {

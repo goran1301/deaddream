@@ -12,6 +12,9 @@ public class Node <N extends Node<N>> {
 
 	/** A constant representing a wall */
 	public static final int TILE_WALL = 2;
+	
+	/** A weight which define the coast of tile */
+	private int weight;
 
 	/** The x coordinate of this tile */
 	public final int x;
@@ -32,6 +35,16 @@ public class Node <N extends Node<N>> {
 		this.sizeY = sizeY;
 		this.type = type;
 		this.connections = connections;
+	}
+	
+	public void setWeight(int weight)
+	{
+		this.weight = weight;
+	}
+	
+	public int getWeight()
+	{
+		return weight;
 	}
 
 	public int getIndex () {

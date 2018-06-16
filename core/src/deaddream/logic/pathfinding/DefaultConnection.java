@@ -30,10 +30,11 @@ public class DefaultConnection<N extends Node<N>> implements Connection<N> {
 
 	@Override
 	public float getCost() {
-		//return 1;
-		if (pathCollisionDetector.detect(toNode)) {
-			return UNREACHEBLE_COST;
+		int bodyWeight = worldMap.getBodyWeight();
+		if (bodyWeight > toNode.getWeight()) {
+			return (float)UNREACHEBLE_COST * (bodyWeight - toNode.getWeight());
 		}
+		
 		if (worldMap.diagonal) return 1f;
 		//worldMap.diagonal = !worldMap.diagonal;
 		return getToNode().x != worldMap.startNode.x
