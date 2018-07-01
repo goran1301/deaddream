@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import deaddream.screens.GameScreen;
+import deaddream.screens.GameplayScreen;
 import deaddream.screens.LoadingScreen;
 import deaddream.screens.MainMenuScreen;
 import deaddream.screens.StartScreen;
@@ -32,7 +33,8 @@ public class DeadDream extends Game {
 	public LoadingScreen loadingScreen;
 	public StartScreen startScreen;
 	public MainMenuScreen mainMenuScreen;
-	public GameScreen gameScreen;
+	public GameplayScreen gameScreen;
+	//public GameplayScreen gameplayScreen;
 	
 	@Override
 	public void create() {
@@ -53,7 +55,8 @@ public class DeadDream extends Game {
 		this.loadingScreen = new LoadingScreen(this);
 		this.startScreen = new StartScreen(this);
 		this.mainMenuScreen = new MainMenuScreen(this);
-		this.gameScreen = new GameScreen(this);
+		//this.gameScreen = new GameScreen(this);
+		this.gameScreen = new GameplayScreen(this);
 		
 		this.setScreen(loadingScreen);
 	}

@@ -1,5 +1,7 @@
 package deaddream.units;
 
+import java.util.UUID;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -18,6 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pools;
 import com.mygdx.dd.Constants;
+
+import deaddream.players.Player;
 import deaddream.units.utilities.MovementControllerInterface;
 
 /**
@@ -36,12 +40,38 @@ public abstract class Unit extends Actor implements Disableable {
 	private boolean programmaticChangeEvents = true;
 	private MovementControllerInterface<Array<Vector2>> movementController;
 	private ShaderProgram shaderProgram;
+	private int index;
+	private final UUID uuid = UUID.randomUUID();
+	private Player player;
 	
 	public Unit(World world, Sprite staticTexture, Sprite staticNormalTexture, float x, float y, float angle) {
 		this.staticTexture = staticTexture;
 		this.staticNormalTexture = staticNormalTexture;
 		this.createUnit(world, x, y, angle);
 		movementController = movementControllerFactory();
+	}
+	
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public UUID getUUID() {
+		return uuid;
+	}
+	
+	
+	
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
+	public int getIndex() {
+		return index;
 	}
 	
 	public float getLargestSize(){
