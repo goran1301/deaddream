@@ -33,4 +33,8 @@ public class UnitSelection {
 	public void remove(Unit unit) {
 		selected.removeValue(unit, true);
 	}
+	
+	public void drop() {
+		selected.clear();
+	}
 }

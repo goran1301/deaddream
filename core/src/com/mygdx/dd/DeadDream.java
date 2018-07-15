@@ -33,6 +33,7 @@ public class DeadDream extends Game {
 	public LoadingScreen loadingScreen;
 	public StartScreen startScreen;
 	public MainMenuScreen mainMenuScreen;
+	//public GameScreen gameScreen;
 	public GameplayScreen gameScreen;
 	//public GameplayScreen gameplayScreen;
 	

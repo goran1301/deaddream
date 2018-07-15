@@ -3,6 +3,7 @@ package deaddream.maps;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import deaddream.logic.pathfinding.PathFinder;
+import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 
 /**
  * Provides operations with map
@@ -15,10 +16,12 @@ public class MapManager {
 	public TiledMap map;
 	public PathFinder pathFinder;
 	
+	
 	public MapManager(TiledMap map, OrthogonalTiledMapRenderer tmr) {
 		this.map = map;
 		this.tmr = tmr;
 		pathFinder = new PathFinder(map);
+		
 	}
 	
 	public PathFinder getPathFinder() {

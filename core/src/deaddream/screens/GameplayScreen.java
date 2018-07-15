@@ -37,8 +37,7 @@ public class GameplayScreen implements Screen {
 		
 		WorldBackground bg = new WorldBackground(
 				gameUtilities.assets.get("backgrounds/world_background/stars.png", Texture.class),
-				gameUtilities.assets.get("backgrounds/world_background/middle_layer.png", Texture.class),
-				gameUtilities.batch
+				gameUtilities.assets.get("backgrounds/world_background/middle_layer.png", Texture.class)
 			);
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);

@@ -7,7 +7,7 @@ public class DarkSpaceBackground implements BackgroundInterface {
 	
 	Texture background;
 	
-	SpriteBatch batch;
+	//SpriteBatch batch;
 	
 	float x;
 	
@@ -17,9 +17,9 @@ public class DarkSpaceBackground implements BackgroundInterface {
 	
 	float height;
 	
-	public DarkSpaceBackground(Texture background, SpriteBatch batch) {
+	public DarkSpaceBackground(Texture background) {
 		this.background = background;
-		this.batch = batch;
+		//this.batch = batch;
 	}
 
 	@Override
@@ -29,11 +29,11 @@ public class DarkSpaceBackground implements BackgroundInterface {
 	}
 
 	@Override
-	public void render() {
-		batch.begin();
-		batch.enableBlending();
+	public void render(SpriteBatch batch) {
+		//batch.begin();
+		//batch.enableBlending();
 		batch.draw(background, x - width / 2, y - height / 2, width, height);
-		batch.end();
+		//batch.end();
 	}
 
 	@Override

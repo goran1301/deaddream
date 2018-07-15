@@ -19,7 +19,7 @@ import deaddream.units.Unit;
  */
 public class PathFinder {
     private IndexedAStarPathFinder<TiledNode> pathFinder;
-	private BaseIndexedGraph<TiledNode> graph;
+	public BaseIndexedGraph<TiledNode> graph;
 	private PathSmoother<TiledNode, Vector2> pathSmoother;
     private TiledManhattanDistance<TiledNode> heuristic;
 	private TiledSmoothableGraphPath<TiledNode> path;

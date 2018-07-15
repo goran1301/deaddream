@@ -9,7 +9,7 @@ public class WorldBackground implements BackgroundInterface{
     
     Texture middleLayer;
 	
-	SpriteBatch batch;
+	//SpriteBatch batch;
 	
 	float x;
 	
@@ -19,10 +19,10 @@ public class WorldBackground implements BackgroundInterface{
 	
 	float height;
 	
-	public WorldBackground(Texture background, Texture middleLayer, SpriteBatch batch) {
+	public WorldBackground(Texture background, Texture middleLayer) {
 		this.background = background;
 		this.middleLayer = middleLayer;
-		this.batch = batch;
+		//this.batch = batch;
 	}
 	
 	@Override
@@ -39,12 +39,12 @@ public class WorldBackground implements BackgroundInterface{
 	}
 
 	@Override
-	public void render() {
-		batch.begin();
-		batch.enableBlending();
+	public void render(SpriteBatch batch) {
+		//batch.begin();
+		//batch.enableBlending();
 		batch.draw(background, x - width / 2, y - height / 2);
 		batch.draw(middleLayer, (x - width / 2) * 0.85f, (y - height / 2) * 0.85f);
-		batch.end();
+		//batch.end();
 	}
 
 }

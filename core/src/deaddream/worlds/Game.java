@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.DeadDream;
-
 import deaddream.backgrounds.BackgroundInterface;
 import deaddream.camera.CameraManager;
 import deaddream.maps.MapManager;
@@ -20,7 +19,9 @@ import deaddream.players.Player;
 import deaddream.units.Unit;
 import deaddream.units.factories.UnitFactory;
 import deaddream.units.utilities.input.InputManager;
+import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 import deaddream.worlds.rendering.ShaderProgrammer;
+import deadream.rendering.SelectionRenderer;
 
 public class Game {
 	protected Player currentPlayer;
@@ -35,6 +36,7 @@ public class Game {
 	public Group unitGroup;
 	protected UnitFactory unitFactory;
 	protected CameraManager camera;
+	private BaseGraphDebugRenderer graphDebugRenderer;
 	
 	public Game(
 			DeadDream utilities, 
@@ -66,6 +68,7 @@ public class Game {
 		mapManager = new MapManager(map, tmr);
 		camera = new CameraManager(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		unitFactory = new UnitFactory(gameUtilities);
+		graphDebugRenderer = new BaseGraphDebugRenderer(mapManager.pathFinder.graph, gameUtilities.batch);
 	}
 	
 	public void setBg(BackgroundInterface bg) {
@@ -73,18 +76,20 @@ public class Game {
 	}
 	
 	public void update(float delta) {
-		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
-		gameUtilities.batch.setProjectionMatrix(gameUtilities.camera.combined);
-		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
-		camera.update(gameUtilities.camera);
+		
 		world.step(1/60f, 6, 2);
 		stage.act(delta);
-		updateInput();
+		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
+		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
+		gameUtilities.batch.setProjectionMatrix(gameUtilities.camera.combined);
 		mapManager.tmr.setView(gameUtilities.camera);
 		shaderProgrammer.update(players);
+		camera.update(gameUtilities.camera);
+		updateInput();
 	}
 	
 	private void updateInput() {
+		inputManager.update(camera.getCursorPosition(), currentPlayer);
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
 			for(Unit unit : currentPlayer.getSelection().getSelected()) {
 				if (unit.getPlayer() == currentPlayer) {
@@ -99,14 +104,29 @@ public class Game {
 	
 	public void render(float delta) {
 		gameUtilities.batch.begin();
+		gameUtilities.batch.enableBlending();
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gameUtilities.batch.end();
 		if (bg != null) {
-			bg.render();
+			bg.render(gameUtilities.batch);
 		}
+		gameUtilities.batch.end();
+		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+			graphDebugRenderer.render(gameUtilities.shapeRenderer, gameUtilities.font);
+		}
+		gameUtilities.batch.begin();
+		beginShapeRenderer();
+		SelectionRenderer.render(currentPlayer.getSelection(), gameUtilities.shapeRenderer);
+		inputManager.render(gameUtilities.shapeRenderer);
+		gameUtilities.shapeRenderer.end();		
+		gameUtilities.batch.end();
 		mapManager.render();
-		stage.draw();
+		stage.draw();	
+	}
+	
+	private void beginShapeRenderer() {
+		gameUtilities.shapeRenderer.setAutoShapeType(true);
+		gameUtilities.shapeRenderer.begin();
 	}
 	
 	public UnitFactory getUnitFactory() {

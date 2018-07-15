@@ -240,8 +240,7 @@ public class GameScreen implements Screen {
 		this.background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		bg = new WorldBackground(
 				game.assets.get("backgrounds/world_background/stars.png", Texture.class),
-				game.assets.get("backgrounds/world_background/middle_layer.png", Texture.class),
-				game.batch
+				game.assets.get("backgrounds/world_background/middle_layer.png", Texture.class)
 			);
 		bg.setResolution(game.camera.viewportWidth, game.camera.viewportHeight);
 		//this.testUnitSkin = game.assets.get("skins/units/protector.png", Texture.class);
@@ -255,7 +254,7 @@ public class GameScreen implements Screen {
 		game.batch.begin();
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		bg.render(game.batch);
 		game.batch.end();
 		// start our FX batch, which will bind our shader program
 				fxBatch.begin();
@@ -273,7 +272,7 @@ public class GameScreen implements Screen {
 				program.setUniformi("useShadow", useShadow ? 1 : 0);
 				program.setUniformf("strength", strength);
 				fxBatch.end();
-		bg.render();
+		
 		tmr.render();
 		this.UCMothership.setShaderProgram(program);
 		this.unit00.setShaderProgram(program);
