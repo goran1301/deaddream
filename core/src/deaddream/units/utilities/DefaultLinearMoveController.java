@@ -123,4 +123,11 @@ public class DefaultLinearMoveController implements MovementControllerInterface 
 			return currentMoveGoal;
 		}
 		
+		public int getCurrentPathIndex() {
+			return currentPathIndex;
+		}
+		
+		public Array<Vector2> getPath(){
+			return path;
+		}
 }

@@ -21,8 +21,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pools;
 import com.mygdx.dd.Constants;
 
+import deaddream.groupmove.SteeringEntity;
 import deaddream.players.Player;
-import deaddream.units.utilities.MovementControllerInterface;
+import deaddream.units.utilities.LogicMovementControllerInterface;
 
 /**
  * 
@@ -38,17 +39,24 @@ public abstract class Unit extends Actor implements Disableable {
 	private ClickListener clickListener;
 	boolean isChecked, isDisabled;
 	private boolean programmaticChangeEvents = true;
-	private MovementControllerInterface<Array<Vector2>> movementController;
+	private LogicMovementControllerInterface<Array<Vector2>, Vector2> movementController;
 	private ShaderProgram shaderProgram;
 	private int index;
 	private final UUID uuid = UUID.randomUUID();
 	private Player player;
+	private Vector2 destinationPoint;
+	protected SteeringEntity steering;
+	protected float speed = 0;
 	
 	public Unit(World world, Sprite staticTexture, Sprite staticNormalTexture, float x, float y, float angle) {
 		this.staticTexture = staticTexture;
 		this.staticNormalTexture = staticNormalTexture;
 		this.createUnit(world, x, y, angle);
 		movementController = movementControllerFactory();
+	}
+	
+	public float getFlockRadius() {
+		return (getLargestSize() + 20f) / 2;
 	}
 	
 	public void setPlayer(Player player) {
@@ -62,9 +70,6 @@ public abstract class Unit extends Actor implements Disableable {
 	public UUID getUUID() {
 		return uuid;
 	}
-	
-	
-	
 	
 	public void setIndex(int index) {
 		this.index = index;
@@ -85,7 +90,7 @@ public abstract class Unit extends Actor implements Disableable {
 		this.shaderProgram = shaderProgram;
 	}
 	
-	protected abstract MovementControllerInterface<Array<Vector2>> movementControllerFactory();
+	protected abstract LogicMovementControllerInterface<Array<Vector2>, Vector2> movementControllerFactory();
 	
 	public void setProgrammaticChangeEvents (boolean programmaticChangeEvents) {
 		this.programmaticChangeEvents = programmaticChangeEvents;
@@ -242,6 +247,36 @@ public abstract class Unit extends Actor implements Disableable {
 	 */
 	public void moveTo(Array<Vector2> path) {
 		movementController.moveTo(path);
+		destinationPoint = path.get(path.size - 1);
+	}
+	
+	/**
+	 * Check is point a destination point
+	 * 
+	 * @param point
+	 * @return
+	 */
+	public boolean isDestinationEqual(Vector2 point) {
+		if (destinationPoint == null || point == null) {
+			return false;
+		}
+		if (destinationPoint.x == point.x && destinationPoint.y == point.y) {
+			return true;
+		}
+		return false;
+	}
+	
+	public Vector2 getDestinationPoint() {
+		return destinationPoint;
+	}
+	
+	/**
+	 * check is unit moving
+	 * 
+	 * @return
+	 */
+	public boolean isMoving() {
+		return movementController.isMoving();
 	}
 	
 	/**
@@ -253,6 +288,7 @@ public abstract class Unit extends Actor implements Disableable {
 		update(delta);
 	}
 	
+	
 	/**
 	 * logic for current delta
 	 * 
@@ -261,6 +297,10 @@ public abstract class Unit extends Actor implements Disableable {
 	public void update(float delta) {
 		if (movementController != null) {
 			movementController.update(delta);
+			if (movementController.isMoving() && steering != null) {
+				steering.updateVelocity(movementController.getVelocity());
+				steering.update(delta);
+			}
 		}
 		setPosition (
 				body.getPosition().x * Constants.PPM - (this.staticTexture.getWidth() /2),
@@ -280,10 +320,31 @@ public abstract class Unit extends Actor implements Disableable {
     public void stopMove() {
 		movementController.stopMove();
 	}
+    
+    public float getOrientation() {
+    	if (movementController != null) {
+    		return movementController.getOrientation();
+    	}
+    	return 0f;
+    }
+    
+    public void correctWay(Vector2 point) {
+    	if (movementController != null) {
+    		if (movementController.isMoving())
+    		movementController.addIntermediatePosition(point);
+    	}
+    }
+    
+    public float getSpeed() {
+    	return speed;
+    }
 	
 	public Body getBody() {
 		return this.body;
 	}
 	
+	public void setSteeringEntity(SteeringEntity entity) {
+		this.steering = entity;
+	}
 	
 }

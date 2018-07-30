@@ -82,6 +82,8 @@ public class DefaultAngleMoveController implements MovementControllerInterface <
 		return isRotating && Math.abs(bodyAngle - angleGoal) <= goalAngleFaultRange;
 	}
 	
-	
+	public float getGoal() {
+		return angleGoal;
+	}
 	
 }

@@ -2,6 +2,7 @@ package deaddream.worlds;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.DeadDream;
 import deaddream.backgrounds.BackgroundInterface;
 import deaddream.camera.CameraManager;
+import deaddream.groupmove.GroupMoveController;
 import deaddream.maps.MapManager;
 import deaddream.players.Player;
 import deaddream.units.Unit;
@@ -37,6 +39,7 @@ public class Game {
 	protected UnitFactory unitFactory;
 	protected CameraManager camera;
 	private BaseGraphDebugRenderer graphDebugRenderer;
+	private GroupMoveController groupMoveController;
 	
 	public Game(
 			DeadDream utilities, 
@@ -67,8 +70,10 @@ public class Game {
 		
 		mapManager = new MapManager(map, tmr);
 		camera = new CameraManager(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
-		unitFactory = new UnitFactory(gameUtilities);
+		
 		graphDebugRenderer = new BaseGraphDebugRenderer(mapManager.pathFinder.graph, gameUtilities.batch);
+		groupMoveController = new GroupMoveController(currentPlayer);
+		unitFactory = new UnitFactory(gameUtilities, groupMoveController);
 	}
 	
 	public void setBg(BackgroundInterface bg) {
@@ -77,8 +82,12 @@ public class Game {
 	
 	public void update(float delta) {
 		
-		world.step(1/60f, 6, 2);
+		
+		GdxAI.getTimepiece().update(delta);
+		//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
+		groupMoveController.update();
 		stage.act(delta);
+		world.step(1/60f, 6, 2);
 		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
 		gameUtilities.batch.setProjectionMatrix(gameUtilities.camera.combined);
@@ -86,6 +95,7 @@ public class Game {
 		shaderProgrammer.update(players);
 		camera.update(gameUtilities.camera);
 		updateInput();
+		
 	}
 	
 	private void updateInput() {
@@ -117,6 +127,9 @@ public class Game {
 		gameUtilities.batch.begin();
 		beginShapeRenderer();
 		SelectionRenderer.render(currentPlayer.getSelection(), gameUtilities.shapeRenderer);
+		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+			groupMoveController.render(gameUtilities.shapeRenderer);
+		}
 		inputManager.render(gameUtilities.shapeRenderer);
 		gameUtilities.shapeRenderer.end();		
 		gameUtilities.batch.end();

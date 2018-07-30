@@ -42,8 +42,19 @@ public class GameplayScreen implements Screen {
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);
 		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+		game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
 		game.getUnitFactory().createProtector(game.world, 45f, 40f, game.unitGroup, currentPlayer);
-		game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
+		//game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
 	}
 
 	@Override

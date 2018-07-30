@@ -5,9 +5,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import deaddream.units.utilities.DefaultAngleMoveController;
 import deaddream.units.utilities.DefaultLinearMoveController;
-import deaddream.units.utilities.MovementControllerInterface;
+import deaddream.units.utilities.LogicMovementControllerInterface;
 
-public class UCMothershipMoveController  implements MovementControllerInterface <Array<Vector2>> {
+public class UCMothershipMoveController  implements LogicMovementControllerInterface <Array<Vector2>, Vector2> {
 
 	protected Body body;
 	
@@ -63,5 +63,25 @@ public class UCMothershipMoveController  implements MovementControllerInterface 
 	
 	public boolean isMoving() {
 		return linearMoveController.isMoving();
+	}
+
+	@Override
+	public float getOrientation() {
+		return angleMoveController.getGoal();
+	}
+
+	@Override
+	public void addIntermediatePosition(Vector2 point) {
+		Array<Vector2> elements = new Array<Vector2>();
+		elements.add(point);
+		for (int i = linearMoveController.getCurrentPathIndex(); i < linearMoveController.getPath().size; i++) {
+			elements.add(linearMoveController.getPath().get(i));
+		}
+		moveTo(elements);
+	}
+
+	@Override
+	public Vector2 getVelocity() {
+		return body.getLinearVelocity();
 	}
 }

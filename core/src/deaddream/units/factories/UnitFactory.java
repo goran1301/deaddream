@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.dd.DeadDream;
 
+import deaddream.groupmove.GroupMoveController;
 import deaddream.players.Player;
 import deaddream.units.Protector;
 import deaddream.units.UCMothership;
@@ -18,8 +19,11 @@ public class UnitFactory {
 	
 	private DeadDream game;
 	
-	public UnitFactory(final DeadDream game) {
+	private GroupMoveController groupMoveController;
+	
+	public UnitFactory(final DeadDream game, GroupMoveController groupMoveController) {
 		this.game = game;
+		this.groupMoveController = groupMoveController;
 	}
 	
 	public Unit createProtector(World world, float xPos, float yPos, Group group, Player player) {
@@ -38,6 +42,7 @@ public class UnitFactory {
 				//selectUnit(unit00);
 			}
 		});
+		groupMoveController.addUnit(protector);
 		return protector;
 	}
 	

@@ -52,7 +52,7 @@ public class PathFinder {
 		);
 		graph.unitSize.x = unit.getWidth();
 		graph.unitSize.y = unit.getHeight();
-		
+		//System.out.println(String.valueOf(unit.getBody().getPosition().x) + " : " + String.valueOf(unit.getBody().getPosition().y));
 		TiledNode endNode = graph.getNodeByCoordinates(destination.x, destination.y);
 		if (endNode != null) {
 			graph.setBodyWeight((int) Math.ceil(unit.getLargestSize() / Constants.PPM));

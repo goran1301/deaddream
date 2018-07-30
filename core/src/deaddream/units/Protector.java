@@ -1,6 +1,11 @@
 package deaddream.units;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
+import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
+import com.badlogic.gdx.ai.steer.proximities.RadiusProximity;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -12,9 +17,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 import aurelienribon.bodyeditor.BodyEditorLoader;
+import deaddream.groupmove.SteeringEntity;
 import deaddream.units.utilities.DefaultMoveController;
+import deaddream.units.utilities.LogicMovementControllerInterface;
 //import deaddream.units.utilities.DefaultMovementController;
-import deaddream.units.utilities.MovementControllerInterface;
 
 //import aurelienribon.bodyeditor.BodyEditorLoader;
 
@@ -33,6 +39,7 @@ public final class Protector extends Unit {
 		super(world, staticTexture, staticNormalTexture, x, y, angle);
 		staticTexture.setSize(width, height);
 		setSize(width, height);
+		
 	}
 
 	/**
@@ -41,7 +48,7 @@ public final class Protector extends Unit {
 	@Override
 	protected BodyDef bodyDefFactory() {
 		BodyDef def = new BodyDef();
-		def.type = BodyType.DynamicBody;
+		def.type = BodyType.KinematicBody;
 		//def.type = BodyType.KinematicBody;
 		def.angularDamping = 1f;
 		def.linearDamping = 7f;
@@ -84,7 +91,8 @@ public final class Protector extends Unit {
 	
 
 	@Override
-	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {
+	protected LogicMovementControllerInterface<Array<Vector2>, Vector2> movementControllerFactory() {
+		speed = 5f;
 		return new DefaultMoveController(body, 5.0f, 0.5f, 360.0f, 5.0f);
 	}
 

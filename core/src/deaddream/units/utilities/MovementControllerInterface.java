@@ -47,5 +47,4 @@ public interface MovementControllerInterface <P> {
 	 * @param delta
 	 */
 	public void update(float delta);
-	
 }

@@ -13,7 +13,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.dd.Constants;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
-import deaddream.units.utilities.MovementControllerInterface;
+import deaddream.groupmove.SteeringEntity;
+import deaddream.units.utilities.LogicMovementControllerInterface;
 
 /**
  * Static stone object
@@ -63,9 +64,11 @@ public final class Stone extends Unit {
 
 
 	@Override
-	protected MovementControllerInterface<Array<Vector2>> movementControllerFactory() {
+	protected LogicMovementControllerInterface<Array<Vector2>, Vector2> movementControllerFactory() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 	
 }
