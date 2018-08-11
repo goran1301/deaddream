@@ -296,9 +296,17 @@ public abstract class Unit extends Actor implements Disableable {
 	 */
 	public void update(float delta) {
 		if (movementController != null) {
-			movementController.update(delta);
-			if (movementController.isMoving() && steering != null) {
-				steering.updateVelocity(movementController.getVelocity());
+			if (isMoving()) {
+				movementController.update(delta);
+			}
+			if (movementController.isMoving() || steering != null) {
+				if (isMoving()) {
+					steering.updateVelocity(movementController.getVelocity());
+					steering.setAngle(movementController.getAngle());
+				} else {
+					steering.updateVelocity(new Vector2(0,0));
+					steering.setAngle(body.getAngle());
+				}
 				steering.update(delta);
 			}
 		}

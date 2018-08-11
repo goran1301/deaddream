@@ -8,6 +8,8 @@ import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.Separation;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
+import com.badlogic.gdx.ai.steer.proximities.FieldOfViewProximity;
+import com.badlogic.gdx.ai.steer.proximities.ProximityBase;
 import com.badlogic.gdx.ai.steer.proximities.RadiusProximity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -32,11 +34,11 @@ public class GroupMoveController {
 		SteeringEntity entity = new SteeringEntity(unit);
 		entity.setMaxLinearSpeed(unit.getSpeed());
 		entity.setMaxLinearAcceleration(unit.getSpeed());
-		entity.setMaxAngularSpeed(5);
+		entity.setMaxAngularSpeed(50);
 		entity.setMaxAngularAcceleration(0);
 		steeringEntities.add(entity);
-		RadiusProximity<Vector2> proximity = new RadiusProximity<Vector2>(entity, steeringEntities,
-		(unit.getFlockRadius()) / Constants.PPM);
+		FieldOfViewProximity<Vector2> proximity = new FieldOfViewProximity<Vector2>(entity, steeringEntities,
+		(unit.getFlockRadius()) / Constants.PPM, 270 * MathUtils.degreesToRadians);
 		entity.setProximity(proximity);
 		
 		
@@ -49,21 +51,26 @@ public class GroupMoveController {
         Alignment<Vector2> alignmentSB = new Alignment<Vector2>(entity, proximity);
         
         prioritySteeringSB.add(separationSB);
-        //prioritySteeringSB.add(collisionAvoidanceSB);
+        //prioritySteeringSB.add(separationSB);
+        prioritySteeringSB.add(collisionAvoidanceSB);
         //prioritySteeringSB.add(cohesionSB);
-        prioritySteeringSB.add(alignmentSB);
+        //prioritySteeringSB.add(alignmentSB);
+        
         
         BlendedSteering<Vector2> blendedSteering = new BlendedSteering<Vector2>(entity) //
-				.add(alignmentSB, .2f) //
-				.add(cohesionSB, .06f) //
-				.add(separationSB, 1.7f);
+				.add(alignmentSB, .4f) //
+				//.add(cohesionSB, .06f) //
+				.add(separationSB, .9f);
+				//.add(collisionAvoidanceSB, 0.1f);
+        
         
         //prioritySteeringSB.add(blendedSteering);
         
-       //prioritySteeringSB.add(collisionAvoidanceSB);
+        //prioritySteeringSB.add(alignmentSB);
      //	prioritySteeringSB.add(wanderSB);
         //entity.setSteeringBehavior(separationSB);
         entity.setSteeringBehavior(prioritySteeringSB);
+        //entity.setSteeringBehavior(blendedSteering);
         
         unit.setSteeringEntity(entity);
 	}
@@ -86,11 +93,20 @@ public class GroupMoveController {
 								Math.pow((current.getBody().getPosition().x - unit.getBody().getPosition().x) * Constants.PPM, 2) +
 								Math.pow((current.getBody().getPosition().y - unit.getBody().getPosition().y) * Constants.PPM, 2)
 							);
-						if (distance <= unit.getFlockRadius() + current.getFlockRadius()) {
+						if (distance <= (unit.getFlockRadius() + current.getFlockRadius()) * 1.5) {
 							unit.stopMove();
 						}
+						
+						
 					}
 				}
+			}
+			float pathDistance = (float)Math.sqrt(
+					Math.pow((unit.getDestinationPoint().x - unit.getBody().getPosition().x) * Constants.PPM, 2) +
+					Math.pow((unit.getDestinationPoint().y - unit.getBody().getPosition().y) * Constants.PPM, 2)
+				);
+			if (pathDistance <= unit.getFlockRadius() + 5) {
+				unit.stopMove();
 			}
 		}
 	}
@@ -112,12 +128,23 @@ public class GroupMoveController {
 			shapeRenderer.line(entity.getPosition().x * Constants.PPM, entity.getPosition().y * Constants.PPM,
 					(entity.getPosition().x + entity.getSteering().x) * Constants.PPM, (entity.getPosition().y + entity.getSteering().y) * Constants.PPM);
 			shapeRenderer.setColor(Color.RED);
-			shapeRenderer.circle(
+			ProximityBase<Vector2> proximity = entity.getProximity();
+			if (proximity instanceof FieldOfViewProximity) {
+				renderFieldOfView((FieldOfViewProximity)proximity, entity, shapeRenderer);
+			}
+			
+			/*shapeRenderer.circle(
 					entity.getPosition().x * Constants.PPM,
 					entity.getPosition().y * Constants.PPM,
 					entity.getProximity().getRadius() * Constants.PPM
-				);
+				);*/
 			
 		}
+	}
+	
+	private void renderFieldOfView(FieldOfViewProximity field, SteeringEntity entity, ShapeRenderer shapeRenderer) {
+		float angle = field.getAngle() * MathUtils.radiansToDegrees;
+		shapeRenderer.arc(entity.getPosition().x * Constants.PPM, entity.getPosition().y * Constants.PPM, field.getRadius() * Constants.PPM,
+			entity.getOrientation() * MathUtils.radiansToDegrees - angle / 2f + 90f, angle);
 	}
 }

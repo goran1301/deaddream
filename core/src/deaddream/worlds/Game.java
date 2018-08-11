@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.dd.DeadDream;
 import deaddream.backgrounds.BackgroundInterface;
@@ -82,7 +83,7 @@ public class Game {
 	
 	public void update(float delta) {
 		
-		
+		System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
 		GdxAI.getTimepiece().update(delta);
 		//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
 		groupMoveController.update();
@@ -99,7 +100,10 @@ public class Game {
 	}
 	
 	private void updateInput() {
+		long before = TimeUtils.nanoTime();
 		inputManager.update(camera.getCursorPosition(), currentPlayer);
+		long after = TimeUtils.nanoTime();
+		//System.out.println("CLICK TOOK= "+((after-before)/1000 ) +" MILLIS" + " FPS " + Gdx.graphics.getFramesPerSecond());
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
 			for(Unit unit : currentPlayer.getSelection().getSelected()) {
 				if (unit.getPlayer() == currentPlayer) {

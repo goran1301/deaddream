@@ -11,13 +11,13 @@ public class DefaultMoveController implements LogicMovementControllerInterface <
 	//DefaultLinearMoveController linearMoveController;
 	VectorLinearMoveController linearMoveController;
 	
-	DefaultAngleMoveController angleMoveController;
+	VectorAngleMoveController angleMoveController;
 	
 	public DefaultMoveController(Body body, float linearVelocity, float goalPointFaultRange, float angularVelocity, float goalAngleFaultRange) {
 		this.body = body;
 		//linearMoveController = new DefaultLinearMoveController(body, linearVelocity, goalPointFaultRange);
 		linearMoveController = new VectorLinearMoveController(body, linearVelocity, goalPointFaultRange);
-		angleMoveController = new DefaultAngleMoveController(body, angularVelocity, goalAngleFaultRange);
+		angleMoveController = new VectorAngleMoveController(body, angularVelocity, goalAngleFaultRange);
 	}
 	
 	@Override
@@ -41,7 +41,7 @@ public class DefaultMoveController implements LogicMovementControllerInterface <
 	public void update(float delta) {
 		linearMoveController.update(delta);
 		if (linearMoveController.isMoving()){
-			this.rotateTo(linearMoveController.getVelocity().angle());
+			rotateTo(linearMoveController.getVelocity().angle());
 		}
 		angleMoveController.update(delta);
 	}
@@ -62,6 +62,11 @@ public class DefaultMoveController implements LogicMovementControllerInterface <
 	@Override
 	public void addIntermediatePosition(Vector2 point) {
 		
+	}
+
+	@Override
+	public float getAngle() {
+		return angleMoveController.getAngle();
 	}
 	
 }

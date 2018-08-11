@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.steer.Proximity.ProximityCallback;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.proximities.ProximityBase;
 import com.badlogic.gdx.ai.steer.proximities.RadiusProximity;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
@@ -40,17 +41,19 @@ public class SteeringEntity implements Steerable<Vector2> {
 	
 	SteeringBehavior<Vector2> steeringBehavior;
 	
-	RadiusProximity<Vector2> proximity;
+	ProximityBase proximity;
+	
+	float angle = 0;
 
 	public SteeringEntity(Unit unit) {
 		this.unit = unit;
 	}
 	
-	public void setProximity(RadiusProximity<Vector2> radius) {
+	public void setProximity(ProximityBase<Vector2> radius) {
 		proximity = radius;
 	}
 	
-	public RadiusProximity<Vector2> getProximity() {
+	public ProximityBase<Vector2> getProximity() {
 		return proximity;
 	}
 	
@@ -182,7 +185,7 @@ public class SteeringEntity implements Steerable<Vector2> {
 				System.out.println("SHIP SO CLOSE!!!");
 				return false;
 			}
-		};
+		};z
 		proximity.findNeighbors(callback);*/
 		//System.out.println("PROXIMITY AGENTS COUNT: " + String.valueOf(proximity.getAgents().size));
 		//System.out.println("PROXIMITY AGENTS COUNT: " + String.valueOf(proximity.findNeighbors(callback)));
@@ -197,6 +200,10 @@ public class SteeringEntity implements Steerable<Vector2> {
 			//} else {
 				steeringLinear.x = steeringOutput.linear.x;
 				steeringLinear.y = steeringOutput.linear.y;
+				//steeringLinear = normalize(steeringLinear);
+				steeringLinear.x *= getMaxLinearSpeed();
+				steeringLinear.y *= getMaxLinearSpeed();
+				steeringLinear.limit(getMaxLinearSpeed());
 			//}
 			//steeringLinear.limit(getMaxLinearSpeed());
 			//velocity.x += steeringOutput.linear.x;
@@ -216,7 +223,7 @@ public class SteeringEntity implements Steerable<Vector2> {
 			//float newOrientation = vectorToAngle(velocity);
 			//float newAng = (newOrientation - orientation) * delta; // this is superfluous if independentFacing is always true
 			
-			unit.getBody().setTransform(position, unit.getBody().getAngle());			
+			unit.getBody().setTransform(position, angle + steeringOutput.angular * maxAngularSpeed * delta);			
 		}
 	}
 	
@@ -228,8 +235,21 @@ public class SteeringEntity implements Steerable<Vector2> {
 		unit.getBody().setTransform(position, unit.getBody().getAngle());	
 	}
 	
+	public Vector2 normalize(Vector2 vector) {
+		float invLen = 1 / vector.len();
+		//Vector2 normalized = new Vector2();
+		vector.x *= invLen;
+		vector.y *= invLen;
+		return vector;
+	}
+	
 	public Vector2 getSteering() {
 		return steeringLinear;
+	}
+	
+	public void setAngle(float angle) {
+		orientation = angle;
+		this.angle = angle;
 	}
 	
 	public Vector2 getVelocity() {

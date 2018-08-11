@@ -51,7 +51,7 @@ public class VectorLinearMoveController implements MovementControllerInterface <
 
 	@Override
 	public void stopMove() {
-		body.setLinearVelocity(0f, 0f);
+		//body.setLinearVelocity(0f, 0f);
 		currentPathIndex = 0;
 		path = null;
 		isMoving = false;

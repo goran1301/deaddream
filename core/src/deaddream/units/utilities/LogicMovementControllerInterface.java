@@ -8,4 +8,6 @@ public interface LogicMovementControllerInterface <P, V> extends MovementControl
 	public void addIntermediatePosition(V point);
 	
 	public V getVelocity();
+	
+	public float getAngle();
 }

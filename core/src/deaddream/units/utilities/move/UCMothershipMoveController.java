@@ -84,4 +84,10 @@ public class UCMothershipMoveController  implements LogicMovementControllerInter
 	public Vector2 getVelocity() {
 		return body.getLinearVelocity();
 	}
+
+	@Override
+	public float getAngle() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
