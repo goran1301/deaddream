@@ -26,6 +26,8 @@ public class MapBaseIndexedGraphFactory {
 			for (int y = 0; y < mapHeight; y++) {
 				mapMatrix[x][y] = Node.TILE_FLOOR;
 				if (collisionLayer.getCell(x, y) == null){
+					//System.out.println("NO CELL"); 
+
 					continue;
 				}
 				TiledMapTile tile = collisionLayer.getCell(x, y).getTile();

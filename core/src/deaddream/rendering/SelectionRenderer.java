@@ -1,4 +1,4 @@
-package deadream.rendering;
+package deaddream.rendering;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
