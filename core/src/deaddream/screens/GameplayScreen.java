@@ -79,6 +79,7 @@ public class GameplayScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		game.dispose();
 		// TODO Auto-generated method stub
 		
 	}

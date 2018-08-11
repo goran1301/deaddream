@@ -19,9 +19,9 @@ public class InterfaceRenderer {
 	}
 	
 	public void show() {
-		renderCursor();
+		showCursor();
 	} 
-	private void renderCursor() {
+	private void showCursor() {
 		region = textureAtlas.findRegion("cursor");
 		if (!region.getTexture().getTextureData().isPrepared()) {
 			region.getTexture().getTextureData().prepare();
@@ -31,7 +31,7 @@ public class InterfaceRenderer {
 	    int height = region.getRegionHeight();
 	    int regionx = region.getRegionX();
 	    int regiony = region.getRegionY();
-		CoursorPm = new Pixmap(128, 128, Format.RGBA8888);
+		CoursorPm = new Pixmap(64, 64, Format.RGBA8888);
 		CoursorPm.drawPixmap(AtlasPm, regionx, regiony, width, height, 0, 0, width, height);
 		Gdx.graphics.setCursor(Gdx.graphics.newCursor(CoursorPm, 0, 0));
 	}

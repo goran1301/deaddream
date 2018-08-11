@@ -27,9 +27,9 @@ cansell_button
   index: -1
 clicked_cursor
   rotate: false
-  xy: 311, 310
-  size: 84, 69
-  orig: 84, 69
+  xy: 471, 551
+  size: 64, 52
+  orig: 64, 52
   offset: 0, 0
   index: -1
 controll_frame
@@ -41,9 +41,9 @@ controll_frame
   index: -1
 cursor
   rotate: false
-  xy: 471, 534
-  size: 84, 69
-  orig: 84, 69
+  xy: 311, 326
+  size: 64, 53
+  orig: 64, 53
   offset: 0, 0
   index: -1
 group

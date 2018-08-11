@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -39,6 +40,7 @@ public class Game {
 	protected CameraManager camera;
 	private BaseGraphDebugRenderer graphDebugRenderer;
 	private InterfaceRenderer Interface;
+	public Polygon hitbox;
 	
 	public Game(
 			DeadDream utilities, 
@@ -122,10 +124,11 @@ public class Game {
 		beginShapeRenderer();
 		SelectionRenderer.render(currentPlayer.getSelection(), gameUtilities.shapeRenderer);
 		inputManager.render(gameUtilities.shapeRenderer);
-		gameUtilities.shapeRenderer.end();		
+		gameUtilities.shapeRenderer.end();	
 		gameUtilities.batch.end();
 		mapManager.render();
 		stage.draw();	
+		
 	}
 	
 	private void beginShapeRenderer() {
