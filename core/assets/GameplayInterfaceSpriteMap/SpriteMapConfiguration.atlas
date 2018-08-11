@@ -1,0 +1,97 @@
+
+SpriteMapConfiguration.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+atack_button
+  rotate: false
+  xy: 2, 92
+  size: 98, 88
+  orig: 98, 88
+  offset: 0, 0
+  index: -1
+button
+  rotate: false
+  xy: 2, 2
+  size: 98, 88
+  orig: 98, 88
+  offset: 0, 0
+  index: -1
+cansell_button
+  rotate: false
+  xy: 311, 381
+  size: 98, 88
+  orig: 98, 88
+  offset: 0, 0
+  index: -1
+clicked_cursor
+  rotate: false
+  xy: 311, 310
+  size: 84, 69
+  orig: 84, 69
+  offset: 0, 0
+  index: -1
+controll_frame
+  rotate: false
+  xy: 2, 182
+  size: 307, 287
+  orig: 307, 287
+  offset: 0, 0
+  index: -1
+cursor
+  rotate: false
+  xy: 471, 534
+  size: 84, 69
+  orig: 84, 69
+  offset: 0, 0
+  index: -1
+group
+  rotate: false
+  xy: 968, 992
+  size: 43, 30
+  orig: 43, 30
+  offset: 0, 0
+  index: -1
+map_frame
+  rotate: false
+  xy: 2, 471
+  size: 467, 350
+  orig: 467, 350
+  offset: 0, 0
+  index: -1
+middle_frame
+  rotate: false
+  xy: 2, 823
+  size: 964, 199
+  orig: 964, 199
+  offset: 0, 0
+  index: -1
+order_button
+  rotate: false
+  xy: 471, 605
+  size: 98, 88
+  orig: 98, 88
+  offset: 0, 0
+  index: -1
+patrol_button
+  rotate: false
+  xy: 612, 733
+  size: 98, 88
+  orig: 98, 88
+  offset: 0, 0
+  index: -1
+repair_button
+  rotate: false
+  xy: 102, 92
+  size: 98, 88
+  orig: 98, 88
+  offset: 0, 0
+  index: -1
+ship_frame
+  rotate: false
+  xy: 471, 695
+  size: 139, 126
+  orig: 139, 126
+  offset: 0, 0
+  index: -1

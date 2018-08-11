@@ -16,12 +16,13 @@ import deaddream.backgrounds.BackgroundInterface;
 import deaddream.camera.CameraManager;
 import deaddream.maps.MapManager;
 import deaddream.players.Player;
+import deaddream.rendering.InterfaceRenderer;
+import deaddream.rendering.SelectionRenderer;
 import deaddream.units.Unit;
 import deaddream.units.factories.UnitFactory;
 import deaddream.units.utilities.input.InputManager;
 import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 import deaddream.worlds.rendering.ShaderProgrammer;
-import deadream.rendering.SelectionRenderer;
 
 public class Game {
 	protected Player currentPlayer;
@@ -37,6 +38,7 @@ public class Game {
 	protected UnitFactory unitFactory;
 	protected CameraManager camera;
 	private BaseGraphDebugRenderer graphDebugRenderer;
+	private InterfaceRenderer Interface;
 	
 	public Game(
 			DeadDream utilities, 
@@ -61,6 +63,9 @@ public class Game {
 		Gdx.input.setInputProcessor(this.stage);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
 		
+		this.Interface = new InterfaceRenderer();
+		Interface.show();
+		
 		inputManager = new InputManager();
 		shaderProgrammer = new ShaderProgrammer();
 		gameUtilities.font.getData().setScale(1);
@@ -76,7 +81,6 @@ public class Game {
 	}
 	
 	public void update(float delta) {
-		
 		world.step(1/60f, 6, 2);
 		stage.act(delta);
 		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
@@ -131,5 +135,8 @@ public class Game {
 	
 	public UnitFactory getUnitFactory() {
 		return unitFactory;
+	}
+	public void dispose() {
+		Interface.dispose();
 	}
 }

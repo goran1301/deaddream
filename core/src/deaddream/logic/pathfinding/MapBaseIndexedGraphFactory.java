@@ -26,14 +26,15 @@ public class MapBaseIndexedGraphFactory {
 			for (int y = 0; y < mapHeight; y++) {
 				mapMatrix[x][y] = Node.TILE_FLOOR;
 				if (collisionLayer.getCell(x, y) == null){
-					System.out.println("NO CELL"); continue;
+					//System.out.println("NO CELL"); 
+					continue;
 				}
 				TiledMapTile tile = collisionLayer.getCell(x, y).getTile();
 				if (tile != null) {
 					if (collisionLayer.getCell(x, y).getTile().getProperties().containsKey("blocked")){
 						//collisionLayer.getCell(x, y).getTile().getProperties().get("blocked");
 						mapMatrix[x][y] = Node.TILE_WALL;
-						System.out.println("WALL");
+						//System.out.println("WALL");
 					} 
 				}
 				

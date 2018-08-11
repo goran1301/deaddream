@@ -45,6 +45,7 @@ import deaddream.logic.pathfinding.TiledManhattanDistance;
 import deaddream.logic.pathfinding.TiledNode;
 import deaddream.logic.pathfinding.TiledSmoothableGraphPath;
 import deaddream.maps.TiledObjectUtil;
+import deaddream.rendering.InterfaceRenderer;
 import deaddream.units.Protector;
 import deaddream.units.Stone;
 import deaddream.units.Unit;
@@ -89,7 +90,8 @@ public class GameScreen implements Screen {
 	
 	TiledSmoothableGraphPath<TiledNode> path = new TiledSmoothableGraphPath<TiledNode>();
 	
-
+	
+	
 	boolean flipY = true;
 	
 	Matrix4 transform = new Matrix4();
@@ -134,6 +136,7 @@ public class GameScreen implements Screen {
 	
 	public GameScreen(final DeadDream game) {
 		this.game = game;
+		
 		this.world = new World(new Vector2(0, 0), false);
 		this.b2ddr = new Box2DDebugRenderer();
 		this.debugMatrix = this.game.camera.combined.cpy();//new Matrix4(this.game.camera.combined.cpy());
@@ -514,6 +517,7 @@ public class GameScreen implements Screen {
 		map.dispose();
 		tmr.dispose();
 		fxBatch.dispose();
+		
 		// TODO Auto-generated method stub
 		
 	}

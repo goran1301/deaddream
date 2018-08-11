@@ -58,7 +58,7 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 	
 	protected int evenStrategy(N node)
 	{
-		System.out.println("node position: x " + String.valueOf(node.x) + " y " + String.valueOf(node.y));
+		//System.out.println("node position: x " + String.valueOf(node.x) + " y " + String.valueOf(node.y));
 		boolean complete = false;
 		int index = 0;
 		int currentIndex = index + 2;
@@ -68,15 +68,15 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 		int yOffsetEnd = 0;
 		int half = 0;
 		while (!complete) {
-			System.out.println("even " + String.valueOf(currentIndex));
+			//System.out.println("even " + String.valueOf(currentIndex));
 			half = currentIndex / 2;
 			xOffsetEnd = node.x + half;
 			xOffsetStart = node.x - (half - 1);
 			yOffsetEnd = node.y + half;
 			yOffsetStart = node.y - (half - 1);
-			System.out.println("X offset start " + String.valueOf(xOffsetStart) + "X offset end " + String.valueOf(xOffsetEnd) + "Y offset start " + String.valueOf(yOffsetStart) + "Y offset end " + String.valueOf(yOffsetEnd));
+			//System.out.println("X offset start " + String.valueOf(xOffsetStart) + "X offset end " + String.valueOf(xOffsetEnd) + "Y offset start " + String.valueOf(yOffsetStart) + "Y offset end " + String.valueOf(yOffsetEnd));
 			
-			System.out.println("map size x: " + sizeX + " y: " + sizeY);
+			//System.out.println("map size x: " + sizeX + " y: " + sizeY);
 			
 			if (xOffsetStart < 0 || xOffsetEnd < 0 || yOffsetStart < 0 || yOffsetEnd < 0) {
 				complete = true;
@@ -89,12 +89,12 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 				N bottomNode = this.getNode(i, yOffsetEnd);
 				if (topNode == null || bottomNode == null) {
 					complete = true;
-					System.out.println("even complete " + String.valueOf(index));
+					//System.out.println("even complete " + String.valueOf(index));
 					break;
 				}
 				if (topNode.type != Node.TILE_FLOOR || bottomNode.type != Node.TILE_FLOOR) {
 					complete = true;
-					System.out.println("even complete " + String.valueOf(index));
+					//System.out.println("even complete " + String.valueOf(index));
 					break;
 				}
 			}
@@ -103,17 +103,17 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 				N rightNode = this.getNode(xOffsetEnd, i);
 				if (leftNode == null || rightNode == null) {
 					complete = true;
-					System.out.println("even complete " + String.valueOf(index));
+					//System.out.println("even complete " + String.valueOf(index));
 					break;
 				}
 				if (leftNode.type != Node.TILE_FLOOR || rightNode.type != Node.TILE_FLOOR) {
 					complete = true;
-					System.out.println("even complete " + String.valueOf(index));
+					//System.out.println("even complete " + String.valueOf(index));
 					break;
 				}
 			}
 			if (complete) {
-				System.out.println("even complete FINISHED " + String.valueOf(index));
+				//System.out.println("even complete FINISHED " + String.valueOf(index));
 				break;
 			}
 			index = currentIndex;
@@ -124,7 +124,7 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 	
 	protected int oddStrategy(N node)
 	{
-		System.out.println("node position: x " + String.valueOf(node.x) + " y " + String.valueOf(node.y));
+		//System.out.println("node position: x " + String.valueOf(node.x) + " y " + String.valueOf(node.y));
 		boolean complete = false;
 		int index = 1;
 		int currentIndex = 3;
@@ -134,13 +134,13 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 		int yOffsetEnd = 0;
 		int half = 0;
 		while (!complete) {
-			System.out.println("odd " + String.valueOf(currentIndex));
+			//System.out.println("odd " + String.valueOf(currentIndex));
 			half = (int) Math.ceil(currentIndex / 2);
 			xOffsetStart = node.x - half;
 			xOffsetEnd = node.x + half;
 			yOffsetStart = node.y - half;
 			yOffsetEnd = node.y + half;
-			System.out.println("X offset start " + String.valueOf(xOffsetStart) + "X offset end " + String.valueOf(xOffsetEnd) + "Y offset start " + String.valueOf(yOffsetStart) + "Y offset end " + String.valueOf(yOffsetEnd));
+			//System.out.println("X offset start " + String.valueOf(xOffsetStart) + "X offset end " + String.valueOf(xOffsetEnd) + "Y offset start " + String.valueOf(yOffsetStart) + "Y offset end " + String.valueOf(yOffsetEnd));
 			if (xOffsetStart < 0 || xOffsetEnd < 0 || yOffsetStart < 0 || yOffsetEnd < 0) {
 				complete = true;
 			}
@@ -152,12 +152,12 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 				N bottomNode = this.getNode(i, yOffsetEnd);
 				if (topNode == null || bottomNode == null) {
 					complete = true;
-					System.out.println("odd complete " + String.valueOf(index));
+					//System.out.println("odd complete " + String.valueOf(index));
 					break;
 				}
 				if (topNode.type != Node.TILE_FLOOR || bottomNode.type != Node.TILE_FLOOR) {
 					complete = true;
-					System.out.println("odd complete" + String.valueOf(index));
+					//System.out.println("odd complete" + String.valueOf(index));
 					break;
 				}
 			}
@@ -166,17 +166,17 @@ public class BaseIndexedGraph<N extends Node<N>> implements IndexedGraph<N> {
 				N rightNode = this.getNode(xOffsetEnd, i);
 				if (leftNode == null || rightNode == null) {
 					complete = true;
-					System.out.println("odd complete " + String.valueOf(index));
+					//System.out.println("odd complete " + String.valueOf(index));
 					break;
 				}
 				if (leftNode.type != Node.TILE_FLOOR || rightNode.type != Node.TILE_FLOOR) {
 					complete = true;
-					System.out.println("odd complete " + String.valueOf(index));
+					//System.out.println("odd complete " + String.valueOf(index));
 					break;
 				}
 			}
 			if (complete) {
-				System.out.println("odd complete, FINISHED " + String.valueOf(index));
+				//System.out.println("odd complete, FINISHED " + String.valueOf(index));
 				break;
 			}
 			index = currentIndex;
