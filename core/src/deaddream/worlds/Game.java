@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -19,7 +20,7 @@ import deaddream.camera.CameraManager;
 import deaddream.groupmove.GroupMoveController;
 import deaddream.maps.MapManager;
 import deaddream.players.Player;
-import deaddream.rendering.InterfaceRenderer;
+import deaddream.rendering.GameplayInterfaceRenderer;
 import deaddream.rendering.SelectionRenderer;
 import deaddream.units.Unit;
 import deaddream.units.factories.UnitFactory;
@@ -42,7 +43,8 @@ public class Game {
 	protected CameraManager camera;
 	private BaseGraphDebugRenderer graphDebugRenderer;
 	private GroupMoveController groupMoveController;
-	private InterfaceRenderer Interface;
+	private GameplayInterfaceRenderer Interface;
+	private Matrix4 screenMatrix;
 
 	
 	public Game(
@@ -67,8 +69,8 @@ public class Game {
 		stage.addActor(unitGroup);
 		Gdx.input.setInputProcessor(this.stage);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
-		
-		this.Interface = new InterfaceRenderer();
+		screenMatrix = new Matrix4(gameUtilities.batch.getProjectionMatrix().setToOrtho2D(0, 0, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT));
+		this.Interface = new GameplayInterfaceRenderer(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		Interface.show();
 		
 		inputManager = new InputManager();
@@ -144,10 +146,12 @@ public class Game {
 		}
 		inputManager.render(gameUtilities.shapeRenderer);
 		gameUtilities.shapeRenderer.end();	
+		gameUtilities.batch.setProjectionMatrix(screenMatrix);
+		//UI
+		Interface.render(gameUtilities.batch);
 		gameUtilities.batch.end();
 		mapManager.render();
 		stage.draw();	
-		
 	}
 	
 	private void beginShapeRenderer() {

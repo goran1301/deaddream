@@ -32,13 +32,6 @@ clicked_cursor
   orig: 64, 52
   offset: 0, 0
   index: -1
-controll_frame
-  rotate: false
-  xy: 2, 182
-  size: 307, 287
-  orig: 307, 287
-  offset: 0, 0
-  index: -1
 cursor
   rotate: false
   xy: 311, 326
@@ -58,6 +51,13 @@ map_frame
   xy: 2, 471
   size: 467, 350
   orig: 467, 350
+  offset: 0, 0
+  index: -1
+menu_frame
+  rotate: false
+  xy: 2, 182
+  size: 307, 287
+  orig: 307, 287
   offset: 0, 0
   index: -1
 middle_frame
