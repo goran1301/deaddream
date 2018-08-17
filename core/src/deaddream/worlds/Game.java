@@ -69,7 +69,7 @@ public class Game {
 		stage.addActor(unitGroup);
 		Gdx.input.setInputProcessor(this.stage);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
-		screenMatrix = new Matrix4(gameUtilities.batch.getProjectionMatrix().setToOrtho2D(0, 0, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT));
+		screenMatrix = new Matrix4(gameUtilities.batch.getProjectionMatrix().cpy().setToOrtho2D(0, 0, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT));
 		this.Interface = new GameplayInterfaceRenderer(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		Interface.show();
 		
@@ -134,28 +134,26 @@ public class Game {
 		if (bg != null) {
 			bg.render(gameUtilities.batch);
 		}
-		//gameUtilities.batch.end();
+		gameUtilities.batch.end();
+		mapManager.render();
+		stage.draw();
+		gameUtilities.batch.begin();
+		beginShapeRenderer();
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			graphDebugRenderer.render(gameUtilities.shapeRenderer, gameUtilities.font);
 		}
-		//gameUtilities.batch.begin();
-		beginShapeRenderer();
 		SelectionRenderer.render(currentPlayer.getSelection(), gameUtilities.shapeRenderer);
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			groupMoveController.render(gameUtilities.shapeRenderer);
-		}
+		} 
 		inputManager.render(gameUtilities.shapeRenderer);
-		gameUtilities.shapeRenderer.end();	
-		gameUtilities.batch.end();
-		stage.draw();
-		gameUtilities.batch.begin();
+		gameUtilities.shapeRenderer.end();
+		gameUtilities.batch.end();	
 		gameUtilities.batch.setProjectionMatrix(screenMatrix);
-		//UI
-		
+		gameUtilities.batch.begin();
 		Interface.render(gameUtilities.batch);
-		gameUtilities.batch.end();
-		mapManager.render();
-			
+		//UI	
+		gameUtilities.batch.end();		
 	}
 	
 	private void beginShapeRenderer() {
