@@ -134,11 +134,11 @@ public class Game {
 		if (bg != null) {
 			bg.render(gameUtilities.batch);
 		}
-		gameUtilities.batch.end();
+		//gameUtilities.batch.end();
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			graphDebugRenderer.render(gameUtilities.shapeRenderer, gameUtilities.font);
 		}
-		gameUtilities.batch.begin();
+		//gameUtilities.batch.begin();
 		beginShapeRenderer();
 		SelectionRenderer.render(currentPlayer.getSelection(), gameUtilities.shapeRenderer);
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -146,12 +146,16 @@ public class Game {
 		}
 		inputManager.render(gameUtilities.shapeRenderer);
 		gameUtilities.shapeRenderer.end();	
+		gameUtilities.batch.end();
+		stage.draw();
+		gameUtilities.batch.begin();
 		gameUtilities.batch.setProjectionMatrix(screenMatrix);
 		//UI
+		
 		Interface.render(gameUtilities.batch);
 		gameUtilities.batch.end();
 		mapManager.render();
-		stage.draw();	
+			
 	}
 	
 	private void beginShapeRenderer() {

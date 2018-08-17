@@ -31,14 +31,14 @@ public class BaseGraphDebugRenderer {
 	
 	public void render(ShapeRenderer renderer, BitmapFont font) 
 	{	
-		renderer.begin(ShapeType.Line);
+		//renderer.begin(ShapeType.Line);
 		for (int x = 0; x < graph.getSizeX(); x++) {
 			int idx = x * graph.getSizeY();
 			for (int y = 0; y < graph.getSizeY(); y++) {
 				renderNode(graph.getNode(idx + y), renderer, font);
 			}
 		}
-		renderer.end();
+		//renderer.end();
 		batch.begin();
 		writeWeights(font);
 		batch.end();	
