@@ -137,7 +137,8 @@ public class Game {
 		gameUtilities.batch.end();
 		mapManager.render();
 		stage.draw();
-		gameUtilities.batch.begin();
+		
+		
 		beginShapeRenderer();
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			graphDebugRenderer.render(gameUtilities.shapeRenderer, gameUtilities.font);
@@ -148,7 +149,7 @@ public class Game {
 		} 
 		inputManager.render(gameUtilities.shapeRenderer);
 		gameUtilities.shapeRenderer.end();
-		gameUtilities.batch.end();	
+		
 		gameUtilities.batch.setProjectionMatrix(screenMatrix);
 		gameUtilities.batch.begin();
 		Interface.render(gameUtilities.batch);

@@ -122,7 +122,7 @@ public abstract class Unit extends Actor implements Disableable {
 		
 		def.position.set(x, y);
 		def.angle = angle;
-		
+		 
 		body = world.createBody(def);
 		FixtureDef fixtureDef = fixtureDefFactory();
 		if (fixtureDef != null) {
