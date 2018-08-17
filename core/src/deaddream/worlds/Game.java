@@ -149,12 +149,15 @@ public class Game {
 		} 
 		inputManager.render(gameUtilities.shapeRenderer);
 		gameUtilities.shapeRenderer.end();
-		
+		//UI
 		gameUtilities.batch.setProjectionMatrix(screenMatrix);
 		gameUtilities.batch.begin();
 		Interface.render(gameUtilities.batch);
-		//UI	
-		gameUtilities.batch.end();		
+		gameUtilities.batch.end();	
+		
+		beginShapeRenderer();
+		Interface.drawDebug(gameUtilities.shapeRenderer);
+		gameUtilities.shapeRenderer.end();
 	}
 	
 	private void beginShapeRenderer() {

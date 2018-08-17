@@ -1,5 +1,8 @@
 package deaddream.rendering;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -8,10 +11,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
+import aurelienribon.bodyeditor.BodyEditorLoader.RigidBodyModel;
 import deaddream.gameplayMenu.GameplayInterface;
 
 public class GameplayInterfaceRenderer {
@@ -19,19 +24,22 @@ public class GameplayInterfaceRenderer {
 	private Pixmap AtlasPm;
 	private Pixmap CoursorPm;
 	private AtlasRegion region;
-	private GameplayInterface MapFrame,MiddleFrame,MenuFrame;
 	private float scale = 0.5f;
+	private ArrayList<GameplayInterface> panels;
+	private Map<String, RigidBodyModel> panelsPolygons;
 	
 	public GameplayInterfaceRenderer(int width, int height) {
 		textureAtlas = new TextureAtlas(Gdx.files.internal("GameplayInterfaceSpriteMap/SpriteMapConfiguration.atlas"));
 		System.out.println("Interface Create");	
 		BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("GameplayInterface/GUIPanelPolygons"));
-		System.out.println(loader.getInternalModel().rigidBodies.keySet());
+		//System.out.println(loader.getInternalModel().rigidBodies.keySet().toArray()[0]);
+		panelsPolygons = loader.getInternalModel().rigidBodies;
+		//loader.getInternalModel().rigidBodies.keySet().toArray().length;
 		//loader.getInternalModel().rigidBodies.get("map_frame.png");
-		//TODO создать из этого полигоны
-		MapFrame = createInterfaceElement("map_frame",0.0f,0.0f, "left");
-		MiddleFrame = createInterfaceElement("middle_frame",width*0.5f + width*0.05f*scale,0.0f,"center");
-		MenuFrame = createInterfaceElement("menu_frame",width, 0.0f, "right");
+		panels = new ArrayList<GameplayInterface>();
+		panels.add(createInterfaceElement("map_frame",0.0f,0.0f, "left"));
+		panels.add(createInterfaceElement("middle_frame",width*0.5f + width*0.05f*scale,0.0f,"center"));
+		panels.add(createInterfaceElement("menu_frame",width, 0.0f, "right"));
 	}
 
 	public void show() {
@@ -52,21 +60,31 @@ public class GameplayInterfaceRenderer {
 		CoursorPm.drawPixmap(AtlasPm, regionx, regiony, width, height, 0, 0, width, height);
 		Gdx.graphics.setCursor(Gdx.graphics.newCursor(CoursorPm, 0, 0));
 	}
+	
 	private GameplayInterface createInterfaceElement(
 			String regionName, 
 			float positionX, 
 			float positionY,
 			String align) {
+		RigidBodyModel model = new RigidBodyModel();
+		model = panelsPolygons.get(regionName+".png");
 		region = textureAtlas.findRegion(regionName);
 		Sprite sprite = new Sprite(region);
-		return new GameplayInterface(align, positionX,positionY,scale,sprite);
-	}
-	public void render(Batch batch){
-		MapFrame.draw(batch, 1);
-		MiddleFrame.draw(batch, 1);
-		MenuFrame.draw(batch, 1);
+		return new GameplayInterface(align, positionX, positionY, scale, sprite, model);
 	}
 	
+	public void render(Batch batch){
+		if (!panels.isEmpty()) {
+			this.panels.forEach(value->value.draw(batch,1));
+		}
+	}
+	
+	public void drawDebug (ShapeRenderer shapes) {
+		if (!panels.isEmpty()) {
+			this.panels.forEach(value->value.drawDebug(shapes));
+		}
+	}
+
 	public void dispose() {
 		AtlasPm.dispose();
 		CoursorPm.dispose();
