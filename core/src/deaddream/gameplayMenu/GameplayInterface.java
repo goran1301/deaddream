@@ -5,6 +5,8 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -20,10 +22,13 @@ public class GameplayInterface extends Actor {
 	protected boolean isChecked;
 	protected float positionX; 
 	protected float positionY; 
-	protected float originX;
-	protected float originY;
+	protected float Width;
+	protected float Height;
 	protected float scale;
 	protected RigidBodyModel model;
+	protected Polygon[] polygons;
+	protected Vector2 texturePosition;
+	protected Vector2 polygonPosition;
 	
 	
  public GameplayInterface(
@@ -39,34 +44,75 @@ public class GameplayInterface extends Actor {
 	 this.staticTexture = staticTexture;
 	 this.staticTexture.setScale(scale);
 	 this.model = model;
-	 originX = this.staticTexture.getRegionWidth();
-	 originY = this.staticTexture.getRegionHeight();
+	 Width = this.staticTexture.getRegionWidth();
+	 Height = this.staticTexture.getRegionHeight();
 	 switch (align) {
-		case "left": this.staticTexture.setPosition(positionX-originX*(1-scale)*0.5f, positionY-originY*(1-scale)*0.5f); break;
-		case "right": this.staticTexture.setPosition(positionX-originX+originX*(1-scale)*0.5f, positionY-originY*(1-scale)*0.5f); break;
-		case "center": this.staticTexture.setPosition(positionX-originX/2, positionY-originY*(1-scale)*0.5f); break;
+		case "left": 
+			this.texturePosition = new Vector2(positionX-Width*(1-scale)*0.5f, positionY-Height*(1-scale)*0.5f); 
+			this.polygonPosition = new Vector2(positionX, positionY); 
+			break;
+		case "right": 
+			this.texturePosition = new Vector2(positionX-Width+Width*(1-scale)*0.5f, positionY-Height*(1-scale)*0.5f); 
+			this.polygonPosition = new Vector2(positionX-Width*scale, positionY);
+			break;
+		case "center": 
+			this.texturePosition = new Vector2(positionX-Width/2, positionY-Height*(1-scale)*0.5f); 
+			this.polygonPosition = new Vector2(positionX-Width/2*scale, positionY);
+			break;
 		default: break;
 		}
-	 
-	setTouchable(Touchable.enabled);
-	addListener(clickListener = new ClickListener() {
-		public void clicked (InputEvent event, float x, float y) {
-			setChecked(!isChecked, true);
-		}
-	});
+	 this.staticTexture.setPosition(this.texturePosition.x,this.texturePosition.y);
+	 setPolygons(model);
+	 setTouchable(Touchable.enabled);
+	 addListener(clickListener = new ClickListener() {
+		 public void clicked (InputEvent event, float x, float y) {
+			 setChecked(!isChecked, true);
+		 }
+	 });
  }
-void setChecked (boolean isChecked, boolean fireEvent) {
+ 
+ void setChecked (boolean isChecked, boolean fireEvent) {
 		if (this.isChecked == isChecked) return;
 		this.isChecked = isChecked;
 	}
+ 
+ void setPolygons(RigidBodyModel model) {
+	 if (model != null) {
+		 polygons = new Polygon[model.polygons.size()];
+		// for(PolygonModel polygon: model.polygons) {
+		 for(int polygonsCount = 0; polygonsCount < model.polygons.size(); polygonsCount++) {
+			 PolygonModel polygon = model.polygons.get(polygonsCount);
+			 if(!polygon.vertices.isEmpty()) {
+				 int polygonSize = 0;
+				 for (@SuppressWarnings("unused") Vector2 vertices:polygon.vertices) {
+					 polygonSize+=2;
+				 }
+				 float[] points =  new float[polygonSize];
+				 int currentVertex = 0;
+				 for (Vector2 vertices:polygon.vertices) {
+					 points[currentVertex] = vertices.x;
+					 currentVertex++;
+					 points[currentVertex] = vertices.y;
+					 currentVertex++;
+				 }
+				 polygons[polygonsCount] = new Polygon(points);
+				 polygons[polygonsCount].setScale(Width*scale, Height*scale*(Width/Height));
+				 polygons[polygonsCount].setPosition(polygonPosition.x, polygonPosition.y);
+			 } 
+		 }
+	 }
+ }
  @Override
  public void draw(Batch batch, float parentAlpha) {
 	 this.staticTexture.draw(batch);
  }
  @Override
  public void drawDebug (ShapeRenderer shapes) {
-	
-	 //model.polygons.forEach(value->value.vertices.forEach(value->));
-	 //shapes.polygon();
+	 if (model != null) {
+		 int length = polygons.length;
+		 for( int polygonCount = 0;polygonCount < length;polygonCount++)
+			 shapes.polygon(polygons[polygonCount].getTransformedVertices());
+	 }
  }
 }
+

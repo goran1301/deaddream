@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -37,9 +38,9 @@ public class GameplayInterfaceRenderer {
 		//loader.getInternalModel().rigidBodies.keySet().toArray().length;
 		//loader.getInternalModel().rigidBodies.get("map_frame.png");
 		panels = new ArrayList<GameplayInterface>();
-		panels.add(createInterfaceElement("map_frame",0.0f,0.0f, "left"));
-		panels.add(createInterfaceElement("middle_frame",width*0.5f + width*0.05f*scale,0.0f,"center"));
-		panels.add(createInterfaceElement("menu_frame",width, 0.0f, "right"));
+		panels.add(interfaceElementsFactory("map_frame",0.0f,0.0f, "left"));
+		panels.add(interfaceElementsFactory("middle_frame",width*0.5f + width*0.05f*scale,0.0f,"center"));
+		panels.add(interfaceElementsFactory("menu_frame",width, 0.0f, "right"));
 	}
 
 	public void show() {
@@ -61,7 +62,7 @@ public class GameplayInterfaceRenderer {
 		Gdx.graphics.setCursor(Gdx.graphics.newCursor(CoursorPm, 0, 0));
 	}
 	
-	private GameplayInterface createInterfaceElement(
+	private GameplayInterface interfaceElementsFactory(
 			String regionName, 
 			float positionX, 
 			float positionY,
@@ -80,6 +81,7 @@ public class GameplayInterfaceRenderer {
 	}
 	
 	public void drawDebug (ShapeRenderer shapes) {
+		shapes.setColor(Color.CYAN);
 		if (!panels.isEmpty()) {
 			this.panels.forEach(value->value.drawDebug(shapes));
 		}

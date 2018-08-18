@@ -155,8 +155,11 @@ public class Game {
 		Interface.render(gameUtilities.batch);
 		gameUtilities.batch.end();	
 		
+		gameUtilities.shapeRenderer.setProjectionMatrix(screenMatrix);
 		beginShapeRenderer();
-		Interface.drawDebug(gameUtilities.shapeRenderer);
+		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+			Interface.drawDebug(gameUtilities.shapeRenderer);
+		} 
 		gameUtilities.shapeRenderer.end();
 	}
 	
