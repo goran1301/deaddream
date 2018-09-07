@@ -10,8 +10,8 @@ public class DesktopLauncher {
 		config.backgroundFPS = 60;
 		config.foregroundFPS = 60;
 		config.title = "Dead Dream";
-		config.width = 1366;
-		config.height = 768;
+		config.width = 1920;
+		config.height = 1080;
 		config.fullscreen = true;
 		new LwjglApplication(new DeadDream(), config);
 	}
