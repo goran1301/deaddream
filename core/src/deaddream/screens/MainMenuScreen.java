@@ -2,7 +2,6 @@ package deaddream.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,7 +26,7 @@ public class MainMenuScreen implements Screen{
 	private Stage stage;
 	private ShapeRenderer shapeRenderer;
 	private Skin skin;
-	private TextButton buttonPlay, buttonExit;
+	private TextButton buttonPlay, buttonExit, buttonHostGame, buttonJoinGame;
 	private Image background;
 	private Image Astra;
 	private Image proection;
@@ -43,34 +42,53 @@ public class MainMenuScreen implements Screen{
 	
 	private void initButtons() {
 		int offset = 400;
-		this.buttonPlay = this.generateButton("Play demo", 10 + 200, game.V_HEIGHT - 80 - offset, 150*2, 80, fontColor);
-		this.buttonExit = this.generateButton("Exit", 10 + 200, game.V_HEIGHT - 80 * 2 - 40 - offset, 150*2, 80, fontColor);
+		buttonPlay = this.generateButton("Play demo", 10 + 200, game.V_HEIGHT - 80 - offset, 150*2, 80, fontColor);
+		buttonHostGame = generateButton("Host game", 10 + 200, game.V_HEIGHT - 80 * 2 - 40 - offset, 150*2, 80, fontColor);
+		buttonJoinGame = generateButton("Join game", 10 + 200, game.V_HEIGHT - 80 * 3 - 40 - offset, 150*2, 80, fontColor);
+		buttonExit = generateButton("Exit", 10 + 200, game.V_HEIGHT - 80 * 4 - 40 - offset, 150*2, 80, fontColor);
 		buttonPlay.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3.5f)));
 		buttonExit.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3.5f)));
-		this.buttonExit.addListener(new ClickListener(){
+		buttonHostGame.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3.5f)));
+		buttonJoinGame.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3.5f)));
+		buttonExit.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
 			}
 		});
 		
-		this.buttonPlay.addListener(new ClickListener(){
+		buttonPlay.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				game.setScreen(game.gameScreen);
 			}
 		});
-		this.stage.addActor(this.buttonPlay);
-		this.stage.addActor(this.buttonExit);
+		buttonHostGame.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.setScreen(game.hostGameScreen);
+			}
+		});
+		buttonJoinGame.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.setScreen(game.clientGameScreen);
+			}
+		});
+		stage.addActor(buttonPlay);
+		stage.addActor(buttonExit);
+		stage.addActor(buttonHostGame);
+		stage.addActor(buttonJoinGame);
 	}
 	
 	private TextButton generateButton(String caption, int x, int y, int width, int height, Color color) {
 		TextButtonStyle buttonStyle = new TextButtonStyle();
-		buttonStyle.font = this.game.font;
+		buttonStyle.font = game.font;
 		buttonStyle.fontColor = color;
 		TextButton button = new TextButton(caption, buttonStyle);
 		button.setPosition(x, y);
 		button.setSize(width, height);
+		button.getLabel().setFontScale(4f);
 		return button;
 	}
 	

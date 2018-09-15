@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import deaddream.screens.ClientScreen;
 import deaddream.screens.GameScreen;
 import deaddream.screens.GameplayScreen;
+import deaddream.screens.HostGameScreen;
 import deaddream.screens.LoadingScreen;
 import deaddream.screens.MainMenuScreen;
 import deaddream.screens.StartScreen;
@@ -35,6 +37,8 @@ public class DeadDream extends Game {
 	public MainMenuScreen mainMenuScreen;
 	//public GameScreen gameScreen;
 	public GameplayScreen gameScreen;
+	public HostGameScreen hostGameScreen;
+	public ClientScreen clientGameScreen;
 	//public GameplayScreen gameplayScreen;
 	
 	@Override
@@ -43,11 +47,9 @@ public class DeadDream extends Game {
 		this.batch = new SpriteBatch();
 		this.font = new BitmapFont();
 		this.font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		this.font.getData().setScale(5);
 		
 		this.shapeRenderer = new ShapeRenderer();
-		//AssetLoader.load();
-		Gdx.app.log("TheGame", "created");
+		Gdx.app.log("DeadDream", "created");
 		
 		this.camera = new OrthographicCamera();
 		this.camera.setToOrtho(false, this.V_WIDTH, this.V_HEIGHT);
@@ -58,7 +60,8 @@ public class DeadDream extends Game {
 		this.mainMenuScreen = new MainMenuScreen(this);
 		//this.gameScreen = new GameScreen(this);
 		this.gameScreen = new GameplayScreen(this);
-		
+		hostGameScreen = new HostGameScreen(this);
+		clientGameScreen = new ClientScreen(this);
 		this.setScreen(loadingScreen);
 	}
 	
@@ -71,6 +74,8 @@ public class DeadDream extends Game {
 		startScreen.dispose();
 		mainMenuScreen.dispose();
 		gameScreen.dispose();
+		hostGameScreen.dispose();
+		clientGameScreen.dispose();
 		//this.getScreen().dispose();
 	}
 	

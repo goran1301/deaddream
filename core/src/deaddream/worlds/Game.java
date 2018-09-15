@@ -89,7 +89,7 @@ public class Game {
 	
 	public void update(float delta) {
 		
-		System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
+		//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
 		GdxAI.getTimepiece().update(delta);
 		//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
 		groupMoveController.update();
