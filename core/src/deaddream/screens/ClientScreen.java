@@ -64,6 +64,13 @@ public class ClientScreen implements Screen{
 
 	@Override
 	public void render(float delta) {
+		if (client != null) {
+			try{
+				client.makeTestDataTransfer();
+			} catch (Exception e) {
+				System.out.println("no client transfer");
+			}
+		}
 		game.update(delta);
 		game.render(delta);
 	}

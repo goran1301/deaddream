@@ -58,6 +58,11 @@ public class HostGameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		try{
+			server.receiveTestData();
+		} catch (Exception e) {
+			System.out.println("no server: " + e.getMessage());
+		}
 		game.update(delta);
 		game.render(delta);
 	}
