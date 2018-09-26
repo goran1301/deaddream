@@ -19,17 +19,22 @@ import deaddream.backgrounds.BackgroundInterface;
 import deaddream.camera.CameraManager;
 import deaddream.groupmove.GroupMoveController;
 import deaddream.maps.MapManager;
+import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
 import deaddream.rendering.GameplayInterfaceRenderer;
 import deaddream.rendering.SelectionRenderer;
-import deaddream.units.Unit;
 import deaddream.units.factories.UnitFactory;
 import deaddream.units.utilities.input.InputManager;
+import deaddream.units.utilities.input.OnlineInputManager;
+import deaddream.units.utilities.input.commandhandlers.CommandHandler;
+import deaddream.units.utilities.input.commandhandlers.GroupSelectionCommandHandler;
+import deaddream.units.utilities.input.commandhandlers.MoveCommandHandler;
+import deaddream.units.utilities.input.commands.BaseCommandInterface;
 import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 import deaddream.worlds.rendering.ShaderProgrammer;
 
 public class Game {
-	protected Player currentPlayer;
+	protected LocalPlayer currentPlayer;
 	protected Array<Player> players;
 	protected Stage stage;
 	protected MapManager mapManager;
@@ -41,16 +46,18 @@ public class Game {
 	public Group unitGroup;
 	protected UnitFactory unitFactory;
 	protected CameraManager camera;
-	private BaseGraphDebugRenderer graphDebugRenderer;
-	private GroupMoveController groupMoveController;
-	private GameplayInterfaceRenderer Interface;
-	private Matrix4 screenMatrix;
-
+	protected BaseGraphDebugRenderer graphDebugRenderer;
+	protected GroupMoveController groupMoveController;
+	protected GameplayInterfaceRenderer Interface;
+	protected Matrix4 screenMatrix;
+	protected Array<CommandHandler<?>> commandHandlers;
+	protected Array<BaseCommandInterface> commands;
+	protected OnlineInputManager onlineInputManager;
 	
 	public Game(
 			DeadDream utilities, 
 			Array<Player> players, 
-			Player currentPlayer,
+			LocalPlayer currentPlayer,
 			TiledMap map,
 			OrthogonalTiledMapRenderer tmr
 		) {
@@ -73,7 +80,7 @@ public class Game {
 		this.Interface = new GameplayInterfaceRenderer(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		Interface.show();
 		
-		inputManager = new InputManager();
+		
 		shaderProgrammer = new ShaderProgrammer();
 		gameUtilities.font.getData().setScale(1);
 		
@@ -81,8 +88,13 @@ public class Game {
 		camera = new CameraManager(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		
 		graphDebugRenderer = new BaseGraphDebugRenderer(mapManager.pathFinder.graph, gameUtilities.batch);
-		groupMoveController = new GroupMoveController(currentPlayer);
+		groupMoveController = new GroupMoveController(players);
 		unitFactory = new UnitFactory(gameUtilities, groupMoveController);
+		
+		commands = new Array<BaseCommandInterface>();
+		initCommandHandlers();
+		inputManager = (InputManager)currentPlayer.getController();
+		onlineInputManager = new OnlineInputManager(players);
 	}
 	
 	public void setBg(BackgroundInterface bg) {
@@ -91,7 +103,14 @@ public class Game {
 	
 	public void update(float delta) {
 		
-		System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
+		//GroupSelectionCommandFactory commandFactory = new GroupSelectionCommandFactory(players);
+		//GroupSelectionCommand command = new GroupSelectionCommand(currentPlayer, 1f, 2f, 3f, 4f);
+		//onlineInputManager.update(command.toJson());
+		//System.out.println(onlineInputManager.getCommand().toJson());
+		//MoveCommand command2 = new MoveCommand(currentPlayer, new Vector3(1f, 2f, 0f));
+		//onlineInputManager.update(command2.toJson());
+		//System.out.println(onlineInputManager.getCommand().toJson());
+		//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
 		GdxAI.getTimepiece().update(delta);
 		//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
 		groupMoveController.update();
@@ -105,26 +124,42 @@ public class Game {
 		mapManager.tmr.setView(gameUtilities.camera);
 		shaderProgrammer.update(players);
 		camera.update(gameUtilities.camera);
-		updateInput();
 		
 	}
 	
-	private void updateInput() {
-		//long before = TimeUtils.nanoTime();
-		inputManager.update(camera.getCursorPosition(), currentPlayer);
-		//long after = TimeUtils.nanoTime();
-		//System.out.println("CLICK TOOK= "+((after-before)/1000 ) +" MILLIS" + " FPS " + Gdx.graphics.getFramesPerSecond());
-		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
-			for(Unit unit : currentPlayer.getSelection().getSelected()) {
-				if (unit.getPlayer() == currentPlayer) {
-					Array<Vector2> path = mapManager.pathFinder.getPath(unit, camera.getCursorPosition());
-					if (path != null) {
-						unit.moveTo(path);
-					}
-				}
+	protected void initCommandHandlers() {
+		commandHandlers = new Array<CommandHandler<?>>();
+		commandHandlers.add(new MoveCommandHandler(mapManager));
+		commandHandlers.add(new GroupSelectionCommandHandler());
+	}
+	
+	public void updateInput(Array<String> remoteCommands) {
+		commands.clear();
+		updateLocalPlyerInput();
+		for (String json : remoteCommands) {
+			onlineInputManager.update(json);
+			BaseCommandInterface command = onlineInputManager.getCommand();
+			if (command != null) {
+				commands.add(command);
+			}
+		}
+		for (BaseCommandInterface command : commands){
+			for (CommandHandler<?> commandHandler : commandHandlers) {
+				commandHandler.handle(command);
 			}
 		}
 	}
+	
+	protected void updateLocalPlyerInput() {
+		currentPlayer.getController().update(camera.getCursorPosition());
+		BaseCommandInterface command = currentPlayer.getController().getCommand();
+		if (command != null) {
+			commands.add(command);
+		}
+	}
+	
+	//public void execute
+	
 	
 	public void render(float delta) {
 		gameUtilities.batch.begin();

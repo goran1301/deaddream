@@ -25,7 +25,7 @@ public class GameplayInterfaceRenderer {
 	private Pixmap AtlasPm;
 	private Pixmap CoursorPm;
 	private AtlasRegion region;
-	private float scale = 0.5f;
+	private float scale = 1.0f;
 	private ArrayList<GameplayInterface> panels;
 	private Map<String, RigidBodyModel> panelsPolygons;
 	

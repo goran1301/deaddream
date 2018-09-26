@@ -18,16 +18,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.dd.Constants;
 
+import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
 import deaddream.units.Unit;
 
 public class GroupMoveController {
 	
-	Player currentPlayer;
+	Array<Player> players;
 	Array<SteeringEntity> steeringEntities = new Array<SteeringEntity>();
 	
-	public GroupMoveController(Player currentPlayer) {
-		this.currentPlayer = currentPlayer;
+	public GroupMoveController(Array<Player> players) {
+		this.players = players;
 	}
 	
 	public void addUnit(Unit unit) {
@@ -76,50 +77,56 @@ public class GroupMoveController {
 	}
 	
 	public void update() {
-		for(int i = 0; i < currentPlayer.getUnits().size; i++) {
-			Unit unit = currentPlayer.getUnit(i);
-			//unit.getBody().getPosition();
-			if (!unit.isMoving()) {
-				continue;
-			}
-			for (int j = 0; j < currentPlayer.getUnits().size; j++) {
-				if (i == j) {
+		for (Player player : players) {
+			for(int i = 0; i < player.getUnits().size; i++) {
+				Unit unit = player.getUnit(i);
+				//unit.getBody().getPosition();
+				if (!unit.isMoving()) {
 					continue;
 				}
-				Unit current = currentPlayer.getUnit(j);
-				if (!current.isMoving()) {
-					if (unit.isDestinationEqual(current.getDestinationPoint())) {
-						float distance = (float)Math.sqrt(
-								Math.pow((current.getBody().getPosition().x - unit.getBody().getPosition().x) * Constants.PPM, 2) +
-								Math.pow((current.getBody().getPosition().y - unit.getBody().getPosition().y) * Constants.PPM, 2)
-							);
-						if (distance <= (unit.getFlockRadius() + current.getFlockRadius()) * 1.5) {
-							unit.stopMove();
+				for (int j = 0; j < player.getUnits().size; j++) {
+					if (i == j) {
+						continue;
+					}
+					Unit current = player.getUnit(j);
+					if (!current.isMoving()) {
+						if (unit.isDestinationEqual(current.getDestinationPoint())) {
+							float distance = (float)Math.sqrt(
+									Math.pow((current.getBody().getPosition().x - unit.getBody().getPosition().x) * Constants.PPM, 2) +
+									Math.pow((current.getBody().getPosition().y - unit.getBody().getPosition().y) * Constants.PPM, 2)
+								);
+							if (distance <= (unit.getFlockRadius() + current.getFlockRadius()) * 1.5) {
+								unit.stopMove();
+							}
+							
+							
 						}
-						
-						
 					}
 				}
-			}
-			float pathDistance = (float)Math.sqrt(
-					Math.pow((unit.getDestinationPoint().x - unit.getBody().getPosition().x) * Constants.PPM, 2) +
-					Math.pow((unit.getDestinationPoint().y - unit.getBody().getPosition().y) * Constants.PPM, 2)
-				);
-			if (pathDistance <= unit.getFlockRadius() + 5) {
-				unit.stopMove();
+				float pathDistance = (float)Math.sqrt(
+						Math.pow((unit.getDestinationPoint().x - unit.getBody().getPosition().x) * Constants.PPM, 2) +
+						Math.pow((unit.getDestinationPoint().y - unit.getBody().getPosition().y) * Constants.PPM, 2)
+					);
+				if (pathDistance <= unit.getFlockRadius() + 5) {
+					unit.stopMove();
+				}
 			}
 		}
 	}
 	
+	
 	public void render(ShapeRenderer shapeRenderer) {
-		for(Unit unit : currentPlayer.getUnits()) {
-			shapeRenderer.setColor(Color.BLUE);
-			shapeRenderer.circle(
-					unit.getBody().getPosition().x * Constants.PPM,
-					unit.getBody().getPosition().y * Constants.PPM,
-					unit.getFlockRadius()
-				);
+		for (Player player : players) {
+			for(Unit unit : player.getUnits()) {
+				shapeRenderer.setColor(Color.BLUE);
+				shapeRenderer.circle(
+						unit.getBody().getPosition().x * Constants.PPM,
+						unit.getBody().getPosition().y * Constants.PPM,
+						unit.getFlockRadius()
+					);
+			}
 		}
+		
 		for(SteeringEntity entity : steeringEntities) {
 			shapeRenderer.setColor(Color.WHITE);
 			shapeRenderer.line(entity.getPosition().x * Constants.PPM, entity.getPosition().y * Constants.PPM,

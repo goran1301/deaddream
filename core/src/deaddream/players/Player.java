@@ -3,8 +3,9 @@ package deaddream.players;
 
 import com.badlogic.gdx.utils.Array;
 import deaddream.units.Unit;
+import deaddream.units.utilities.input.CommanderInterface;
 
-public class Player {
+abstract public class Player {
 	
 	protected int id;
 	protected Array<Unit> units = new Array<Unit>();
@@ -26,6 +27,12 @@ public class Player {
 		this.id = id;
 		this.type = type;
 	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	abstract public CommanderInterface<?> getController();
 	
 	public boolean isReady() {
 		return status == readyStatus;
