@@ -34,8 +34,8 @@ public class ClientScreen implements Screen{
 	
 	@Override
 	public void show() {
-		Player currentPlayer = new LocalPlayer(1, Player.inGameStatus); 
-		Player onlinePLayer = new OnlinePlayer(0, Player.inGameStatus);
+		LocalPlayer currentPlayer = new LocalPlayer(1, Player.inGameStatus); 
+		OnlinePlayer onlinePLayer = new OnlinePlayer(0, Player.inGameStatus);
 		Array<Player> players = new Array<Player>();
 		players.add(onlinePLayer);
 		players.add(currentPlayer);
@@ -50,13 +50,14 @@ public class ClientScreen implements Screen{
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);
 		for (int i = 0; i < 99; i++) {
-			game.getUnitFactory().createProtector(game.world, 500f, 500f, game.unitGroup, currentPlayer);
+			game.getUnitFactory().createProtector(game.world, 23f, 40f, game.unitGroup, currentPlayer);
 		}
 		for (int i = 0; i < 99; i++) {
 			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, onlinePLayer);
 		}
 		try {
 			client = new UDPClient();
+			//client.makeTestDataTransfer(null);
 		} catch(Exception e) {
 			System.out.println("no client init");
 		}
@@ -69,12 +70,14 @@ public class ClientScreen implements Screen{
 		game.update(1/60f);
 		game.render(1/60f);
 		game.clearCommands();
+		System.out.println("Client update");
 		if (client != null) {
 			try{
+			
 				Array<String> jsonCommands = client.makeTestDataTransfer(game.updateLocalPlyerInput());
 				game.updateInput(jsonCommands);
 			} catch (Exception e) {
-				System.out.println("no client transfer");
+				System.out.println("no client transfer " + e.getMessage());
 			}
 		}
 		

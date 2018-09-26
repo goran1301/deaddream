@@ -33,8 +33,8 @@ public class HostGameScreen implements Screen {
 
 	@Override
 	public void show() {
-		Player currentPlayer = new LocalPlayer(0, Player.inGameStatus); 
-		Player onlinePlayer = new OnlinePlayer(1, Player.inGameStatus);
+		LocalPlayer currentPlayer = new LocalPlayer(0, Player.inGameStatus); 
+		OnlinePlayer onlinePlayer = new OnlinePlayer(1, Player.inGameStatus);
 		Array<Player> players = new Array<Player>();
 		players.add(currentPlayer);
 		players.add(onlinePlayer);
@@ -49,13 +49,14 @@ public class HostGameScreen implements Screen {
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);
 		for (int i = 0; i < 99; i++) {
-			game.getUnitFactory().createProtector(game.world, 500f, 500f, game.unitGroup, onlinePlayer);
+			game.getUnitFactory().createProtector(game.world, 23f, 40f, game.unitGroup, onlinePlayer);
 		}
 		for (int i = 0; i < 99; i++) {
 			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
 		}
 		try{
 			server = new UDPServer();
+			server.receiveTestData(null);
 		} catch (Exception e) {
 			System.out.println("no server: " + e.getMessage());
 		}
@@ -67,7 +68,9 @@ public class HostGameScreen implements Screen {
 		game.update(1/60f);
 		game.render(1/60f);
 		game.clearCommands();
+		System.out.println("Host update");
 		try{
+			
 			Array<String> jsonCommands = server.receiveTestData(game.updateLocalPlyerInput());
 			game.updateInput(jsonCommands);
 		} catch (Exception e) {

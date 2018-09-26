@@ -152,7 +152,7 @@ public class Game {
 			commands.add(command);
 			return command.toJson();
 		}
-		return null;
+		return "1";
 	}
 	
 	//public void execute

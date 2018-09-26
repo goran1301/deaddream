@@ -31,16 +31,22 @@ public class UDPServer {
 	 * @throws Exception
 	 */
 	public Array<String> receiveTestData(String command) throws Exception {
+		if (command == null) {
+			command = "1";
+		}
 		commands.clear();
 		byte[] requestDataBuffer = new byte[1024];
 		DatagramPacket requestPacket = new DatagramPacket(requestDataBuffer, requestDataBuffer.length);
 		socket.receive(requestPacket);
+		//System.out.println("received");
 		
 		//String gottenData = new String(requestPacket.getData(), 0, requestPacket.getLength());
 		String gottenData = new String(requestPacket.getData());
 		String jsonCommand = gottenData.trim();
-		System.out.println("Host got a command: " + jsonCommand);
-		if (jsonCommand != null) {
+		if (jsonCommand != "1") {
+			System.out.println("Host got a command: " + jsonCommand);
+		}
+		if (jsonCommand != null || jsonCommand != "1") {
 			commands.add(jsonCommand);
 		}
 		//data processing
