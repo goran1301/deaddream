@@ -10,6 +10,8 @@ import com.mygdx.dd.DeadDream;
 
 import deaddream.backgrounds.WorldBackground;
 import deaddream.network.UDPClient;
+import deaddream.players.LocalPlayer;
+import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
 import deaddream.worlds.NetworkGame;
 
@@ -23,11 +25,7 @@ public class ClientScreen implements Screen{
 	
 	public ClientScreen(DeadDream utils) {
 		this.gameUtilities = utils;
-		try {
-			client = new UDPClient();
-		} catch(Exception e) {
-			System.out.println("no client init");
-		}
+		
 	}
 	
 	public void setGame(NetworkGame game) {
@@ -36,8 +34,10 @@ public class ClientScreen implements Screen{
 	
 	@Override
 	public void show() {
-		Player currentPlayer = new Player(0, Player.inGameStatus); 
+		Player currentPlayer = new LocalPlayer(1, Player.inGameStatus); 
+		Player onlinePLayer = new OnlinePlayer(0, Player.inGameStatus);
 		Array<Player> players = new Array<Player>();
+		players.add(onlinePLayer);
 		players.add(currentPlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");
 		OrthogonalTiledMapRenderer tmr = new OrthogonalTiledMapRenderer(map);
@@ -50,29 +50,34 @@ public class ClientScreen implements Screen{
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);
 		for (int i = 0; i < 99; i++) {
-			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
+			game.getUnitFactory().createProtector(game.world, 500f, 500f, game.unitGroup, currentPlayer);
 		}
-		if (client != null) {
-			try{
-				client.makeTestDataTransfer();
-			} catch (Exception e) {
-				System.out.println("no client transfer");
-			}
+		for (int i = 0; i < 99; i++) {
+			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, onlinePLayer);
 		}
+		try {
+			client = new UDPClient();
+		} catch(Exception e) {
+			System.out.println("no client init");
+		}
+		
 				//game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
 	}
 
 	@Override
 	public void render(float delta) {
+		game.update(1/60f);
+		game.render(1/60f);
+		game.clearCommands();
 		if (client != null) {
 			try{
-				client.makeTestDataTransfer();
+				Array<String> jsonCommands = client.makeTestDataTransfer(game.updateLocalPlyerInput());
+				game.updateInput(jsonCommands);
 			} catch (Exception e) {
 				System.out.println("no client transfer");
 			}
 		}
-		game.update(delta);
-		game.render(delta);
+		
 	}
 
 	@Override

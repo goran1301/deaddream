@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -18,17 +19,22 @@ import deaddream.backgrounds.BackgroundInterface;
 import deaddream.camera.CameraManager;
 import deaddream.groupmove.GroupMoveController;
 import deaddream.maps.MapManager;
+import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
-import deaddream.rendering.InterfaceRenderer;
+import deaddream.rendering.GameplayInterfaceRenderer;
 import deaddream.rendering.SelectionRenderer;
-import deaddream.units.Unit;
 import deaddream.units.factories.UnitFactory;
 import deaddream.units.utilities.input.InputManager;
+import deaddream.units.utilities.input.OnlineInputManager;
+import deaddream.units.utilities.input.commandhandlers.CommandHandler;
+import deaddream.units.utilities.input.commandhandlers.GroupSelectionCommandHandler;
+import deaddream.units.utilities.input.commandhandlers.MoveCommandHandler;
+import deaddream.units.utilities.input.commands.BaseCommandInterface;
 import deaddream.units.utilities.map.BaseGraphDebugRenderer;
 import deaddream.worlds.rendering.ShaderProgrammer;
 
 public class Game {
-	protected Player currentPlayer;
+	protected LocalPlayer currentPlayer;
 	protected Array<Player> players;
 	protected Stage stage;
 	protected MapManager mapManager;
@@ -40,15 +46,18 @@ public class Game {
 	public Group unitGroup;
 	protected UnitFactory unitFactory;
 	protected CameraManager camera;
-	private BaseGraphDebugRenderer graphDebugRenderer;
-	private GroupMoveController groupMoveController;
-	private InterfaceRenderer Interface;
-
+	protected BaseGraphDebugRenderer graphDebugRenderer;
+	protected GroupMoveController groupMoveController;
+	protected GameplayInterfaceRenderer Interface;
+	protected Matrix4 screenMatrix;
+	protected Array<CommandHandler<?>> commandHandlers;
+	protected Array<BaseCommandInterface> commands;
+	protected OnlineInputManager onlineInputManager;
 	
 	public Game(
 			DeadDream utilities, 
 			Array<Player> players, 
-			Player currentPlayer,
+			LocalPlayer currentPlayer,
 			TiledMap map,
 			OrthogonalTiledMapRenderer tmr
 		) {
@@ -67,11 +76,11 @@ public class Game {
 		stage.addActor(unitGroup);
 		Gdx.input.setInputProcessor(this.stage);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
-		
-		this.Interface = new InterfaceRenderer();
+		screenMatrix = new Matrix4(gameUtilities.batch.getProjectionMatrix().cpy().setToOrtho2D(0, 0, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT));
+		this.Interface = new GameplayInterfaceRenderer(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		Interface.show();
 		
-		inputManager = new InputManager();
+		
 		shaderProgrammer = new ShaderProgrammer();
 		gameUtilities.font.getData().setScale(1);
 		
@@ -79,8 +88,13 @@ public class Game {
 		camera = new CameraManager(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
 		
 		graphDebugRenderer = new BaseGraphDebugRenderer(mapManager.pathFinder.graph, gameUtilities.batch);
-		groupMoveController = new GroupMoveController(currentPlayer);
+		groupMoveController = new GroupMoveController(players);
 		unitFactory = new UnitFactory(gameUtilities, groupMoveController);
+		
+		commands = new Array<BaseCommandInterface>();
+		initCommandHandlers();
+		inputManager = (InputManager)currentPlayer.getController();
+		onlineInputManager = new OnlineInputManager(players);
 	}
 	
 	public void setBg(BackgroundInterface bg) {
@@ -103,26 +117,46 @@ public class Game {
 		mapManager.tmr.setView(gameUtilities.camera);
 		shaderProgrammer.update(players);
 		camera.update(gameUtilities.camera);
-		updateInput();
 		
 	}
 	
-	private void updateInput() {
-		//long before = TimeUtils.nanoTime();
-		inputManager.update(camera.getCursorPosition(), currentPlayer);
-		//long after = TimeUtils.nanoTime();
-		//System.out.println("CLICK TOOK= "+((after-before)/1000 ) +" MILLIS" + " FPS " + Gdx.graphics.getFramesPerSecond());
-		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
-			for(Unit unit : currentPlayer.getSelection().getSelected()) {
-				if (unit.getPlayer() == currentPlayer) {
-					Array<Vector2> path = mapManager.pathFinder.getPath(unit, camera.getCursorPosition());
-					if (path != null) {
-						unit.moveTo(path);
-					}
-				}
+	protected void initCommandHandlers() {
+		commandHandlers = new Array<CommandHandler<?>>();
+		commandHandlers.add(new MoveCommandHandler(mapManager));
+		commandHandlers.add(new GroupSelectionCommandHandler());
+	}
+	
+	public void clearCommands() {
+		commands.clear();
+	}
+	
+	public void updateInput(Array<String> remoteCommands) {
+		for (String json : remoteCommands) {
+			onlineInputManager.update(json);
+			BaseCommandInterface command = onlineInputManager.getCommand();
+			if (command != null) {
+				commands.add(command);
+			}
+		}
+		for (BaseCommandInterface command : commands){
+			for (CommandHandler<?> commandHandler : commandHandlers) {
+				commandHandler.handle(command);
 			}
 		}
 	}
+	
+	public String updateLocalPlyerInput() {
+		currentPlayer.getController().update(camera.getCursorPosition());
+		BaseCommandInterface command = currentPlayer.getController().getCommand();
+		if (command != null) {
+			commands.add(command);
+			return command.toJson();
+		}
+		return null;
+	}
+	
+	//public void execute
+	
 	
 	public void render(float delta) {
 		gameUtilities.batch.begin();
@@ -133,21 +167,32 @@ public class Game {
 			bg.render(gameUtilities.batch);
 		}
 		gameUtilities.batch.end();
+		mapManager.render();
+		stage.draw();
+		
+		
+		beginShapeRenderer();
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			graphDebugRenderer.render(gameUtilities.shapeRenderer, gameUtilities.font);
 		}
-		gameUtilities.batch.begin();
-		beginShapeRenderer();
 		SelectionRenderer.render(currentPlayer.getSelection(), gameUtilities.shapeRenderer);
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			groupMoveController.render(gameUtilities.shapeRenderer);
-		}
+		} 
 		inputManager.render(gameUtilities.shapeRenderer);
-		gameUtilities.shapeRenderer.end();	
-		gameUtilities.batch.end();
-		mapManager.render();
-		stage.draw();	
+		gameUtilities.shapeRenderer.end();
+		//UI
+		gameUtilities.batch.setProjectionMatrix(screenMatrix);
+		gameUtilities.batch.begin();
+		Interface.render(gameUtilities.batch);
+		gameUtilities.batch.end();	
 		
+		gameUtilities.shapeRenderer.setProjectionMatrix(screenMatrix);
+		beginShapeRenderer();
+		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+			Interface.drawDebug(gameUtilities.shapeRenderer);
+		} 
+		gameUtilities.shapeRenderer.end();
 	}
 	
 	private void beginShapeRenderer() {

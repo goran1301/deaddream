@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.dd.DeadDream;
 
 import deaddream.backgrounds.WorldBackground;
+import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
 import deaddream.worlds.Game;
 
@@ -18,6 +19,8 @@ public class GameplayScreen implements Screen {
 	private Game game;
 	
 	private DeadDream gameUtilities;
+	
+	private Array<String> remoteCommands = new Array<String>();
 	
 	public GameplayScreen(final DeadDream gameUtilities) {
 		this.gameUtilities = gameUtilities;
@@ -29,7 +32,7 @@ public class GameplayScreen implements Screen {
 
 	@Override
 	public void show() {
-		Player currentPlayer = new Player(0, Player.inGameStatus); 
+		LocalPlayer currentPlayer = new LocalPlayer(0, Player.inGameStatus); 
 		Array<Player> players = new Array<Player>();
 		players.add(currentPlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");
@@ -50,8 +53,9 @@ public class GameplayScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		game.update(delta);
-		game.render(delta);
+		game.update(1/60f);
+		game.updateInput(remoteCommands);
+		game.render(1/60f);
 	}
 
 	@Override

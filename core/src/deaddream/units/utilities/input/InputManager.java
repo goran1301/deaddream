@@ -5,16 +5,27 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.dd.Constants;
 
-import deaddream.players.Player;
-import deaddream.units.Unit;
+import deaddream.players.LocalPlayer;
+import deaddream.units.utilities.input.commands.BaseCommandInterface;
+import deaddream.units.utilities.input.commands.GroupSelectionCommand;
+import deaddream.units.utilities.input.commands.MoveCommand;
 
-public class InputManager {
+public class InputManager implements CommanderInterface<Vector3>{
 	
 	private Vector3 cursorPosition;
 	
 	public SelectField selectField = new SelectField();
+	
+	private boolean rightPressed = false;
+	
+	private boolean leftPressed = false;
+	
+	private LocalPlayer player;
+	
+	public InputManager(LocalPlayer player) {
+		this.player = player;
+	}
 	
 	private void updatePosition(Vector3 position) {
 		cursorPosition = position;
@@ -24,29 +35,29 @@ public class InputManager {
 		return cursorPosition;
 	}
 	
-	public void updateSelection(Player currentPlayer) {
-		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+	public void updateSelection() {
+		if (leftPressed) {
 			selectField.update(cursorPosition.x, cursorPosition.y);
-		} else {
-			if (selectField.getIsReady()) {
-				currentPlayer.getSelection().drop();
-				for (Unit unit : currentPlayer.getUnits()) {
-					if (selectField.isInSelectField(
-							unit.getBody().getPosition().x * Constants.PPM,
-							unit.getBody().getPosition().y * Constants.PPM
-						)
-					) {
-						currentPlayer.getSelection().add(unit);
-					}
-				}
-			}
-			selectField.drop();
-		}
+		} 
 	}
 	
-	public void update(Vector3 position, Player currentPlayer) {
+	public void update(Vector3 position) {
+		gameClickEventCheck();
 		updatePosition(position);
-		updateSelection(currentPlayer);
+		updateSelection();
+	}
+	
+	private void gameClickEventCheck() {
+		leftPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		rightPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
+	}
+	
+	public boolean rightPressed() {
+		return rightPressed;
+	}
+	
+	public boolean leftPressed(){
+		return leftPressed;
 	}
 	
 	public void render(ShapeRenderer shapeRenderer) {
@@ -63,5 +74,27 @@ public class InputManager {
 					Math.abs(endY -startY)
 				);
 		}
+	}
+
+	@Override
+	public BaseCommandInterface getCommand() {
+		
+		if (selectField.getIsReady() && !leftPressed) {
+			GroupSelectionCommand command = new GroupSelectionCommand(
+				player,
+				selectField.getStartX(),
+				selectField.getEndX(),
+				selectField.getStartY(),
+				selectField.getEndY()
+			);
+			selectField.drop();
+			return command;
+		}
+		
+		if (rightPressed) {
+			return new MoveCommand(player, cursorPosition);
+		}
+		
+		return null;
 	}
 }

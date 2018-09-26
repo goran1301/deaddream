@@ -53,10 +53,14 @@ public class SelectField {
     }
     
     public boolean isInSelectField(float x, float y) {
-    	float smallerX = startX < endX ? startX : endX;
-		float smallerY = startY < endY ? startY : endY;			
-		float biggerX = startX > endX ? startX : endX;
-		float biggerY = startY > endY ? startY : endY;
+    	return isInSelectField(x, y, startX, endX, startY, endY);
+    }
+    
+    public static boolean isInSelectField(float x, float y, float x1, float x2, float y1, float y2) {
+    	float smallerX = x1 < x2 ? x1 : x2;
+		float smallerY = y1 < y2 ? y1 : y2;			
+		float biggerX = x1 > x2 ? x1 : x2;
+		float biggerY = y1 > y2 ? y1 : y2;
 		
     	if ((x >= smallerX && x <= biggerX) && (y >= smallerY && y <= biggerY)) {
     		return true;

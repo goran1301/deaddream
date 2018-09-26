@@ -10,6 +10,8 @@ import com.mygdx.dd.DeadDream;
 
 import deaddream.backgrounds.WorldBackground;
 import deaddream.network.UDPServer;
+import deaddream.players.LocalPlayer;
+import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
 import deaddream.worlds.NetworkGame;
 
@@ -31,9 +33,11 @@ public class HostGameScreen implements Screen {
 
 	@Override
 	public void show() {
-		Player currentPlayer = new Player(0, Player.inGameStatus); 
+		Player currentPlayer = new LocalPlayer(0, Player.inGameStatus); 
+		Player onlinePlayer = new OnlinePlayer(1, Player.inGameStatus);
 		Array<Player> players = new Array<Player>();
 		players.add(currentPlayer);
+		players.add(onlinePlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");
 		OrthogonalTiledMapRenderer tmr = new OrthogonalTiledMapRenderer(map);
 		game = new NetworkGame(gameUtilities, players, currentPlayer, map, tmr);
@@ -45,11 +49,13 @@ public class HostGameScreen implements Screen {
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);
 		for (int i = 0; i < 99; i++) {
+			game.getUnitFactory().createProtector(game.world, 500f, 500f, game.unitGroup, onlinePlayer);
+		}
+		for (int i = 0; i < 99; i++) {
 			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
 		}
 		try{
 			server = new UDPServer();
-			server.receiveTestData();
 		} catch (Exception e) {
 			System.out.println("no server: " + e.getMessage());
 		}
@@ -58,13 +64,15 @@ public class HostGameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		game.update(1/60f);
+		game.render(1/60f);
+		game.clearCommands();
 		try{
-			server.receiveTestData();
+			Array<String> jsonCommands = server.receiveTestData(game.updateLocalPlyerInput());
+			game.updateInput(jsonCommands);
 		} catch (Exception e) {
 			System.out.println("no server: " + e.getMessage());
 		}
-		game.update(delta);
-		game.render(delta);
 	}
 
 	@Override
