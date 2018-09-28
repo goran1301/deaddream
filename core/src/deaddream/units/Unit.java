@@ -226,7 +226,7 @@ public abstract class Unit extends Actor implements Disableable {
 				this.body.getPosition().y * Constants.PPM);*/
 		/*this.staticTexture.setPosition(this.body.getPosition().x * Constants.PPM,
 				this.body.getPosition().y * Constants.PPM);*/
-		if (shaderProgram != null) {
+		if (shaderProgram != null && staticNormalTexture != null) {
 			this.staticNormalTexture.setRotation(this.staticTexture.getRotation());
 			this.staticNormalTexture.setPosition(
 					this.body.getWorldCenter().x * Constants.PPM - (this.staticTexture.getWidth() /2),

@@ -48,14 +48,19 @@ public class GameplayScreen implements Screen {
 		for (int i = 0; i < 99; i++) {
 			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
 		}
+		for (int i = 0; i < 15; i++) {
+			game.getUnitFactory().createMoth(game.world, 23, 50, game.unitGroup, currentPlayer);
+		}
 		//game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
 	}
 
 	@Override
 	public void render(float delta) {
 		game.update(1/60f);
-		game.updateInput(remoteCommands);
 		game.render(1/60f);
+		game.updateLocalPlyerInput();
+		game.updateInput(remoteCommands);
+		game.clearCommands();	
 	}
 
 	@Override
