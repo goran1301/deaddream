@@ -203,7 +203,7 @@ public class SteeringEntity implements Steerable<Vector2> {
 				//steeringLinear = normalize(steeringLinear);
 				
 				
-				//ToDo 1 fot protector, 2 for moth   
+				//ToDo 1 for protector, 2 for moth   
 				steeringLinear.x *= getMaxLinearSpeed() * 2;
 				steeringLinear.y *= getMaxLinearSpeed() * 2;
 				steeringLinear.limit(getMaxLinearSpeed());
