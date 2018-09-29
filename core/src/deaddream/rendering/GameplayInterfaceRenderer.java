@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -13,8 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
 import aurelienribon.bodyeditor.BodyEditorLoader.RigidBodyModel;
@@ -29,7 +27,7 @@ public class GameplayInterfaceRenderer {
 	private ArrayList<GameplayInterface> panels;
 	private Map<String, RigidBodyModel> panelsPolygons;
 	
-	public GameplayInterfaceRenderer(int width, int height) {
+	public GameplayInterfaceRenderer(Stage stage) {
 		textureAtlas = new TextureAtlas(Gdx.files.internal("GameplayInterfaceSpriteMap/SpriteMapConfiguration.atlas"));
 		System.out.println("Interface Create");	
 		BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("GameplayInterface/GUIPanelPolygons"));
@@ -38,9 +36,9 @@ public class GameplayInterfaceRenderer {
 		//loader.getInternalModel().rigidBodies.keySet().toArray().length;
 		//loader.getInternalModel().rigidBodies.get("map_frame.png");
 		panels = new ArrayList<GameplayInterface>();
-		panels.add(interfaceElementsFactory("map_frame",0.0f,0.0f, "left"));
-		panels.add(interfaceElementsFactory("middle_frame",width*0.5f + width*0.05f*scale,0.0f,"center"));
-		panels.add(interfaceElementsFactory("menu_frame",width, 0.0f, "right"));
+		panels.add(interfaceElementsFactory(stage, "map_frame",0.0f,0.0f, "left"));
+		panels.add(interfaceElementsFactory(stage, "middle_frame",stage.getWidth()*0.5f + stage.getWidth()*0.05f*scale,0.0f,"center"));
+		panels.add(interfaceElementsFactory(stage, "menu_frame",stage.getWidth(), 0.0f, "right"));
 	}
 
 	public void show() {
@@ -63,6 +61,7 @@ public class GameplayInterfaceRenderer {
 	}
 	
 	private GameplayInterface interfaceElementsFactory(
+			Stage stage,
 			String regionName, 
 			float positionX, 
 			float positionY,
@@ -71,7 +70,7 @@ public class GameplayInterfaceRenderer {
 		model = panelsPolygons.get(regionName+".png");
 		region = textureAtlas.findRegion(regionName);
 		Sprite sprite = new Sprite(region);
-		return new GameplayInterface(align, positionX, positionY, scale, sprite, model);
+		return new GameplayInterface(stage, align, positionX, positionY, scale, sprite, model);
 	}
 	
 	public void render(Batch batch){
@@ -81,7 +80,6 @@ public class GameplayInterfaceRenderer {
 	}
 	
 	public void drawDebug (ShapeRenderer shapes) {
-		shapes.setColor(Color.CYAN);
 		if (!panels.isEmpty()) {
 			this.panels.forEach(value->value.drawDebug(shapes));
 		}
@@ -92,5 +90,11 @@ public class GameplayInterfaceRenderer {
 		CoursorPm.dispose();
 		textureAtlas.dispose();
 		region.getTexture().getTextureData().disposePixmap();
+	}
+
+	public void addToStage(Stage stage) {
+		if (!panels.isEmpty()) {
+			this.panels.forEach(value->stage.addActor(value));
+		}
 	}
 }
