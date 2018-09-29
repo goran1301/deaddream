@@ -37,6 +37,11 @@ public class Month extends Unit {
 		def.type = BodyType.KinematicBody;
 		return def;
 	}
+	
+	@Override
+	public float getFlockRadius() {
+		return (getLargestSize() + 50f) / 2;
+	}
 
 	@Override
 	protected FixtureDef fixtureDefFactory() {

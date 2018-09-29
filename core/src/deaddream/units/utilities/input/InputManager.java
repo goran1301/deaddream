@@ -38,7 +38,11 @@ public class InputManager implements CommanderInterface<Vector3>{
 	public void updateSelection() {
 		if (leftPressed) {
 			selectField.update(cursorPosition.x, cursorPosition.y);
-		} 
+		} else {
+			if (!selectField.getIsReady()) {
+				selectField.drop();
+			}
+		}
 	}
 	
 	public void update(Vector3 position) {
