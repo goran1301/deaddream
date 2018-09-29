@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
@@ -37,6 +38,7 @@ public class Game {
 	protected LocalPlayer currentPlayer;
 	protected Array<Player> players;
 	protected Stage stage;
+	protected Stage interfaceStage;
 	protected MapManager mapManager;
 	protected InputManager inputManager;
 	protected BackgroundInterface bg;
@@ -44,6 +46,7 @@ public class Game {
 	protected DeadDream gameUtilities;
 	protected ShaderProgrammer shaderProgrammer;
 	public Group unitGroup;
+	
 	protected UnitFactory unitFactory;
 	protected CameraManager camera;
 	protected BaseGraphDebugRenderer graphDebugRenderer;
@@ -53,6 +56,9 @@ public class Game {
 	protected Array<CommandHandler<?>> commandHandlers;
 	protected Array<BaseCommandInterface> commands;
 	protected OnlineInputManager onlineInputManager;
+	protected OrthographicCamera HUDCamera;
+	protected StretchViewport HUDViewport;
+	
 	
 	public Game(
 			DeadDream utilities, 
@@ -76,8 +82,15 @@ public class Game {
 		stage.addActor(unitGroup);
 		Gdx.input.setInputProcessor(this.stage);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
+		this.HUDCamera = new OrthographicCamera();
+		this.HUDCamera.setToOrtho(false, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
+		HUDViewport = new StretchViewport(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT, HUDCamera);		
 		screenMatrix = new Matrix4(gameUtilities.batch.getProjectionMatrix().cpy().setToOrtho2D(0, 0, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT));
-		this.Interface = new GameplayInterfaceRenderer(gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
+		gameUtilities.batch.setProjectionMatrix(screenMatrix);
+		interfaceStage = new Stage(HUDViewport,gameUtilities.batch);
+		this.Interface = new GameplayInterfaceRenderer(this.interfaceStage);
+		Interface.addToStage(interfaceStage);
+		Gdx.input.setInputProcessor(this.interfaceStage);
 		Interface.show();
 		
 		
@@ -183,10 +196,7 @@ public class Game {
 		gameUtilities.shapeRenderer.end();
 		//UI
 		gameUtilities.batch.setProjectionMatrix(screenMatrix);
-		gameUtilities.batch.begin();
-		Interface.render(gameUtilities.batch);
-		gameUtilities.batch.end();	
-		
+		interfaceStage.draw();	
 		gameUtilities.shapeRenderer.setProjectionMatrix(screenMatrix);
 		beginShapeRenderer();
 		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
@@ -205,5 +215,6 @@ public class Game {
 	}
 	public void dispose() {
 		Interface.dispose();
+		interfaceStage.dispose();
 	}
 }
