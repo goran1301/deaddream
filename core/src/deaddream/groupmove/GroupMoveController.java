@@ -34,7 +34,7 @@ public class GroupMoveController {
 	public void addUnit(Unit unit) {
 		SteeringEntity entity = new SteeringEntity(unit);
 		entity.setMaxLinearSpeed(unit.getSpeed());
-		entity.setMaxLinearAcceleration(unit.getSpeed());
+		entity.setMaxLinearAcceleration(unit.getSpeed() * 2);
 		entity.setMaxAngularSpeed(50);
 		entity.setMaxAngularAcceleration(0);
 		steeringEntities.add(entity);
