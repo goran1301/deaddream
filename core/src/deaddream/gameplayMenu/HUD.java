@@ -31,6 +31,7 @@ public class HUD extends Actor {
 	protected Polygon[] polygons;
 	protected Vector2 texturePosition;
 	protected Vector2 polygonsPosition;
+	protected Vector2 center;
 	
 	
  public HUD(
@@ -52,42 +53,69 @@ public class HUD extends Actor {
 	 Width = this.staticTexture.getRegionWidth();
 	 Height = this.staticTexture.getRegionHeight();
 	 switch (align) {
-		case "left": 
+		case "left_bottom": 
 			this.texturePosition = new Vector2(positionX-Width*(1-scale)*0.5f, positionY-Height*(1-scale)*0.5f); 
 			this.polygonsPosition = new Vector2(positionX, positionY); 
 			break;
-		case "right": 
+		case "right_bottom": 
 			this.texturePosition = new Vector2(positionX-Width+Width*(1-scale)*0.5f, positionY-Height*(1-scale)*0.5f); 
 			this.polygonsPosition = new Vector2(positionX-Width*scale, positionY);
 			break;
-		case "center": 
+		case "center_bottom": 
 			this.texturePosition = new Vector2(positionX-Width/2, positionY-Height*(1-scale)*0.5f); 
 			this.polygonsPosition = new Vector2(positionX-Width/2*scale, positionY);
+			break;
+		case "left_middle": 
+			this.texturePosition = new Vector2(positionX-Width*(1-scale)*0.5f, positionY-Height/2); 
+			this.polygonsPosition = new Vector2(positionX, positionY-Height/2*scale); 
+			break;
+		case "right_middle": 
+			this.texturePosition = new Vector2(positionX-Width+Width*(1-scale)*0.5f, positionY-Height/2); 
+			this.polygonsPosition = new Vector2(positionX-Width*scale, positionY-Height/2*scale);
+			break;
+		case "center_middle": 
+			this.texturePosition = new Vector2(positionX-Width/2, positionY-Height/2); 
+			this.polygonsPosition = new Vector2(positionX-Width/2*scale, positionY-Height/2*scale);
+			break;
+		case "left_top": 
+			this.texturePosition = new Vector2(positionX-Width*(1-scale)*0.5f, positionY-Height+Height*(1-scale)*0.5f); 
+			this.polygonsPosition = new Vector2(positionX, positionY-Height*scale); 
+			break;
+		case "right_top": 
+			this.texturePosition = new Vector2(positionX-Width+Width*(1-scale)*0.5f, positionY-Height+Height*(1-scale)*0.5f); 
+			this.polygonsPosition = new Vector2(positionX-Width*scale, positionY-Height*scale);
+			break;
+		case "center_top": 
+			this.texturePosition = new Vector2(positionX-Width/2, positionY-Height+Height*(1-scale)*0.5f); 
+			this.polygonsPosition = new Vector2(positionX-Width/2*scale, positionY-Height*scale);
 			break;
 		default: break;
 		}
 	 this.setRotation(0);
-	 this.setScale(scale);
-	 this.setOrigin(polygonsPosition.x, polygonsPosition.y);
-	 this.setX(polygonsPosition.x);
-	 this.setY(polygonsPosition.y);
-	 this.setHeight(Height);
-	 this.setWidth(Width);
 	 this.staticTexture.setPosition(this.texturePosition.x,this.texturePosition.y);
+	 this.center = new Vector2(this.texturePosition.x + this.Width/2,this.texturePosition.y + this.Height/2);
 	 setPolygons(model);
 	 setTouchable(Touchable.enabled);
 	 clickListener = new ClickListener() {
 		 @Override
 		 public void clicked (InputEvent event, float x, float y) {
-			 Vector3 position = updatePosition();
-			 System.out.println("X: "+position.x+" Y: "+position.y);
+			 //Vector3 position = updatePosition();
+			 //System.out.println("X: "+position.x+" Y: "+position.y);
 		 } 
 		 
 	 };
 	 addListener(clickListener);
  }
-
- void setPolygons(RigidBodyModel model) {
+public Vector2 getCenter() {
+	return center;
+}
+public Vector2 getLeftBottom() {
+	return new Vector2(this.texturePosition.x,this.texturePosition.y);
+}
+public Vector2 getRightTop() {
+	return new Vector2(this.texturePosition.x+ this.Width,this.texturePosition.y+ this.Width);
+}
+private void setPolygons(RigidBodyModel model) {
 	 if (model != null) {
 		 polygons = new Polygon[model.polygons.size()];
 		// for(PolygonModel polygon: model.polygons) {
@@ -125,10 +153,6 @@ public class HUD extends Actor {
 		 for( int polygonCount = 0;polygonCount < length;polygonCount++)
 			 shapes.polygon(polygons[polygonCount].getTransformedVertices());
 	 }
-	 this.setDebug(true);
-	 shapes.setColor(Color.YELLOW);
-	 this.drawDebugBounds(shapes);
-	 this.setDebug(false);
  }
  @Override
  public void drawDebugBounds(ShapeRenderer shapes) {

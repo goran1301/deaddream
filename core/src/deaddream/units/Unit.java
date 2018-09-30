@@ -135,11 +135,11 @@ public abstract class Unit extends Actor implements Disableable {
 			public void clicked (InputEvent event, float x, float y) {
 				if (isDisabled()) return;
 				setChecked(!isChecked, true);
-				System.out.println("check");
+				//System.out.println("check");
 			}
 		});
 		isDisabled = false;
-		setDebug(true);
+		//setDebug(true);
 	}
 	
 	public void setChecked (boolean isChecked) {

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
@@ -23,7 +24,7 @@ public class HUDRenderer {
 	private Pixmap AtlasPm;
 	private Pixmap CoursorPm;
 	private AtlasRegion region;
-	private float scale = 1.0f;
+	private float scale = 1f;
 	private ArrayList<HUD> panels;
 	private Map<String, RigidBodyModel> panelsPolygons;
 	
@@ -36,10 +37,16 @@ public class HUDRenderer {
 		//loader.getInternalModel().rigidBodies.keySet().toArray().length;
 		//loader.getInternalModel().rigidBodies.get("map_frame.png");
 		panels = new ArrayList<HUD>();
-		panels.add(interfaceElementsFactory(stage, "map_frame",0.0f,0.0f, "left"));
-		panels.add(interfaceElementsFactory(stage, "middle_frame",stage.getWidth()*0.5f + stage.getWidth()*0.05f*scale,0.0f,"center"));
-		panels.add(interfaceElementsFactory(stage, "menu_frame",stage.getWidth(), 0.0f, "right"));
-		//panels.add(interfaceElementsFactory(stage, "button",stage.getWidth(), 0.0f, "center"));
+		panels.add(interfaceElementsFactory(stage, "map_frame",0.0f,0.0f, "left_bottom"));
+		panels.add(interfaceElementsFactory(stage, "middle_frame",stage.getWidth()*0.5f + stage.getWidth()*0.05f*scale,0.0f,"center_bottom"));
+		panels.add(interfaceElementsFactory(stage, "menu_frame",stage.getWidth(), 0.0f, "right_bottom"));
+		panels.add(interfaceElementsFactory(stage, "atack_button",stage.getWidth() - stage.getWidth()*(1-0.919791667f)*scale, stage.getHeight() - stage.getHeight()*(1-0.12387037f*scale), "center_middle"));
+		panels.add(interfaceElementsFactory(stage, "order_button",stage.getWidth() - stage.getWidth()*(1-0.919791667f)*scale, stage.getHeight() - stage.getHeight()*(1-0.151f*scale), "center_bottom"));
+		panels.add(interfaceElementsFactory(stage, "cansell_button",stage.getWidth() - stage.getWidth()*(1-0.919791667f)*scale, stage.getHeight() - stage.getHeight()*(1-0.095f*scale), "center_top"));
+		panels.add(interfaceElementsFactory(stage, "patrol_button",stage.getWidth() - stage.getWidth()*(1-0.886583334f)*scale, stage.getHeight() - stage.getHeight()*(1-0.1585f*scale), "center_middle"));
+		panels.add(interfaceElementsFactory(stage, "button",stage.getWidth() - stage.getWidth()*(1-0.886583334f)*scale, stage.getHeight() - stage.getHeight()*(1-0.09f*scale), "center_middle"));
+		panels.add(interfaceElementsFactory(stage, "repair_button",stage.getWidth() - stage.getWidth()*(1-0.953f)*scale, stage.getHeight() - stage.getHeight()*(1-0.1585f*scale), "center_middle"));
+		panels.add(interfaceElementsFactory(stage, "button",stage.getWidth() - stage.getWidth()*(1-0.953f)*scale, stage.getHeight() - stage.getHeight()*(1-0.09f*scale), "center_middle"));
 	}
 
 	public void show() {
