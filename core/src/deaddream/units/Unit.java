@@ -131,13 +131,15 @@ public abstract class Unit extends Actor implements Disableable {
 		}
 		setTouchable(Touchable.enabled);
 		addListener(clickListener = new ClickListener() {
+			@Override
 			public void clicked (InputEvent event, float x, float y) {
 				if (isDisabled()) return;
 				setChecked(!isChecked, true);
+				System.out.println("check");
 			}
 		});
 		isDisabled = false;
-		//setDebug(true);
+		setDebug(true);
 	}
 	
 	public void setChecked (boolean isChecked) {

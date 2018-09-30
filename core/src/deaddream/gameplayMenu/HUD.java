@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import aurelienribon.bodyeditor.BodyEditorLoader.PolygonModel;
 import aurelienribon.bodyeditor.BodyEditorLoader.RigidBodyModel;
 
-public class GameplayInterface extends Actor {
+public class HUD extends Actor {
 	
 	protected Sprite staticTexture;
 	protected ClickListener clickListener;
@@ -33,7 +33,7 @@ public class GameplayInterface extends Actor {
 	protected Vector2 polygonsPosition;
 	
 	
- public GameplayInterface(
+ public HUD(
 		 Stage stage,
 		 String align,
 		 float positionX, 

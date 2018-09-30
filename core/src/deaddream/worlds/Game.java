@@ -2,6 +2,8 @@ package deaddream.worlds;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,7 +24,7 @@ import deaddream.groupmove.GroupMoveController;
 import deaddream.maps.MapManager;
 import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
-import deaddream.rendering.GameplayInterfaceRenderer;
+import deaddream.rendering.HUDRenderer;
 import deaddream.rendering.SelectionRenderer;
 import deaddream.units.factories.UnitFactory;
 import deaddream.units.utilities.input.InputManager;
@@ -51,13 +53,14 @@ public class Game {
 	protected CameraManager camera;
 	protected BaseGraphDebugRenderer graphDebugRenderer;
 	protected GroupMoveController groupMoveController;
-	protected GameplayInterfaceRenderer Interface;
+	protected HUDRenderer HUD;
 	protected Matrix4 screenMatrix;
 	protected Array<CommandHandler<?>> commandHandlers;
 	protected Array<BaseCommandInterface> commands;
 	protected OnlineInputManager onlineInputManager;
 	protected OrthographicCamera HUDCamera;
 	protected StretchViewport HUDViewport;
+	protected InputMultiplexer multiplexer;
 	
 	
 	public Game(
@@ -80,7 +83,7 @@ public class Game {
 		gameUtilities.batch);
 		unitGroup = new Group();
 		stage.addActor(unitGroup);
-		Gdx.input.setInputProcessor(this.stage);
+		//Gdx.input.setInputProcessor(this.stage);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
 		this.HUDCamera = new OrthographicCamera();
 		this.HUDCamera.setToOrtho(false, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT);
@@ -88,10 +91,28 @@ public class Game {
 		screenMatrix = new Matrix4(gameUtilities.batch.getProjectionMatrix().cpy().setToOrtho2D(0, 0, gameUtilities.V_WIDTH, gameUtilities.V_HEIGHT));
 		gameUtilities.batch.setProjectionMatrix(screenMatrix);
 		interfaceStage = new Stage(HUDViewport,gameUtilities.batch);
-		this.Interface = new GameplayInterfaceRenderer(this.interfaceStage);
-		Interface.addToStage(interfaceStage);
-		Gdx.input.setInputProcessor(this.interfaceStage);
-		Interface.show();
+		this.HUD = new HUDRenderer(this.interfaceStage);
+		HUD.addToStage(interfaceStage);
+		//Gdx.input.setInputProcessor(this.interfaceStage);
+		HUD.show();
+		multiplexer = new InputMultiplexer();
+		Gdx.input.setInputProcessor(this.multiplexer);
+		multiplexer.addProcessor(new InputAdapter () {
+			@Override
+			   public boolean touchDown (int x, int y, int pointer, int button) {
+				HUD.showCursor(true);
+			      return false;
+			   }
+
+			   @Override
+			   public boolean touchUp (int x, int y, int pointer, int button) {
+			      HUD.showCursor(false);
+			      return false;
+			   }
+		}
+		);
+		multiplexer.addProcessor(interfaceStage);
+		multiplexer.addProcessor(stage);
 		
 		
 		shaderProgrammer = new ShaderProgrammer();
@@ -200,7 +221,7 @@ public class Game {
 		gameUtilities.shapeRenderer.setProjectionMatrix(screenMatrix);
 		beginShapeRenderer();
 		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-			Interface.drawDebug(gameUtilities.shapeRenderer);
+			HUD.drawDebug(gameUtilities.shapeRenderer);
 		} 
 		gameUtilities.shapeRenderer.end();
 	}
@@ -214,7 +235,7 @@ public class Game {
 		return unitFactory;
 	}
 	public void dispose() {
-		Interface.dispose();
+		HUD.dispose();
 		interfaceStage.dispose();
 	}
 }

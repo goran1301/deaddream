@@ -45,7 +45,7 @@ import deaddream.logic.pathfinding.TiledManhattanDistance;
 import deaddream.logic.pathfinding.TiledNode;
 import deaddream.logic.pathfinding.TiledSmoothableGraphPath;
 import deaddream.maps.TiledObjectUtil;
-import deaddream.rendering.GameplayInterfaceRenderer;
+import deaddream.rendering.HUDRenderer;
 import deaddream.units.Protector;
 import deaddream.units.Stone;
 import deaddream.units.Unit;
