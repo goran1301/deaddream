@@ -61,6 +61,7 @@ public class Game {
 	protected OrthographicCamera HUDCamera;
 	protected StretchViewport HUDViewport;
 	protected InputMultiplexer multiplexer;
+	protected BaseCommandInterface currentCommand;
 	
 	
 	public Game(
@@ -164,7 +165,7 @@ public class Game {
 		commands.clear();
 	}
 	
-	public void updateInput(Array<String> remoteCommands) {
+	public void updateInput(Array<String> remoteCommands, BaseCommandInterface localCommand) {
 		for (String json : remoteCommands) {
 			onlineInputManager.update(json);
 			BaseCommandInterface command = onlineInputManager.getCommand();
@@ -172,6 +173,7 @@ public class Game {
 				commands.add(command);
 			}
 		}
+		commands.add(localCommand);
 		for (BaseCommandInterface command : commands){
 			for (CommandHandler<?> commandHandler : commandHandlers) {
 				commandHandler.handle(command);
@@ -179,14 +181,10 @@ public class Game {
 		}
 	}
 	
-	public String updateLocalPlyerInput() {
+	public BaseCommandInterface updateLocalPlyerInput() {
 		currentPlayer.getController().update(camera.getCursorPosition());
 		BaseCommandInterface command = currentPlayer.getController().getCommand();
-		if (command != null) {
-			commands.add(command);
-			return command.toJson();
-		}
-		return "1";
+		return command;
 	}
 	
 	//public void execute

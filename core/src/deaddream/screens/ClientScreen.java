@@ -13,6 +13,7 @@ import deaddream.network.UDPClient;
 import deaddream.players.LocalPlayer;
 import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
+import deaddream.units.utilities.input.commands.BaseCommandInterface;
 import deaddream.worlds.NetworkGame;
 
 public class ClientScreen implements Screen{
@@ -22,6 +23,11 @@ public class ClientScreen implements Screen{
 	private DeadDream gameUtilities;
 	
 	private UDPClient client;
+
+	private boolean successCommandExchange;
+	
+	private BaseCommandInterface currentLocalCommand;
+	
 	
 	public ClientScreen(DeadDream utils) {
 		this.gameUtilities = utils;
@@ -61,21 +67,36 @@ public class ClientScreen implements Screen{
 		} catch(Exception e) {
 			System.out.println("no client init");
 		}
+		successCommandExchange = true;
 		
 				//game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
 	}
 
 	@Override
 	public void render(float delta) {
-		game.update(1/60f);
-		game.render(1/60f);
-		game.clearCommands();
-		System.out.println("Client update");
+		if (successCommandExchange) {
+			//System.out.println("CLIENT UPDATE GAME LOGIC");
+			game.update(1/60f);
+			game.render(1/60f);
+			game.clearCommands();
+			currentLocalCommand = game.updateLocalPlyerInput();
+			successCommandExchange = false;
+		}
+		
+		//game.render(1/60f);
 		if (client != null) {
 			try{
-			
-				Array<String> jsonCommands = client.makeTestDataTransfer(game.updateLocalPlyerInput());
-				game.updateInput(jsonCommands);
+				//System.out.println("Client update");
+				Array<String> jsonCommands = client.makeTestDataTransfer(currentLocalCommand);
+				if (jsonCommands.size > 0){
+					
+					game.updateInput(jsonCommands, currentLocalCommand);
+					successCommandExchange = true;
+					//System.out.println("CLIENT SUCCESS INPUT UPDATE");
+				} else {
+					successCommandExchange = false;
+				}
+				
 			} catch (Exception e) {
 				System.out.println("no client transfer " + e.getMessage());
 			}

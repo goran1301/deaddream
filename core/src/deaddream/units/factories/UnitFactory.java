@@ -38,7 +38,7 @@ public class UnitFactory {
 		protector.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				protector.getPlayer().getSelection().select(protector);
+				//protector.getPlayer().getSelection().select(protector);
 				//System.out.println("Unit00 selected" + String.valueOf(protector.getZIndex()));
 				//selectUnit(unit00);
 			}

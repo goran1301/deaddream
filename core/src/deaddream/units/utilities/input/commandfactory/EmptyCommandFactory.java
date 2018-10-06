@@ -6,36 +6,31 @@ import com.badlogic.gdx.utils.JsonValue;
 
 import deaddream.players.Player;
 import deaddream.units.utilities.input.commands.BaseCommandInterface;
-import deaddream.units.utilities.input.commands.GroupSelectionCommand;
+import deaddream.units.utilities.input.commands.EmptyCommand;
 
-public class GroupSelectionCommandFactory  implements CommandFactoryInterface <GroupSelectionCommand>{
-
+public class EmptyCommandFactory implements CommandFactoryInterface<EmptyCommand> {
+	
 	private Array<Player> players;
+	private JsonReader reader;	
 	
-	private JsonReader reader;
-	
-	public GroupSelectionCommandFactory(Array<Player> players) {
+	public EmptyCommandFactory(Array<Player> players) {
 		this.players = players;
 		reader = new JsonReader();
 	}
 	
 	@Override
-	public GroupSelectionCommand constructFromJSON(String json) {
+	public EmptyCommand constructFromJSON(String json) {
 		JsonValue parsedJson = reader.parse(json);
 		try {
 			int code = parsedJson.getInt("code");
 			Player player = getPlayerById(parsedJson.getInt("playerId"));
-			if (player == null || code != 1) {
+			if (player == null || code != 3) {
 				return null;
 			}
 			
 			int id = parsedJson.getInt("id");
-			float x1 = parsedJson.getFloat("x1");
-			float x2 = parsedJson.getFloat("x2");
-			float y1 = parsedJson.getFloat("y1");
-			float y2 = parsedJson.getFloat("y2");
 			
-			return new GroupSelectionCommand(id, player, x1, x2, y1, y2);
+			return new EmptyCommand(id, player);
 			
 		} catch (IllegalArgumentException e) {
 			return null;
@@ -44,7 +39,7 @@ public class GroupSelectionCommandFactory  implements CommandFactoryInterface <G
 
 	@Override
 	public String converToJson(BaseCommandInterface command) {
-		// TODO think do we need it
+		// TODO Auto-generated method stub
 		return null;
 	}
 	

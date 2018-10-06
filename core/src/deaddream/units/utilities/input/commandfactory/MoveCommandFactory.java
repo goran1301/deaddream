@@ -30,10 +30,11 @@ private Array<Player> players;
 				return null;
 			}
 			
+			int id = parsedJson.getInt("id");
 			float x = parsedJson.getFloat("x");
 			float y = parsedJson.getFloat("y");
 			
-			return new MoveCommand(player, new Vector3(x, y, 0f));
+			return new MoveCommand(id, player, new Vector3(x, y, 0f));
 			
 		} catch (IllegalArgumentException e) {
 			return null;

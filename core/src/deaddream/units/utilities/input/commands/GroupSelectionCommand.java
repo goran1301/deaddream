@@ -8,6 +8,8 @@ import deaddream.players.Player;
 
 public class GroupSelectionCommand implements BaseCommandInterface{
 
+	private int id;
+	
 	private transient Player player;
 	
 	private float x1;
@@ -22,7 +24,8 @@ public class GroupSelectionCommand implements BaseCommandInterface{
 	
 	private int playerId;
 	
-	public GroupSelectionCommand(Player player, float x1, float x2, float y1, float y2) {
+	public GroupSelectionCommand(int id, Player player, float x1, float x2, float y1, float y2) {
+		this.id = id;
 		this.player = player;
 		playerId = player.getId();
 		this.x1 = x1;
@@ -66,6 +69,11 @@ public class GroupSelectionCommand implements BaseCommandInterface{
 		Json json = new Json();
 		json.setOutputType(OutputType.json);
 		return json.toJson(this);
+	}
+
+	@Override
+	public int getFrameId() {
+		return id;
 	}
 	
 }

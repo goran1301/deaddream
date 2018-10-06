@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import deaddream.players.LocalPlayer;
 import deaddream.units.utilities.input.commands.BaseCommandInterface;
+import deaddream.units.utilities.input.commands.EmptyCommand;
 import deaddream.units.utilities.input.commands.GroupSelectionCommand;
 import deaddream.units.utilities.input.commands.MoveCommand;
 
@@ -23,8 +24,12 @@ public class InputManager implements CommanderInterface<Vector3>{
 	
 	private LocalPlayer player;
 	
+	int frameId;
+	
+	
 	public InputManager(LocalPlayer player) {
 		this.player = player;
+		frameId = -1;
 	}
 	
 	private void updatePosition(Vector3 position) {
@@ -46,6 +51,7 @@ public class InputManager implements CommanderInterface<Vector3>{
 	}
 	
 	public void update(Vector3 position) {
+		frameId++;
 		gameClickEventCheck();
 		updatePosition(position);
 		updateSelection();
@@ -82,9 +88,10 @@ public class InputManager implements CommanderInterface<Vector3>{
 
 	@Override
 	public BaseCommandInterface getCommand() {
-		
+		//System.out.println("Constructing a command for a frame " + frameId);
 		if (selectField.getIsReady() && !leftPressed) {
 			GroupSelectionCommand command = new GroupSelectionCommand(
+				frameId,
 				player,
 				selectField.getStartX(),
 				selectField.getEndX(),
@@ -92,13 +99,18 @@ public class InputManager implements CommanderInterface<Vector3>{
 				selectField.getEndY()
 			);
 			selectField.drop();
+			//System.out.println("Constructing a group selection for a frame " + command.getFrameId());
 			return command;
 		}
 		
 		if (rightPressed) {
-			return new MoveCommand(player, cursorPosition);
+			MoveCommand command = new MoveCommand(frameId, player, cursorPosition);
+			//System.out.println("Constructing a move for a frame " + command.getFrameId());
+			return command;
 		}
 		
-		return null;
+		BaseCommandInterface command = new EmptyCommand(frameId, player);
+		//System.out.println("Constructing an empty for a frame " + command.getFrameId());
+		return command;
 	}
 }

@@ -58,8 +58,7 @@ public class GameplayScreen implements Screen {
 	public void render(float delta) {
 		game.update(1/60f);
 		game.render(1/60f);
-		game.updateLocalPlyerInput();
-		game.updateInput(remoteCommands);
+		game.updateInput(remoteCommands, game.updateLocalPlyerInput());
 		game.clearCommands();	
 	}
 

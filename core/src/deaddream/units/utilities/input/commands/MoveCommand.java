@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import deaddream.players.Player;
 
 public class MoveCommand implements BaseCommandInterface {
+	private int id;
 	private float x;
 	private float y;
 	private transient Player player;
@@ -14,7 +15,8 @@ public class MoveCommand implements BaseCommandInterface {
 	private int code = 0;
 	private int playerId;
 	
-	public MoveCommand(Player player, Vector3 cursorPosition) {
+	public MoveCommand(int id, Player player, Vector3 cursorPosition) {
+		this.id = id;
 		this.player = player;
 		playerId = player.getId();
 		this.x = cursorPosition.x;
@@ -52,5 +54,10 @@ public class MoveCommand implements BaseCommandInterface {
 	
 	public int getPlayerId() {
 		return playerId;
+	}
+
+	@Override
+	public int getFrameId() {
+		return id;
 	}
 }

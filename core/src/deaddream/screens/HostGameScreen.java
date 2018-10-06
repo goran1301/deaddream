@@ -13,6 +13,7 @@ import deaddream.network.UDPServer;
 import deaddream.players.LocalPlayer;
 import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
+import deaddream.units.utilities.input.commands.BaseCommandInterface;
 import deaddream.worlds.NetworkGame;
 
 public class HostGameScreen implements Screen {
@@ -22,6 +23,10 @@ public class HostGameScreen implements Screen {
 	private DeadDream gameUtilities;
 	
 	private UDPServer server;
+	
+	private boolean successCommandExchange;
+	
+	private BaseCommandInterface currentLocalCommand;
 	
 	public HostGameScreen(DeadDream utils) {
 		this.gameUtilities = utils;
@@ -56,23 +61,38 @@ public class HostGameScreen implements Screen {
 		}
 		try{
 			server = new UDPServer();
-			server.receiveTestData(null);
+			//server.receiveTestData(null);
 		} catch (Exception e) {
 			System.out.println("no server: " + e.getMessage());
 		}
+		successCommandExchange = true;
+		
 		//game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
 	}
 
 	@Override
 	public void render(float delta) {
-		game.update(1/60f);
-		game.render(1/60f);
-		game.clearCommands();
-		System.out.println("Host update");
+		if (successCommandExchange) {
+			//System.out.println("HOST UPDATE GAME LOGIC");
+			game.update(1/60f);
+			game.render(1/60f);
+			game.clearCommands();
+			currentLocalCommand = game.updateLocalPlyerInput();
+			successCommandExchange = false;
+		}
+		//game.render(1/60f);
+		//System.out.println("currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
+		
 		try{
+			Array<String> jsonCommands = server.receiveTestData(currentLocalCommand);
+			if (jsonCommands.size > 0) {
+				game.updateInput(jsonCommands, currentLocalCommand);
+				successCommandExchange = true;
+				//System.out.println("HOST SUCCESS INPUT UPDATE");
+			} else {
+				successCommandExchange = false;
+			}
 			
-			Array<String> jsonCommands = server.receiveTestData(game.updateLocalPlyerInput());
-			game.updateInput(jsonCommands);
 		} catch (Exception e) {
 			System.out.println("no server: " + e.getMessage());
 		}
