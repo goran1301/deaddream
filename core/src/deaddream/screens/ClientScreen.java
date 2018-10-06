@@ -77,13 +77,13 @@ public class ClientScreen implements Screen{
 		if (successCommandExchange) {
 			//System.out.println("CLIENT UPDATE GAME LOGIC");
 			game.update(1/60f);
-			game.render(1/60f);
+			//game.render(1/60f);
 			game.clearCommands();
 			currentLocalCommand = game.updateLocalPlyerInput();
 			successCommandExchange = false;
 		}
 		
-		//game.render(1/60f);
+		game.render(1/60f);
 		if (client != null) {
 			try{
 				//System.out.println("Client update");
