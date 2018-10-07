@@ -137,15 +137,17 @@ public class Game {
 	}
 	
 	public void update(float delta) {
-		
+		//System.out.println("DELTA IS " + String.valueOf(delta));
+		InputManager inputManager = (InputManager)currentPlayer.getController();
+		inputManager.updateDelta(delta);
 		//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
-		GdxAI.getTimepiece().update(delta);
+		GdxAI.getTimepiece().update(chooseDelta());
 		//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
 		groupMoveController.update();
 
 		world.step(1/60f, 6, 2);
-		stage.act(delta);
-		world.step(1/60f, 6, 2);
+		stage.act(chooseDelta());
+		//world.step(1/60f, 6, 2);
 		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
 		gameUtilities.batch.setProjectionMatrix(gameUtilities.camera.combined);
@@ -235,5 +237,18 @@ public class Game {
 	public void dispose() {
 		HUD.dispose();
 		interfaceStage.dispose();
+	}
+	
+	public float chooseDelta() {
+		if (commands.size == 0) {
+			return 1/60f;
+		}
+		float delta = commands.get(0).getDelta();
+		for (BaseCommandInterface command : commands) {
+			if (command.getDelta() > delta ) {
+				delta = command.getDelta();
+			}
+		}
+		return delta;
 	}
 }

@@ -24,8 +24,11 @@ public class GroupSelectionCommand implements BaseCommandInterface{
 	
 	private int playerId;
 	
-	public GroupSelectionCommand(int id, Player player, float x1, float x2, float y1, float y2) {
+	private float delta;
+	
+	public GroupSelectionCommand(int id, float delta, Player player, float x1, float x2, float y1, float y2) {
 		this.id = id;
+		this.delta = delta;
 		this.player = player;
 		playerId = player.getId();
 		this.x1 = x1;
@@ -74,6 +77,11 @@ public class GroupSelectionCommand implements BaseCommandInterface{
 	@Override
 	public int getFrameId() {
 		return id;
+	}
+
+	@Override
+	public float getDelta() {
+		return delta;
 	}
 	
 }

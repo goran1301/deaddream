@@ -11,9 +11,11 @@ public class EmptyCommand implements BaseCommandInterface {
 	private transient Player player;
 	private int code = 3;
 	private int playerId;
+	private float delta;
 	
-	public EmptyCommand(int id, Player player) {
+	public EmptyCommand(int id, float delta, Player player) {
 		this.id = id;
+		this.delta = delta;
 		this.player = player;
 		playerId = player.getId();
 	}
@@ -42,6 +44,11 @@ public class EmptyCommand implements BaseCommandInterface {
 	
 	public int getPlayerId() {
 		return playerId;
+	}
+
+	@Override
+	public float getDelta() {
+		return delta;
 	}
 
 }

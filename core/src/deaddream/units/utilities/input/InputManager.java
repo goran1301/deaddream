@@ -24,6 +24,8 @@ public class InputManager implements CommanderInterface<Vector3>{
 	
 	private LocalPlayer player;
 	
+	private float delta;
+	
 	int frameId;
 	
 	
@@ -48,6 +50,10 @@ public class InputManager implements CommanderInterface<Vector3>{
 				selectField.drop();
 			}
 		}
+	}
+	
+	public void updateDelta(float delta) {
+		this.delta = delta;
 	}
 	
 	public void update(Vector3 position) {
@@ -92,6 +98,7 @@ public class InputManager implements CommanderInterface<Vector3>{
 		if (selectField.getIsReady() && !leftPressed) {
 			GroupSelectionCommand command = new GroupSelectionCommand(
 				frameId,
+				delta,
 				player,
 				selectField.getStartX(),
 				selectField.getEndX(),
@@ -104,12 +111,12 @@ public class InputManager implements CommanderInterface<Vector3>{
 		}
 		
 		if (rightPressed) {
-			MoveCommand command = new MoveCommand(frameId, player, cursorPosition);
+			MoveCommand command = new MoveCommand(frameId, delta, player, cursorPosition);
 			//System.out.println("Constructing a move for a frame " + command.getFrameId());
 			return command;
 		}
 		
-		BaseCommandInterface command = new EmptyCommand(frameId, player);
+		BaseCommandInterface command = new EmptyCommand(frameId, delta, player);
 		//System.out.println("Constructing an empty for a frame " + command.getFrameId());
 		return command;
 	}

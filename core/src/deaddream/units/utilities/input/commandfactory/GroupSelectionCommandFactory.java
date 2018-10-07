@@ -30,12 +30,13 @@ public class GroupSelectionCommandFactory  implements CommandFactoryInterface <G
 			}
 			
 			int id = parsedJson.getInt("id");
+			float delta = parsedJson.getFloat("delta");
 			float x1 = parsedJson.getFloat("x1");
 			float x2 = parsedJson.getFloat("x2");
 			float y1 = parsedJson.getFloat("y1");
 			float y2 = parsedJson.getFloat("y2");
 			
-			return new GroupSelectionCommand(id, player, x1, x2, y1, y2);
+			return new GroupSelectionCommand(id, delta, player, x1, x2, y1, y2);
 			
 		} catch (IllegalArgumentException e) {
 			return null;

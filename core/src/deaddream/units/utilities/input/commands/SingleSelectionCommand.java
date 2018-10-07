@@ -12,8 +12,11 @@ public class SingleSelectionCommand implements BaseCommandInterface {
 	
 	private int index;
 	
-	public SingleSelectionCommand(int id, Player player, int index) {
+	private float delta;
+	
+	public SingleSelectionCommand(int id, float delta, Player player, int index) {
 		this.id = id;
+		this.delta = delta;
 		this.player = player;
 		this.index = index;
 	}
@@ -43,6 +46,12 @@ public class SingleSelectionCommand implements BaseCommandInterface {
 	@Override
 	public int getFrameId() {
 		return id;
+	}
+
+
+	@Override
+	public float getDelta() {
+		return delta;
 	}
 
 }

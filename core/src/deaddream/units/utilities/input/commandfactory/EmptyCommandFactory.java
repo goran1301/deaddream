@@ -29,8 +29,9 @@ public class EmptyCommandFactory implements CommandFactoryInterface<EmptyCommand
 			}
 			
 			int id = parsedJson.getInt("id");
+			float delta = parsedJson.getFloat("delta");
 			
-			return new EmptyCommand(id, player);
+			return new EmptyCommand(id, delta, player);
 			
 		} catch (IllegalArgumentException e) {
 			return null;

@@ -14,9 +14,11 @@ public class MoveCommand implements BaseCommandInterface {
 	private transient Vector3 cursorPosition; 
 	private int code = 0;
 	private int playerId;
+	private float delta;
 	
-	public MoveCommand(int id, Player player, Vector3 cursorPosition) {
+	public MoveCommand(int id, float delta, Player player, Vector3 cursorPosition) {
 		this.id = id;
+		this.delta = delta;
 		this.player = player;
 		playerId = player.getId();
 		this.x = cursorPosition.x;
@@ -59,5 +61,10 @@ public class MoveCommand implements BaseCommandInterface {
 	@Override
 	public int getFrameId() {
 		return id;
+	}
+
+	@Override
+	public float getDelta() {
+		return delta;
 	}
 }

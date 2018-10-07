@@ -75,12 +75,12 @@ public class HostGameScreen implements Screen {
 		if (successCommandExchange) {
 			//System.out.println("HOST UPDATE GAME LOGIC");
 			game.update(delta);
-			//game.render(1/60f);
+			game.render(delta);
 			game.clearCommands();
 			currentLocalCommand = game.updateLocalPlyerInput();
 			successCommandExchange = false;
 		}
-		game.render(delta);
+		//game.render(1/60);
 		//System.out.println("currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
 		
 		try{

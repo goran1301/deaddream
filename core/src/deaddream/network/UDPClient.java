@@ -33,8 +33,8 @@ public class UDPClient {
 	public UDPClient() throws Exception {
 		commands = new Array<String>();
 		socket = new DatagramSocket();
-		adress = InetAddress.getByName("the-twilightfox.ddns.net");
-		//adress = InetAddress.getLocalHost();
+		//adress = InetAddress.getByName("the-twilightfox.ddns.net");
+		adress = InetAddress.getLocalHost();
 		port = 9999;
 		reader = new JsonReader();
 		localCommandsHistory = new Array<BaseCommandInterface>();
