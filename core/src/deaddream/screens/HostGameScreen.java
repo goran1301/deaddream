@@ -61,6 +61,7 @@ public class HostGameScreen implements Screen {
 		}
 		try{
 			server = new UDPServer();
+			server.startReceive();
 			//server.receiveTestData(null);
 		} catch (Exception e) {
 			System.out.println("no server: " + e.getMessage());

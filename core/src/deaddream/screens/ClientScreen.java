@@ -63,6 +63,7 @@ public class ClientScreen implements Screen{
 		}
 		try {
 			client = new UDPClient();
+			client.startReceive();
 			//client.makeTestDataTransfer(null);
 		} catch(Exception e) {
 			System.out.println("no client init");
@@ -98,7 +99,7 @@ public class ClientScreen implements Screen{
 				}
 				
 			} catch (Exception e) {
-				System.out.println("no client transfer " + e.getMessage());
+				 e.printStackTrace();
 			}
 		}
 		

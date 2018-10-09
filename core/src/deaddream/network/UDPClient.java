@@ -22,9 +22,11 @@ public class UDPClient {
 	InetAddress adress;
 	int port;
 	private Array<String> commands;
+	private Array<DatagramPacket> receiveBuffer;
 	private JsonReader reader;	
 	Array<BaseCommandInterface> localCommandsHistory;
 	private int remoteFrameId;
+	Thread udpThread;
 	
 	/**
 	 * Construcor
@@ -33,6 +35,7 @@ public class UDPClient {
 	public UDPClient() throws Exception {
 		commands = new Array<String>();
 		socket = new DatagramSocket();
+		receiveBuffer = new Array<DatagramPacket>();
 		//adress = InetAddress.getByName("the-twilightfox.ddns.net");
 		adress = InetAddress.getLocalHost();
 		port = 9999;
@@ -40,6 +43,15 @@ public class UDPClient {
 		localCommandsHistory = new Array<BaseCommandInterface>();
 		remoteFrameId = -1;
 	}
+	
+	public void startReceive() {
+		UDPReceiver udpReceiver = new UDPReceiver(socket, receiveBuffer);
+		udpThread = new Thread(udpReceiver);
+		udpThread.setName("receiver");
+		udpThread.setDaemon(true);
+		udpThread.start();
+	}
+	
 	
 	/**
 	 * Test dataTransfer
@@ -49,27 +61,34 @@ public class UDPClient {
 		addHistoryCommand(command);
 		String commandString = getResponceCommand().toJson();
 		commands.clear();
-		//System.out.println("client send 222222");
+		
 		byte[] formatedData = commandString.getBytes();
 		System.out.println(String.valueOf(formatedData.length));
 		DatagramPacket packet = new DatagramPacket(formatedData, formatedData.length, adress, port);
+		
+		//udpThread.wait();
 		socket.send(packet);
-		
-		byte[] receivedData = new byte[1024];
-		DatagramPacket receivedPacket = new DatagramPacket(receivedData, receivedData.length);
-		socket.setSoTimeout(300);
-		
-		socket.receive(receivedPacket);
-		
-		String jsonCommand = new String(receivedPacket.getData());
-		jsonCommand = jsonCommand.trim();
-		System.out.println("Client received a command " + jsonCommand);
-		updateRemoteFrameId(jsonCommand);
-		
-		if (remoteFrameId == command.getFrameId()) {
-			commands.add(jsonCommand);
+		packetProcessing(command.getFrameId());
+		synchronized (receiveBuffer) {
+			receiveBuffer.clear();					
 		}
+		//udpThread.notify();
+		
+		
 		return commands;
+	}
+	
+	private void packetProcessing(float needleFrameID) {
+		for (DatagramPacket packet : receiveBuffer) {
+			String jsonCommand = new String(packet.getData());
+			jsonCommand = jsonCommand.trim();
+			System.out.println("Client received a command " + jsonCommand);
+			updateRemoteFrameId(jsonCommand);
+			
+			if (remoteFrameId == needleFrameID) {
+				commands.add(jsonCommand);
+			}
+		}
 	}
 	
     private void addHistoryCommand(BaseCommandInterface command) {
@@ -97,7 +116,6 @@ public class UDPClient {
 		JsonValue parsedJson = reader.parse(input);
 		try {
 			remoteFrameId = parsedJson.getInt("id");
-			//System.out.println("Client got a command for the " + String.valueOf(remoteFrameId));
 			
 		} catch (IllegalArgumentException e) {
 			return;

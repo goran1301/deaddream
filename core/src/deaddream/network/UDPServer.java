@@ -25,6 +25,8 @@ public class UDPServer {
 	private JsonReader reader;	
 	Array<BaseCommandInterface> localCommandsHistory;
 	private int remoteFrameId;
+	private Array<DatagramPacket> receiveBuffer;
+	Thread udpThread;
 	
 	public UDPServer() throws Exception {
 		commands = new Array<String>();
@@ -32,6 +34,15 @@ public class UDPServer {
 		socket = new DatagramSocket(port);		
 		reader = new JsonReader();
 		localCommandsHistory = new Array<BaseCommandInterface>();
+		receiveBuffer = new Array<DatagramPacket>();
+	}
+	
+	public void startReceive() {
+		UDPReceiver udpReceiver = new UDPReceiver(socket, receiveBuffer);
+		udpThread = new Thread(udpReceiver);
+		udpThread.setName("receiver");
+		udpThread.setDaemon(true);
+		udpThread.start();
 	}
 	
 	/**
@@ -41,34 +52,33 @@ public class UDPServer {
 	public Array<String> receiveTestData(BaseCommandInterface command) throws Exception {
 		addHistoryCommand(command);
 		commands.clear();
-		byte[] requestDataBuffer = new byte[1024];
-		DatagramPacket requestPacket = new DatagramPacket(requestDataBuffer, requestDataBuffer.length);
-		socket.setSoTimeout(300);
-		socket.receive(requestPacket);
-		System.out.println("HOST received");
 		
-		//String gottenData = new String(requestPacket.getData(), 0, requestPacket.getLength());
-		String gottenData = new String(requestPacket.getData());
-		if (gottenData != null) {
-			String jsonCommand = gottenData.trim();
-			
-			System.out.println("Host got a command: " + jsonCommand);
-			
-			
-			updateRemoteFrameId(jsonCommand);
-			
-			if (remoteFrameId == command.getFrameId()) {
-				commands.add(jsonCommand);
+		for (DatagramPacket packet : receiveBuffer) {
+			String gottenData = new String(packet.getData());
+			if (gottenData != null) {
+				String jsonCommand = gottenData.trim();
+				
+				System.out.println("Host got a command: " + jsonCommand);
+				
+				
+				updateRemoteFrameId(jsonCommand);
+				
+				if (remoteFrameId == command.getFrameId()) {
+					commands.add(jsonCommand);
+				}
+				//data processing
+				String commandText = getResponceCommand().toJson();
+				byte[] responseData = commandText.getBytes();
+				DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length, packet.getAddress(), packet.getPort());
+				socket.send(responsePacket);
+				synchronized (receiveBuffer) {
+					receiveBuffer.clear();					
+				}
+				System.out.println("RECEIVE BUFFER SIZE: " + String.valueOf(receiveBuffer.size));
 			}
-			//data processing
-			
 		}
 		
-		String commandText = getResponceCommand().toJson();
-		byte[] responseData = commandText.getBytes();
-		DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length, requestPacket.getAddress(), requestPacket.getPort());
-		socket.send(responsePacket);
-		
+		//String gottenData = new String(requestPacket.getData(), 0, requestPacket.getLength());
 		return commands;
 	}
 	
