@@ -9,7 +9,7 @@ import deaddream.units.utilities.input.commandfactory.GroupSelectionCommandFacto
 import deaddream.units.utilities.input.commandfactory.MoveCommandFactory;
 import deaddream.units.utilities.input.commands.BaseCommandInterface;
 
-public class OnlineInputManager implements CommanderInterface<String> {
+public class OnlineInputManager implements CommanderInterface<byte[]> {
 	
 	private Array<CommandFactoryInterface<?>> factories;
 	
@@ -23,10 +23,10 @@ public class OnlineInputManager implements CommanderInterface<String> {
 	}
 
 	@Override
-	public void update(String inputData) {
+	public void update(byte[] inputData) {
 		command = null;
 		for (CommandFactoryInterface<?> factory : factories) {
-			command = factory.constructFromJSON(inputData);
+			command = factory.constructFromBytes(inputData);
 			if (command != null) {
 				break;
 			}

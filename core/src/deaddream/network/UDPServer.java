@@ -3,10 +3,9 @@ package deaddream.network;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 
 import deaddream.units.utilities.input.commands.BaseCommandInterface;
 
@@ -21,18 +20,16 @@ public class UDPServer {
 	DatagramSocket socket;
 	InetAddress adress;
 	int port;
-	private Array<String> commands;
-	private JsonReader reader;	
+	private Array<byte[]> commands;
 	Array<BaseCommandInterface> localCommandsHistory;
 	private int remoteFrameId;
 	private Array<DatagramPacket> receiveBuffer;
 	Thread udpThread;
 	
 	public UDPServer() throws Exception {
-		commands = new Array<String>();
+		commands = new Array<byte[]>();
 		port = 9999;
 		socket = new DatagramSocket(port);		
-		reader = new JsonReader();
 		localCommandsHistory = new Array<BaseCommandInterface>();
 		receiveBuffer = new Array<DatagramPacket>();
 	}
@@ -49,26 +46,22 @@ public class UDPServer {
 	 * 
 	 * @throws Exception
 	 */
-	public Array<String> receiveTestData(BaseCommandInterface command) throws Exception {
+	public Array<byte[]> receiveTestData(BaseCommandInterface command) throws Exception {
 		addHistoryCommand(command);
 		commands.clear();
 		
 		for (DatagramPacket packet : receiveBuffer) {
-			String gottenData = new String(packet.getData());
+			byte[] gottenData = packet.getData();
 			if (gottenData != null) {
-				String jsonCommand = gottenData.trim();
-				
-				System.out.println("Host got a command: " + jsonCommand);
-				
-				
-				updateRemoteFrameId(jsonCommand);
+				byte[] frameIdData = {gottenData[0], gottenData[1], gottenData[2], gottenData[3]};
+				updateRemoteFrameId(frameIdData);
 				
 				if (remoteFrameId == command.getFrameId()) {
-					commands.add(jsonCommand);
+					commands.add(gottenData);
 				}
 				//data processing
-				String commandText = getResponceCommand().toJson();
-				byte[] responseData = commandText.getBytes();
+				
+				byte[] responseData = getResponceCommand().getBytes();
 				DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length, packet.getAddress(), packet.getPort());
 				socket.send(responsePacket);
 				synchronized (receiveBuffer) {
@@ -103,15 +96,8 @@ public class UDPServer {
 		return localCommandsHistory.get(localCommandsHistory.size - 1);
 	}
 	
-	private void updateRemoteFrameId(String input){
-		JsonValue parsedJson = reader.parse(input);
-		try {
-			remoteFrameId = parsedJson.getInt("id");
-			//System.out.println("HOST got a command for the " + String.valueOf(remoteFrameId));
-			
-		} catch (IllegalArgumentException e) {
-			return;
-		}
+	private void updateRemoteFrameId(byte[] input){
+		remoteFrameId = ByteBuffer.wrap(input).getInt();
 	}
 	
 }

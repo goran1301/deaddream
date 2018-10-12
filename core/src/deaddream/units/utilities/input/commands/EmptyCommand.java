@@ -1,7 +1,6 @@
 package deaddream.units.utilities.input.commands;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import java.nio.ByteBuffer;
 
 import deaddream.players.Player;
 
@@ -20,6 +19,17 @@ public class EmptyCommand implements BaseCommandInterface {
 		playerId = player.getId();
 	}
 	
+	public EmptyCommand(byte[] bytes, Player player) {
+		byte[] idBytes = {bytes[0], bytes[1], bytes[2], bytes[3]};
+		//byte[] playerIdBytes = {bytes[8], bytes[9], bytes[10], bytes[11]};
+		byte[] deltaBytes = {bytes[12], bytes[13], bytes[14], bytes[15]};
+		id = ByteBuffer.wrap(idBytes).getInt();
+		playerId = player.getId();
+		this.player = player;
+		//playerId = ByteBuffer.wrap(playerIdBytes).getInt();
+		delta = ByteBuffer.wrap(deltaBytes).getFloat();
+	}
+	
 	@Override
 	public Player getPlayer() {
 		return player;
@@ -28,13 +38,6 @@ public class EmptyCommand implements BaseCommandInterface {
 	@Override
 	public int getCode() {
 		return code;
-	}
-
-	@Override
-	public String toJson() {
-		Json json = new Json();
-		json.setOutputType(OutputType.json);
-		return json.toJson(this);
 	}
 
 	@Override
@@ -49,6 +52,33 @@ public class EmptyCommand implements BaseCommandInterface {
 	@Override
 	public float getDelta() {
 		return delta;
+	}
+
+	@Override
+	public byte[] getBytes() {
+		byte[] idBytes = ByteBuffer.allocate(4).putInt(id).array();
+		byte[] codeBytes = ByteBuffer.allocate(4).putInt(code).array();
+		byte[] playerIdByte = ByteBuffer.allocate(4).putInt(playerId).array();
+		byte[] deltaBytes = ByteBuffer.allocate(4).putFloat(delta).array();
+		byte[] bytes = {
+				idBytes[0], 
+				idBytes[1], 
+				idBytes[2],
+				idBytes[3],
+				codeBytes[0],
+				codeBytes[1],
+				codeBytes[2],
+				codeBytes[3],
+				playerIdByte[0],
+				playerIdByte[1],
+				playerIdByte[2],
+				playerIdByte[3],
+				deltaBytes[0],
+				deltaBytes[1],
+				deltaBytes[2],
+				deltaBytes[3]
+		};
+		return bytes;
 	}
 
 }

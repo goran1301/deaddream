@@ -1,7 +1,5 @@
 package deaddream.units.utilities.input.commands;
 
-import com.badlogic.gdx.utils.Json;
-
 import deaddream.players.Player;
 
 public class SingleSelectionCommand implements BaseCommandInterface {
@@ -36,12 +34,6 @@ public class SingleSelectionCommand implements BaseCommandInterface {
 		return index;
 	}
 	
-	@Override
-	public String toJson() {
-		Json json = new Json();
-		return json.toJson(this);
-	}
-
 
 	@Override
 	public int getFrameId() {
@@ -52,6 +44,13 @@ public class SingleSelectionCommand implements BaseCommandInterface {
 	@Override
 	public float getDelta() {
 		return delta;
+	}
+
+
+	@Override
+	public byte[] getBytes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

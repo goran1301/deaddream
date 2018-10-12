@@ -74,18 +74,19 @@ public class HostGameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		if (successCommandExchange) {
-			//System.out.println("HOST UPDATE GAME LOGIC");
-			game.update(delta);
-			game.render(delta);
+			System.out.println("HOST UPDATE GAME LOGIC");
+			
 			game.clearCommands();
 			currentLocalCommand = game.updateLocalPlyerInput();
-			successCommandExchange = false;
+			//successCommandExchange = false;
 		}
+		game.update(delta, successCommandExchange);
+		game.render(delta);
 		//game.render(1/60);
-		//System.out.println("currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
+		System.out.println("currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
 		
 		try{
-			Array<String> jsonCommands = server.receiveTestData(currentLocalCommand);
+			Array<byte[]> jsonCommands = server.receiveTestData(currentLocalCommand);
 			if (jsonCommands.size > 0) {
 				game.updateInput(jsonCommands, currentLocalCommand);
 				successCommandExchange = true;

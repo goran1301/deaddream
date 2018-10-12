@@ -136,17 +136,21 @@ public class Game {
 		this.bg = bg;
 	}
 	
-	public void update(float delta) {
-		//System.out.println("DELTA IS " + String.valueOf(delta));
-		InputManager inputManager = (InputManager)currentPlayer.getController();
-		inputManager.updateDelta(delta);
-		//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
-		GdxAI.getTimepiece().update(chooseDelta());
-		//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
-		groupMoveController.update();
+	public void update(float delta, boolean updateLogic) {
+		
 
-		world.step(1/60f, 6, 2);
-		stage.act(chooseDelta());
+		if (updateLogic){
+			//System.out.println("DELTA IS " + String.valueOf(delta));
+			InputManager inputManager = (InputManager)currentPlayer.getController();
+			inputManager.updateDelta(delta);
+			//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
+			GdxAI.getTimepiece().update(chooseDelta());
+			//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
+			groupMoveController.update();
+			
+			world.step(1/60f, 6, 2);
+			stage.act(chooseDelta());
+		}
 		//world.step(1/60f, 6, 2);
 		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
 		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
@@ -167,9 +171,9 @@ public class Game {
 		commands.clear();
 	}
 	
-	public void updateInput(Array<String> remoteCommands, BaseCommandInterface localCommand) {
-		for (String json : remoteCommands) {
-			onlineInputManager.update(json);
+	public void updateInput(Array<byte[]> remoteCommands, BaseCommandInterface localCommand) {
+		for (byte[] bytes : remoteCommands) {
+			onlineInputManager.update(bytes);
 			BaseCommandInterface command = onlineInputManager.getCommand();
 			if (command != null) {
 				commands.add(command);

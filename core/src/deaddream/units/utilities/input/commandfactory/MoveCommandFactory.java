@@ -1,51 +1,19 @@
 package deaddream.units.utilities.input.commandfactory;
 
-import com.badlogic.gdx.math.Vector3;
+import java.nio.ByteBuffer;
+
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 
 import deaddream.players.Player;
-import deaddream.units.utilities.input.commands.BaseCommandInterface;
 import deaddream.units.utilities.input.commands.MoveCommand;
 
 public class MoveCommandFactory implements CommandFactoryInterface<MoveCommand>{
 
 private Array<Player> players;
 	
-	private JsonReader reader;
 	
 	public MoveCommandFactory(Array<Player> players) {
 		this.players = players;
-		reader = new JsonReader();
-	}
-	
-	@Override
-	public MoveCommand constructFromJSON(String json) {
-		JsonValue parsedJson = reader.parse(json);
-		try {
-			int code = parsedJson.getInt("code");
-			Player player = getPlayerById(parsedJson.getInt("playerId"));
-			if (player == null || code != 0) {
-				return null;
-			}
-			
-			int id = parsedJson.getInt("id");
-			float delta = parsedJson.getFloat("delta");
-			float x = parsedJson.getFloat("x");
-			float y = parsedJson.getFloat("y");
-			
-			return new MoveCommand(id, delta, player, new Vector3(x, y, 0f));
-			
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
-	}
-
-	@Override
-	public String converToJson(BaseCommandInterface command) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	private Player getPlayerById(int id) {
@@ -55,6 +23,19 @@ private Array<Player> players;
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public MoveCommand constructFromBytes(byte[] bytes) {
+		byte[] codeBytes = {bytes[4], bytes[5], bytes[6], bytes[7]};
+		byte[] playerIdBytes = {bytes[12], bytes[13], bytes[14], bytes[15]};
+		int playerId = ByteBuffer.wrap(playerIdBytes).getInt();
+		int code = ByteBuffer.wrap(codeBytes).getInt();
+		Player player = getPlayerById(playerId);
+		if (code != 0 || player == null) {
+			return null;
+		}
+		return new MoveCommand(bytes, player);
 	}
 
 }

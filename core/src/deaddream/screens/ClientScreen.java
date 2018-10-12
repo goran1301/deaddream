@@ -76,19 +76,21 @@ public class ClientScreen implements Screen{
 	@Override
 	public void render(float delta) {
 		if (successCommandExchange) {
-			//System.out.println("CLIENT UPDATE GAME LOGIC");
-			game.update(delta);
-			game.render(delta);
+			System.out.println("CLIENT UPDATE GAME LOGIC");
+			
+			
 			game.clearCommands();
 			currentLocalCommand = game.updateLocalPlyerInput();
-			successCommandExchange = false;
+			//successCommandExchange = false;
 		}
-		
+		game.update(delta, successCommandExchange);
+		game.render(delta);
+		System.out.println("CLIENT currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
 		//game.render(delta);
 		if (client != null) {
 			try{
 				//System.out.println("Client update");
-				Array<String> jsonCommands = client.makeTestDataTransfer(currentLocalCommand);
+				Array<byte[]> jsonCommands = client.makeTestDataTransfer(currentLocalCommand);
 				if (jsonCommands.size > 0){
 					
 					game.updateInput(jsonCommands, currentLocalCommand);
