@@ -9,11 +9,12 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.dd.DeadDream;
 
 import deaddream.backgrounds.WorldBackground;
-import deaddream.network.UDPClient;
+import deaddream.network.UDPClientTransmission;
 import deaddream.players.LocalPlayer;
 import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
 import deaddream.units.utilities.input.commands.BaseCommandInterface;
+import deaddream.units.utilities.input.commands.EmptyCommand;
 import deaddream.worlds.NetworkGame;
 
 public class ClientScreen implements Screen{
@@ -22,16 +23,10 @@ public class ClientScreen implements Screen{
 	
 	private DeadDream gameUtilities;
 	
-	private UDPClient client;
-
-	private boolean successCommandExchange;
-	
-	private BaseCommandInterface currentLocalCommand;
-	
+	private UDPClientTransmission client;
 	
 	public ClientScreen(DeadDream utils) {
 		this.gameUtilities = utils;
-		
 	}
 	
 	public void setGame(NetworkGame game) {
@@ -62,43 +57,57 @@ public class ClientScreen implements Screen{
 			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, onlinePLayer);
 		}
 		try {
-			client = new UDPClient();
+			client = new UDPClientTransmission();
 			client.startReceive();
 			//client.makeTestDataTransfer(null);
 		} catch(Exception e) {
 			System.out.println("no client init");
+			e.printStackTrace();
+			
 		}
-		successCommandExchange = true;
+		//successCommandExchange = true;
 		
 				//game.getUnitFactory().createUCMothership(game.world, 40f, 40f, game.unitGroup, currentPlayer);
 	}
 
 	@Override
 	public void render(float delta) {
-		if (successCommandExchange) {
-			System.out.println("CLIENT UPDATE GAME LOGIC");
+		
+			//System.out.println("CLIENT UPDATE GAME LOGIC");
+		
 			
-			
-			game.clearCommands();
-			currentLocalCommand = game.updateLocalPlyerInput();
+			//game.clearCommands();
+		
 			//successCommandExchange = false;
-		}
-		game.update(delta, successCommandExchange);
-		game.render(delta);
-		System.out.println("CLIENT currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
+		
+		
+		//System.out.println("CLIENT currentLocalCommand frame " + String.valueOf(currentLocalCommand.getFrameId()));
 		//game.render(delta);
 		if (client != null) {
-			try{
-				//System.out.println("Client update");
-				Array<byte[]> jsonCommands = client.makeTestDataTransfer(currentLocalCommand);
-				if (jsonCommands.size > 0){
-					
-					game.updateInput(jsonCommands, currentLocalCommand);
-					successCommandExchange = true;
-					//System.out.println("CLIENT SUCCESS INPUT UPDATE");
-				} else {
-					successCommandExchange = false;
+			/*if (!client.isTransferDone()) {
+				byte[] bytes = new byte[2];
+				try {
+					client.exchange(bytes);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+			}*/
+			try{
+				game.update(delta);
+				game.render(delta);
+				//System.out.println("Client update");
+				game.updateLocalInput(game.updateLocalPlyerInput());
+				
+				Array<byte[]> remoteCommands = client.exchange(game.getCommandsForPlayer(0));
+				
+				
+				
+				//System.out.println(currentLocalCommand.getCode());
+				game.updateRemoteInput(remoteCommands);
+					
+					//System.out.println("CLIENT SUCCESS INPUT UPDATE");
+				
 				
 			} catch (Exception e) {
 				 e.printStackTrace();

@@ -56,10 +56,11 @@ public class GameplayScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		game.update(delta, true);
+		game.update(delta);
 		game.render(delta);
-		game.updateInput(remoteCommands, game.updateLocalPlyerInput());
-		game.clearCommands();	
+		game.updateLocalInput(game.updateLocalPlyerInput());
+		game.updateRemoteInput(remoteCommands);
+		//game.clearCommands();	
 	}
 
 	@Override

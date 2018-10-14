@@ -119,5 +119,11 @@ public class GroupSelectionCommand implements BaseCommandInterface{
 		};
 		return bytes;
 	}
+
+	@Override
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return 32;
+	}
 	
 }

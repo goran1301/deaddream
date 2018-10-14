@@ -81,4 +81,9 @@ public class EmptyCommand implements BaseCommandInterface {
 		return bytes;
 	}
 
+	@Override
+	public int getSize() {
+		return 16;
+	}
+
 }

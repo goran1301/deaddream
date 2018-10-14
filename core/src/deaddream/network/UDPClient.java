@@ -68,8 +68,6 @@ public class UDPClient {
 		synchronized (receiveBuffer) {
 			receiveBuffer.clear();					
 		}
-		//udpThread.notify();
-		
 		
 		return commands;
 	}

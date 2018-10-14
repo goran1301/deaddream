@@ -22,6 +22,7 @@ import deaddream.backgrounds.BackgroundInterface;
 import deaddream.camera.CameraManager;
 import deaddream.groupmove.GroupMoveController;
 import deaddream.maps.MapManager;
+import deaddream.network.LockstepPrecessor;
 import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
 import deaddream.rendering.HUDRenderer;
@@ -56,13 +57,16 @@ public class Game {
 	protected HUDRenderer HUD;
 	protected Matrix4 screenMatrix;
 	protected Array<CommandHandler<?>> commandHandlers;
-	protected Array<BaseCommandInterface> commands;
 	protected OnlineInputManager onlineInputManager;
 	protected OrthographicCamera HUDCamera;
 	protected StretchViewport HUDViewport;
 	protected InputMultiplexer multiplexer;
 	protected BaseCommandInterface currentCommand;
 	
+	protected LockstepPrecessor lockstepPrecessor;
+	
+	protected float choosedDelta;
+	protected boolean updateLogic = true;
 	
 	public Game(
 			DeadDream utilities, 
@@ -126,30 +130,31 @@ public class Game {
 		groupMoveController = new GroupMoveController(players);
 		unitFactory = new UnitFactory(gameUtilities, groupMoveController);
 		
-		commands = new Array<BaseCommandInterface>();
+
 		initCommandHandlers();
 		inputManager = (InputManager)currentPlayer.getController();
 		onlineInputManager = new OnlineInputManager(players);
+		lockstepPrecessor = new LockstepPrecessor(onlineInputManager);
 	}
 	
 	public void setBg(BackgroundInterface bg) {
 		this.bg = bg;
 	}
 	
-	public void update(float delta, boolean updateLogic) {
-		
+	public void update(float delta) {
 
+		System.out.println("CURRENT STEP " + lockstepPrecessor.getFrameId());
 		if (updateLogic){
 			//System.out.println("DELTA IS " + String.valueOf(delta));
 			InputManager inputManager = (InputManager)currentPlayer.getController();
 			inputManager.updateDelta(delta);
 			//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
-			GdxAI.getTimepiece().update(chooseDelta());
+			GdxAI.getTimepiece().update(choosedDelta);
 			//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
 			groupMoveController.update();
 			
 			world.step(1/60f, 6, 2);
-			stage.act(chooseDelta());
+			stage.act(choosedDelta);
 		}
 		//world.step(1/60f, 6, 2);
 		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
@@ -167,24 +172,28 @@ public class Game {
 		commandHandlers.add(new GroupSelectionCommandHandler());
 	}
 	
-	public void clearCommands() {
-		commands.clear();
-	}
-	
-	public void updateInput(Array<byte[]> remoteCommands, BaseCommandInterface localCommand) {
-		for (byte[] bytes : remoteCommands) {
-			onlineInputManager.update(bytes);
-			BaseCommandInterface command = onlineInputManager.getCommand();
-			if (command != null) {
-				commands.add(command);
-			}
+	public void updateRemoteInput(Array<byte[]> remoteCommands) {
+		lockstepPrecessor.updateRemote(remoteCommands);
+		BaseCommandInterface[] stepCommands = lockstepPrecessor.getStepCommands();
+		if (stepCommands == null) {
+			updateLogic = false;
+			return;
 		}
-		commands.add(localCommand);
-		for (BaseCommandInterface command : commands){
+		updateLogic = true;
+		chooseDelta(stepCommands);
+		for (BaseCommandInterface command : stepCommands){
 			for (CommandHandler<?> commandHandler : commandHandlers) {
 				commandHandler.handle(command);
 			}
 		}
+	}
+	
+	public void updateLocalInput(BaseCommandInterface localCommand) {
+		lockstepPrecessor.updateLocal(localCommand);
+	}
+	
+	public byte[] getCommandsForPlayer(int playerId) {
+		return lockstepPrecessor.getCommandsForPlayer(playerId);
 	}
 	
 	public BaseCommandInterface updateLocalPlyerInput() {
@@ -243,16 +252,13 @@ public class Game {
 		interfaceStage.dispose();
 	}
 	
-	public float chooseDelta() {
-		if (commands.size == 0) {
-			return 1/60f;
-		}
-		float delta = commands.get(0).getDelta();
+	public void chooseDelta(BaseCommandInterface[] commands) {
+		float delta = commands[0].getDelta();
 		for (BaseCommandInterface command : commands) {
 			if (command.getDelta() > delta ) {
 				delta = command.getDelta();
 			}
 		}
-		return delta;
+		choosedDelta = delta;
 	}
 }

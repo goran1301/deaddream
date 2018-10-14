@@ -12,6 +12,8 @@ public class SingleSelectionCommand implements BaseCommandInterface {
 	
 	private float delta;
 	
+	private int code;
+	
 	public SingleSelectionCommand(int id, float delta, Player player, int index) {
 		this.id = id;
 		this.delta = delta;
@@ -51,6 +53,13 @@ public class SingleSelectionCommand implements BaseCommandInterface {
 	public byte[] getBytes() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
