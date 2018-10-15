@@ -22,11 +22,8 @@ public class OnlineInputManager {
 	
 	private ArrayMap<Integer, Integer> receivedFrames;
 	
-	private boolean isServer;
 	
-	
-	public OnlineInputManager(Array<Player> players, boolean isServer) {
-		this.isServer = isServer;
+	public OnlineInputManager(Array<Player> players, boolean sgf) {
 		remoteCommands = new ArrayMap<Integer, Array<BaseCommandInterface>>();
 		for (Player player : players) {
 			if (player instanceof LocalPlayer) {
@@ -51,22 +48,13 @@ public class OnlineInputManager {
 
 	
 	public void update(byte[] inputData) {
-		//byte[] clone = inputData.clone();
 		byte[] receivedFrameNumberBytes = {inputData[0], inputData[1], inputData[2], inputData[3]};
 		int lastreceivedFrameNumber = ByteBuffer.wrap(receivedFrameNumberBytes).getInt();
 		inputData = Arrays.copyOfRange(inputData, 4, inputData.length);
 		while (inputData.length != 0) {
 		    BaseCommandInterface command = null;
 		    for (CommandFactoryInterface<?> factory : factories) {
-			    try {
-			    	command = factory.constructFromBytes(inputData);
-			    	
-			    } catch(ArrayIndexOutOfBoundsException e) {
-			    	
-			    	//debug("start bytes length " + clone.length );
-			    	
-			    }
-		    	
+			    command = factory.constructFromBytes(inputData);
 			    
 			    /*byte[] number0 = {inputData[0], inputData[1], inputData[2], inputData[3]};
 			    byte[] number1 = {inputData[4], inputData[5], inputData[6], inputData[7]};
@@ -81,22 +69,20 @@ public class OnlineInputManager {
 			    
 			    if (command != null) {
 			    	
-			    	
-			    	
 			    	receivedFrames.put(command.getPlayer().getId(), lastreceivedFrameNumber);
-			    	//debug("LAST RECEIVED FRAME " + receivedFrames.get(command.getPlayer().getId()));
 			    	
 			    	inputData = Arrays.copyOfRange(inputData, command.getSize(), inputData.length);
 			    	BaseCommandInterface duplicate = getUserCommandForFrame(command.getPlayer().getId(), command.getFrameId());
-			    	//debug("COMMAND DONE!  " + command.getCode() + " " + command.getFrameId());
+			    	System.out.println("COMMAND DONE!  " + command.getCode() + " " + command.getFrameId());
 			    	if (duplicate == null) {
 			    		remoteCommands.get(command.getPlayer().getId()).add(command);
-			    		//debug("SUCCESS ADD COMMAND" + command.getCode() + " " + command.getFrameId());
+			    		System.out.println("SUCCESS ADD COMMAND" + command.getCode() + " " + command.getFrameId());
 			    	}else {
-			    		//debug("DUPLICATE FOR " + command.getCode() + " " + command.getFrameId());
+			    		System.out.println("DUPLICATE FOR " + command.getCode() + " " + command.getFrameId());
 			    	}
 				    break;
 			    }
+			    
 		    }
 		    
 		}
@@ -157,13 +143,5 @@ public class OnlineInputManager {
 			}
 		}
 		return frameId;
-	}
-	
-	public void debug(String message) {
-		if (isServer) {
-			System.out.println("SERVER: " + message);
-		} else {
-			System.out.println("CLIENT: " + message);
-		}
 	}
 }
