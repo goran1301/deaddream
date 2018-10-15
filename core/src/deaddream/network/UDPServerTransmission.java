@@ -3,6 +3,7 @@ package deaddream.network;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -12,6 +13,9 @@ public class UDPServerTransmission {
 	private Array<DatagramPacket> receiveBuffer;
 	Thread udpThread;
 	private boolean transferDone = false;
+	
+	private InetAddress clientAdress;
+	private int clientPort;
 	
 	public UDPServerTransmission() throws Exception {
 		port = 9999;
@@ -34,27 +38,36 @@ public class UDPServerTransmission {
 	 */
 	public Array<byte[]> exchange(byte[] command) throws Exception {
 		Array<byte[]> receivedBytesData = new Array<byte[]>();
-		System.out.println("SERVER RECEIVE BUFFER SIZE: " + String.valueOf(receiveBuffer.size));
-		if (receiveBuffer.size > 0) {
-			transferDone = true;
-		} 
-		for (DatagramPacket packet : receiveBuffer) {
-			byte[] gottenData = packet.getData();
-			transferDone = true;
-			receivedBytesData.add(gottenData);
-			//data processing
-		    
-			DatagramPacket commandPacket = new DatagramPacket(command, command.length, packet.getAddress(), packet.getPort());
-			socket.send(commandPacket);
-			
-			
-		}
+		//System.out.println("SERVER RECEIVE BUFFER SIZE: " + String.valueOf(receiveBuffer.size));
+		
 		synchronized (receiveBuffer) {
+			for (DatagramPacket packet : receiveBuffer) {
+				byte[] gottenData = packet.getData();
+				transferDone = true;
+				gottenData = Arrays.copyOfRange(gottenData, 0, packet.getLength());
+				receivedBytesData.add(gottenData);
+				//data processing
+			    if (clientAdress == null) {
+			    	clientAdress = packet.getAddress();
+			    	clientPort = packet.getPort();
+			    }
+			}
 			receiveBuffer.clear();					
+		}
+		
+		if (clientAdress != null) {
+			DatagramPacket commandPacket = new DatagramPacket(command, command.length, clientAdress, clientPort);
+			socket.send(commandPacket);
 		}
 		
 		//String gottenData = new String(requestPacket.getData(), 0, requestPacket.getLength());
 		return receivedBytesData;
+	}
+	
+	public void transferCheck() {
+		if (receiveBuffer.size > 0) {
+			transferDone = true;
+		} 
 	}
 	
 	public boolean isTransferDone() {

@@ -29,11 +29,13 @@ public class GroupSelectionCommandFactory  implements CommandFactoryInterface <G
 
 	@Override
 	public GroupSelectionCommand constructFromBytes(byte[] bytes) {
+		//System.out.println("TRY TO MAKE A GROUP SELECTION COMMAND");
 		byte[] codeBytes = {bytes[4], bytes[5], bytes[6], bytes[7]};
 		byte[] playerIdBytes = {bytes[12], bytes[13], bytes[14], bytes[15]};
 		int playerId = ByteBuffer.wrap(playerIdBytes).getInt();
 		int code = ByteBuffer.wrap(codeBytes).getInt();
 		Player player = getPlayerById(playerId);
+		//System.out.println("GROUP SELECTION COMMAND PARSING HAS DONE. PLAYERID " + playerId + " CODE " + code);
 		if (player == null || code != 1) {
 			return null;
 		}

@@ -42,7 +42,7 @@ public class HostGameScreen implements Screen {
 		players.add(onlinePlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");
 		OrthogonalTiledMapRenderer tmr = new OrthogonalTiledMapRenderer(map);
-		game = new NetworkGame(gameUtilities, players, currentPlayer, map, tmr);
+		game = new NetworkGame(gameUtilities, players, currentPlayer, map, tmr, true);
 		
 		WorldBackground bg = new WorldBackground(
 				gameUtilities.assets.get("backgrounds/world_background/stars.png", Texture.class),
@@ -70,7 +70,7 @@ public class HostGameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		//System.out.println("CLIENT UPDATE GAME LOGIC");
-		
+		server.transferCheck();
 		if (server.isTransferDone()){
 			 if (server != null) {
 				    try{

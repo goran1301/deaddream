@@ -37,7 +37,7 @@ public class GameplayScreen implements Screen {
 		players.add(currentPlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");
 		OrthogonalTiledMapRenderer tmr = new OrthogonalTiledMapRenderer(map);
-		game = new Game(gameUtilities, players, currentPlayer, map, tmr);
+		game = new Game(gameUtilities, players, currentPlayer, map, tmr, true);
 		
 		WorldBackground bg = new WorldBackground(
 				gameUtilities.assets.get("backgrounds/world_background/stars.png", Texture.class),

@@ -11,8 +11,8 @@ import deaddream.players.Player;
 public class NetworkGame extends Game {
 
 	public NetworkGame(DeadDream utilities, Array<Player> players, LocalPlayer currentPlayer, TiledMap map,
-			OrthogonalTiledMapRenderer tmr) {
-		super(utilities, players, currentPlayer, map, tmr);
+			OrthogonalTiledMapRenderer tmr, boolean isServer) {
+		super(utilities, players, currentPlayer, map, tmr, isServer);
 		// TODO Auto-generated constructor stub
 	}
 

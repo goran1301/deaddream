@@ -73,7 +73,8 @@ public class Game {
 			Array<Player> players, 
 			LocalPlayer currentPlayer,
 			TiledMap map,
-			OrthogonalTiledMapRenderer tmr
+			OrthogonalTiledMapRenderer tmr,
+			boolean isServer
 		) {
 		this.players = players;
 		this.currentPlayer = currentPlayer;
@@ -133,7 +134,7 @@ public class Game {
 
 		initCommandHandlers();
 		inputManager = (InputManager)currentPlayer.getController();
-		onlineInputManager = new OnlineInputManager(players);
+		onlineInputManager = new OnlineInputManager(players, isServer);
 		lockstepPrecessor = new LockstepPrecessor(onlineInputManager);
 	}
 	
@@ -143,7 +144,7 @@ public class Game {
 	
 	public void update(float delta) {
 
-		System.out.println("CURRENT STEP " + lockstepPrecessor.getFrameId());
+		//System.out.println("CURRENT STEP " + lockstepPrecessor.getFrameId());
 		if (updateLogic){
 			//System.out.println("DELTA IS " + String.valueOf(delta));
 			InputManager inputManager = (InputManager)currentPlayer.getController();

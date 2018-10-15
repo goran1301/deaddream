@@ -42,7 +42,7 @@ public class ClientScreen implements Screen{
 		players.add(currentPlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");
 		OrthogonalTiledMapRenderer tmr = new OrthogonalTiledMapRenderer(map);
-		game = new NetworkGame(gameUtilities, players, currentPlayer, map, tmr);
+		game = new NetworkGame(gameUtilities, players, currentPlayer, map, tmr, false);
 		
 		WorldBackground bg = new WorldBackground(
 				gameUtilities.assets.get("backgrounds/world_background/stars.png", Texture.class),
@@ -101,8 +101,10 @@ public class ClientScreen implements Screen{
 				
 				Array<byte[]> remoteCommands = client.exchange(game.getCommandsForPlayer(0));
 				
-				
-				
+				/*if (remoteCommands.size > 0)
+				if (remoteCommands.get(0).length < 1024)
+				System.out.println("CLIENT RECEIVE BUFFER SIZE: " + remoteCommands.get(0).length);
+				*/
 				//System.out.println(currentLocalCommand.getCode());
 				game.updateRemoteInput(remoteCommands);
 					

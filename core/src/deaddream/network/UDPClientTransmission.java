@@ -3,6 +3,7 @@ package deaddream.network;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -37,18 +38,23 @@ public class UDPClientTransmission {
 	 */
 	public Array<byte[]> exchange(byte[] command) throws Exception {
 		Array<byte[]> receivedBytesData = new Array<byte[]>();
-		System.out.println("CLIENT RECEIVE BUFFER SIZE: " + String.valueOf(receiveBuffer.size));
-		if (receiveBuffer.size > 0) {
-			transferDone = true;
-		} 
+		//System.out.println("CLIENT RECEIVE BUFFER SIZE: " + String.valueOf(receiveBuffer.size));
+		
 		DatagramPacket commandPacket = new DatagramPacket(command, command.length, adress, port);
 		socket.send(commandPacket);
-		for (DatagramPacket packet : receiveBuffer) {
-			byte[] gottenData = packet.getData();
-			transferDone = true;
-			receivedBytesData.add(gottenData);
-		}
+		
 		synchronized (receiveBuffer) {
+			if (receiveBuffer.size > 0) {
+				transferDone = true;
+			} 
+			for (DatagramPacket packet : receiveBuffer) {
+				//System.out.println("CLIENT RECEIVE BUFFER SIZE: " + packet.getLength() + " DATA SIZE " + packet.getData().length);
+				byte[] gottenData = packet.getData();
+				gottenData = Arrays.copyOfRange(gottenData, 0, packet.getLength());
+				//System.out.println("CLIENT RECEIVE BUFFER SIZE: " + gottenData.length);
+				transferDone = true;
+				receivedBytesData.add(gottenData);
+			}
 			receiveBuffer.clear();					
 		}
 		
