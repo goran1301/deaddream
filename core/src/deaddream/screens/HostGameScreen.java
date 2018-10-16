@@ -51,10 +51,10 @@ public class HostGameScreen implements Screen {
 			);
 		bg.setResolution(gameUtilities.camera.viewportWidth, gameUtilities.camera.viewportHeight);
 		game.setBg(bg);
-		for (int i = 0; i < 99; i++) {
+		for (int i = 0; i < 4; i++) {
 			game.getUnitFactory().createProtector(game.world, 23f, 40f, game.unitGroup, onlinePlayer);
 		}
-		for (int i = 0; i < 99; i++) {
+		for (int i = 0; i < 4; i++) {
 			game.getUnitFactory().createProtector(game.world, 23f, 23f, game.unitGroup, currentPlayer);
 		}
 		try{
