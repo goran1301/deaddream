@@ -158,12 +158,7 @@ public class Game {
 			stage.act(choosedDelta);
 		}
 		//world.step(1/60f, 6, 2);
-		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
-		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
-		gameUtilities.batch.setProjectionMatrix(gameUtilities.camera.combined);
-		mapManager.tmr.setView(gameUtilities.camera);
-		shaderProgrammer.update(players);
-		camera.update(gameUtilities.camera);
+		
 		
 	}
 	
@@ -173,12 +168,16 @@ public class Game {
 		commandHandlers.add(new GroupSelectionCommandHandler());
 	}
 	
-	public void updateRemoteInput(Array<byte[]> remoteCommands) {
+	public boolean updateRemoteInput(Array<byte[]> remoteCommands) {
 		lockstepPrecessor.updateRemote(remoteCommands);
+		return updateRemoteInput();
+	}
+	
+	public boolean updateRemoteInput() {
 		BaseCommandInterface[] stepCommands = lockstepPrecessor.getStepCommands();
 		if (stepCommands == null) {
 			updateLogic = false;
-			return;
+			return updateLogic;
 		}
 		updateLogic = true;
 		chooseDelta(stepCommands);
@@ -187,6 +186,7 @@ public class Game {
 				commandHandler.handle(command);
 			}
 		}
+		return updateLogic;
 	}
 	
 	public void updateLocalInput(BaseCommandInterface localCommand) {
@@ -207,6 +207,16 @@ public class Game {
 	
 	
 	public void render(float delta) {
+		
+		bg.updateCameraPosition(gameUtilities.camera.position.x, gameUtilities.camera.position.y);
+		gameUtilities.shapeRenderer.setProjectionMatrix(gameUtilities.camera.combined);
+		gameUtilities.batch.setProjectionMatrix(gameUtilities.camera.combined);
+		mapManager.tmr.setView(gameUtilities.camera);
+		shaderProgrammer.update(players);
+		camera.update(gameUtilities.camera);
+		
+		
+		
 		gameUtilities.batch.begin();
 		gameUtilities.batch.enableBlending();
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1f);

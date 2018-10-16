@@ -95,21 +95,38 @@ public class ClientScreen implements Screen{
 				}
 			}*/
 			try{
-				game.update(delta);
-				game.render(delta);
+				
 				//System.out.println("Client update");
 				if(!game.techPaused())
 				game.updateLocalInput(game.updateLocalPlyerInput());
 				
 				Array<byte[]> remoteCommands = client.exchange(game.getCommandsForPlayer(0));
 				
+				if (remoteCommands.size > 0) {
+					if (remoteCommands.get(0).length > 100 || game.techPaused() || game.getStepLatency() > 10)
+					System.out.println("CLIENT GOT PACKAGE LENGTH " + remoteCommands.get(0).length + " stepLatency " + game.getStepLatency() + " pause " + game.techPaused());
+				}
+				
+				
+				try{
+					boolean update = false;
+					while (game.updateRemoteInput(remoteCommands)){
+						update = true;
+						game.update(delta);
+					}
+					
+					if (!update) {
+						game.update(delta);
+					}
+				}catch(Exception e){
+					
+				}
 				
 				
 				
 				
-				game.updateRemoteInput(remoteCommands);
-				
-				System.out.println("CLIENT STEPS LATENCY: " + game.getStepLatency());	
+				game.render(delta);
+				//System.out.println("CLIENT STEPS LATENCY: " + game.getStepLatency());	
 					//System.out.println("CLIENT SUCCESS INPUT UPDATE");
 				
 				

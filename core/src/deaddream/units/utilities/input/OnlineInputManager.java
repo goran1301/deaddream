@@ -42,9 +42,11 @@ public class OnlineInputManager {
 			receivedFrames.put(player.getId(), -1);
 		}
 		factories = new Array<CommandFactoryInterface<?>>();
-		factories.add(new EmptyCommandFactory(players));
 		factories.add(new MoveCommandFactory(players));
 		factories.add(new GroupSelectionCommandFactory(players));
+		factories.add(new EmptyCommandFactory(players));
+		
+		
 	}
 	
 

@@ -13,6 +13,7 @@ public class LockstepPrecessor {
 	private LocalInputStorage localInputStorage;
 	private OnlineInputManager remoteInput;
 	private int frameId = 0;
+	private int commandLimit = 8;
 	//private boolean techPause = true;
 	
 	public LockstepPrecessor(OnlineInputManager remoteInput) {
@@ -88,7 +89,11 @@ public class LockstepPrecessor {
 		return localInputStorage.getLastLocalFrame() - remoteInput.getBiggestFrameId();
 	}
 	
+	public int getLatency() {
+		return localInputStorage.getLastLocalFrame() - frameId;
+	}
+	
 	public boolean isTechPaused() {
-		return getStepLatency() > 10;
+		return getStepLatency() > 10 || getLatency() > 10;
 	}
 }

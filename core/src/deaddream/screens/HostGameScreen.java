@@ -75,15 +75,36 @@ public class HostGameScreen implements Screen {
 		if (server.isTransferDone()){
 			 if (server != null) {
 				    try{
-				    	game.update(delta);
-					    game.render(delta);
-					    if(!game.techPaused())
+				    	if(!game.techPaused())
 					    game.updateLocalInput(game.updateLocalPlyerInput());
 					   
 					    Array<byte[]> remoteCommands = server.exchange(game.getCommandsForPlayer(1));
 					    
-					    game.updateRemoteInput(remoteCommands);
-					    System.out.println("HOST STEPS LATENCY: " + game.getStepLatency());
+					    
+					    if (remoteCommands.size > 0) {
+							if (remoteCommands.get(0).length > 100 || game.techPaused() || game.getStepLatency() > 10)
+							System.out.println("HOST GOT PACKAGE LENGTH " + remoteCommands.get(0).length + " stepLatency " + game.getStepLatency() + " pause " + game.techPaused());
+						}
+					    
+					    
+					   try {
+						   boolean updated = false;
+						    while (game.updateRemoteInput(remoteCommands)) {
+						    	updated = true;
+						    	game.update(delta);
+		     			    }
+						    
+						    if (!updated) {
+						    	game.update(delta);
+						    }
+					   }catch(Exception e) {
+						   
+					   }
+					    
+					    
+					    game.render(delta);
+					    
+					    //System.out.println("HOST STEPS LATENCY: " + game.getStepLatency());
 					
 				    } catch (Exception e) {
 				    	 e.printStackTrace();
