@@ -10,6 +10,7 @@ import com.mygdx.dd.DeadDream;
 
 import deaddream.backgrounds.WorldBackground;
 import deaddream.network.UDPClientTransmission;
+import deaddream.players.Colors;
 import deaddream.players.LocalPlayer;
 import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
@@ -35,8 +36,8 @@ public class ClientScreen implements Screen{
 	
 	@Override
 	public void show() {
-		LocalPlayer currentPlayer = new LocalPlayer(1, Player.inGameStatus); 
-		OnlinePlayer onlinePLayer = new OnlinePlayer(0, Player.inGameStatus);
+		LocalPlayer currentPlayer = new LocalPlayer(1, Player.inGameStatus, Colors.BLUE); 
+		OnlinePlayer onlinePLayer = new OnlinePlayer(0, Player.inGameStatus, Colors.ORANGE);
 		Array<Player> players = new Array<Player>();
 		players.add(onlinePLayer);
 		players.add(currentPlayer);
@@ -97,17 +98,18 @@ public class ClientScreen implements Screen{
 				game.update(delta);
 				game.render(delta);
 				//System.out.println("Client update");
+				if(!game.techPaused())
 				game.updateLocalInput(game.updateLocalPlyerInput());
 				
 				Array<byte[]> remoteCommands = client.exchange(game.getCommandsForPlayer(0));
 				
-				/*if (remoteCommands.size > 0)
-				if (remoteCommands.get(0).length < 1024)
-				System.out.println("CLIENT RECEIVE BUFFER SIZE: " + remoteCommands.get(0).length);
-				*/
-				//System.out.println(currentLocalCommand.getCode());
+				
+				
+				
+				
 				game.updateRemoteInput(remoteCommands);
-					
+				
+				System.out.println("CLIENT STEPS LATENCY: " + game.getStepLatency());	
 					//System.out.println("CLIENT SUCCESS INPUT UPDATE");
 				
 				

@@ -33,6 +33,8 @@ public class LoadingScreen implements Screen {
 		game.assets.load("backgrounds/world_background/stars.png", Texture.class);
 		game.assets.load("backgrounds/world_background/middle_layer.png", Texture.class);
 		game.assets.load("skins/units/protector.png", Texture.class);
+		game.assets.load("skins/units/protector_BLUE.png", Texture.class);
+		game.assets.load("skins/units/protector_ORANGE.png", Texture.class);
 		game.assets.load("skins/units/stone.png", Texture.class);
 		game.assets.load("skins/units/ucmothership.png", Texture.class);
 		game.assets.load("skins/units/materinskiy.png", Texture.class);

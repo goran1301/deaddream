@@ -13,7 +13,7 @@ public class LockstepPrecessor {
 	private LocalInputStorage localInputStorage;
 	private OnlineInputManager remoteInput;
 	private int frameId = 0;
-	private boolean techPause = true;
+	//private boolean techPause = true;
 	
 	public LockstepPrecessor(OnlineInputManager remoteInput) {
 		this.remoteInput = remoteInput;
@@ -22,9 +22,9 @@ public class LockstepPrecessor {
 	
 	public void updateRemote(Array<byte[]> remoteCommandsBytes) {
 		
-		if (techPause && remoteCommandsBytes.size > 0) {
+		/*if (techPause && remoteCommandsBytes.size > 0) {
 			techPause = false;
-		}
+		}*/
 		
 		
 		
@@ -44,6 +44,7 @@ public class LockstepPrecessor {
 	public BaseCommandInterface[] getStepCommands() {
 		
 		BaseCommandInterface localCommand = localInputStorage.getCommandForFrame(frameId);
+		if (localCommand == null) return null;
 		BaseCommandInterface[] commands  = remoteInput.getCommandsFor(localCommand, true);
 		
 		if (commands != null) {
@@ -83,7 +84,11 @@ public class LockstepPrecessor {
 		return commcandBytesReal;
 	}
 	
+	public int getStepLatency() {
+		return localInputStorage.getLastLocalFrame() - remoteInput.getBiggestFrameId();
+	}
+	
 	public boolean isTechPaused() {
-		return techPause;
+		return getStepLatency() > 10;
 	}
 }

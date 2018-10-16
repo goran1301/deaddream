@@ -9,8 +9,8 @@ public class LocalPlayer extends Player {
 
 	protected CommanderInterface<Vector3> controller;
 	
-	public LocalPlayer(int id, int type) {
-		super(id, type);
+	public LocalPlayer(int id, int type, String color) {
+		super(id, type, color);
 		controller = new InputManager(this);
 	}
 

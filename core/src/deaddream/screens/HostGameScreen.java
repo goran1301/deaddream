@@ -11,6 +11,7 @@ import com.mygdx.dd.DeadDream;
 import deaddream.backgrounds.WorldBackground;
 import deaddream.network.UDPServer;
 import deaddream.network.UDPServerTransmission;
+import deaddream.players.Colors;
 import deaddream.players.LocalPlayer;
 import deaddream.players.OnlinePlayer;
 import deaddream.players.Player;
@@ -35,8 +36,8 @@ public class HostGameScreen implements Screen {
 
 	@Override
 	public void show() {
-		LocalPlayer currentPlayer = new LocalPlayer(0, Player.inGameStatus); 
-		OnlinePlayer onlinePlayer = new OnlinePlayer(1, Player.inGameStatus);
+		LocalPlayer currentPlayer = new LocalPlayer(0, Player.inGameStatus, Colors.ORANGE); 
+		OnlinePlayer onlinePlayer = new OnlinePlayer(1, Player.inGameStatus, Colors.BLUE);
 		Array<Player> players = new Array<Player>();
 		players.add(currentPlayer);
 		players.add(onlinePlayer);
@@ -76,12 +77,13 @@ public class HostGameScreen implements Screen {
 				    try{
 				    	game.update(delta);
 					    game.render(delta);
+					    if(!game.techPaused())
 					    game.updateLocalInput(game.updateLocalPlyerInput());
-					    //System.out.println("Client update");
+					   
 					    Array<byte[]> remoteCommands = server.exchange(game.getCommandsForPlayer(1));
 					    
 					    game.updateRemoteInput(remoteCommands);
-					    
+					    System.out.println("HOST STEPS LATENCY: " + game.getStepLatency());
 					
 				    } catch (Exception e) {
 				    	 e.printStackTrace();

@@ -22,6 +22,8 @@ public class OnlineInputManager {
 	
 	private ArrayMap<Integer, Integer> receivedFrames;
 	
+	private int biggestFrameId = 0;
+	
 	
 	public OnlineInputManager(Array<Player> players, boolean sgf) {
 		remoteCommands = new ArrayMap<Integer, Array<BaseCommandInterface>>();
@@ -56,30 +58,11 @@ public class OnlineInputManager {
 		    for (CommandFactoryInterface<?> factory : factories) {
 			    command = factory.constructFromBytes(inputData);
 			    
-			    /*byte[] number0 = {inputData[0], inputData[1], inputData[2], inputData[3]};
-			    byte[] number1 = {inputData[4], inputData[5], inputData[6], inputData[7]};
-			    byte[] number2 = {inputData[8], inputData[9], inputData[10], inputData[11]};
-			    byte[] number3 = {inputData[12], inputData[13], inputData[14], inputData[15]};
-			    int test0 = ByteBuffer.wrap(number0).getInt();
-			    int test1 = ByteBuffer.wrap(number1).getInt();
-			    int test2 = ByteBuffer.wrap(number2).getInt();
-			    float test3 = ByteBuffer.wrap(number3).getFloat();*/
-			    //System.out.println("TEST COMMAND test0 " + test0 + " test1 " + test1 + " test2 " + test2 + " test3 " + test3);
-			    
-			    
+			     
 			    if (command != null) {
 			    	
-			    	receivedFrames.put(command.getPlayer().getId(), lastreceivedFrameNumber);
-			    	
+			    	insert(command, lastreceivedFrameNumber);
 			    	inputData = Arrays.copyOfRange(inputData, command.getSize(), inputData.length);
-			    	BaseCommandInterface duplicate = getUserCommandForFrame(command.getPlayer().getId(), command.getFrameId());
-			    	System.out.println("COMMAND DONE!  " + command.getCode() + " " + command.getFrameId());
-			    	if (duplicate == null) {
-			    		remoteCommands.get(command.getPlayer().getId()).add(command);
-			    		System.out.println("SUCCESS ADD COMMAND" + command.getCode() + " " + command.getFrameId());
-			    	}else {
-			    		System.out.println("DUPLICATE FOR " + command.getCode() + " " + command.getFrameId());
-			    	}
 				    break;
 			    }
 			    
@@ -143,5 +126,21 @@ public class OnlineInputManager {
 			}
 		}
 		return frameId;
+	}
+	
+	public void insert(BaseCommandInterface command, int lastreceivedFrameNumber) {
+		receivedFrames.put(command.getPlayer().getId(), lastreceivedFrameNumber);
+    	
+    	BaseCommandInterface duplicate = getUserCommandForFrame(command.getPlayer().getId(), command.getFrameId());
+    	if (duplicate == null) {
+    		if(command.getFrameId() > biggestFrameId) {
+    			biggestFrameId = command.getFrameId();
+    		}
+    		remoteCommands.get(command.getPlayer().getId()).add(command);
+    	}
+	}
+	
+	public int getBiggestFrameId() {
+		return biggestFrameId;
 	}
 }

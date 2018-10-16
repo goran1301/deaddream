@@ -4,8 +4,8 @@ import deaddream.units.utilities.input.CommanderInterface;
 
 public class OnlinePlayer extends Player {
 
-	public OnlinePlayer(int id, int type) {
-		super(id, type);
+	public OnlinePlayer(int id, int type, String color) {
+		super(id, type, color);
 		// TODO Auto-generated constructor stub
 	}
 

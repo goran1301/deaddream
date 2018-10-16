@@ -23,13 +23,20 @@ abstract public class Player {
 	
 	public final static int inGameStatus = 4;
 	
-	public Player(int id, int type) {
+	private String color;
+	
+	public Player(int id, int type, String color) {
 		this.id = id;
 		this.type = type;
+		this.color = color;
 	}
 	
 	public int getId() {
 		return id;
+	}
+	
+	public String getColor() {
+		return color;
 	}
 	
 	abstract public CommanderInterface<?> getController();

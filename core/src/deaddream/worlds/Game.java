@@ -260,6 +260,14 @@ public class Game {
 				delta = command.getDelta();
 			}
 		}
-		choosedDelta = delta;
+		choosedDelta = 1/60f;//delta;
+	}
+	
+	public int getStepLatency() {
+		return lockstepPrecessor.getStepLatency();
+	}
+	
+	public boolean techPaused() {
+		return lockstepPrecessor.isTechPaused();
 	}
 }

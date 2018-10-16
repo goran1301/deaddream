@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.dd.DeadDream;
 
 import deaddream.backgrounds.WorldBackground;
+import deaddream.players.Colors;
 import deaddream.players.LocalPlayer;
 import deaddream.players.Player;
 import deaddream.worlds.Game;
@@ -32,7 +33,7 @@ public class GameplayScreen implements Screen {
 
 	@Override
 	public void show() {
-		LocalPlayer currentPlayer = new LocalPlayer(0, Player.inGameStatus); 
+		LocalPlayer currentPlayer = new LocalPlayer(0, Player.inGameStatus, Colors.ORANGE); 
 		Array<Player> players = new Array<Player>();
 		players.add(currentPlayer);
 		TiledMap map = new TmxMapLoader().load("maps/test2.tmx");

@@ -28,7 +28,7 @@ public class UnitFactory {
 	}
 	
 	public Unit createProtector(World world, float xPos, float yPos, Group group, Player player) {
-		Texture protecterTexture = game.assets.get("skins/units/protector.png", Texture.class);
+		Texture protecterTexture = game.assets.get("skins/units/protector_" + player.getColor() + ".png", Texture.class);
 		protecterTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture protecterNormalTexture = game.assets.get("skins/units/protectorNormal.png", Texture.class);
 		protecterNormalTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
