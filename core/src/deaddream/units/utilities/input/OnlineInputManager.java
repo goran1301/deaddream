@@ -131,8 +131,10 @@ public class OnlineInputManager {
 	}
 	
 	public void insert(BaseCommandInterface command, int lastreceivedFrameNumber) {
-		receivedFrames.put(command.getPlayer().getId(), lastreceivedFrameNumber);
-    	
+		if (lastreceivedFrameNumber > receivedFrames.get(command.getPlayer().getId())) {
+			receivedFrames.put(command.getPlayer().getId(), lastreceivedFrameNumber);
+		}
+		
     	BaseCommandInterface duplicate = getUserCommandForFrame(command.getPlayer().getId(), command.getFrameId());
     	if (duplicate == null) {
     		if(command.getFrameId() > biggestFrameId) {

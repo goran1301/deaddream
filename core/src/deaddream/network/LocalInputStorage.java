@@ -41,7 +41,7 @@ public class LocalInputStorage {
 	
 	public void removeOld(int frameId) {
 		for (BaseCommandInterface command : commands) {
-			if (command.getFrameId() == frameId) {
+			if (command.getFrameId() < frameId) {
 				commands.removeValue(command, true);
 			}
 		}

@@ -46,7 +46,7 @@ public class LockstepPrecessor {
 		
 		BaseCommandInterface localCommand = localInputStorage.getCommandForFrame(frameId);
 		if (localCommand == null) return null;
-		BaseCommandInterface[] commands  = remoteInput.getCommandsFor(localCommand, true);
+		BaseCommandInterface[] commands  = remoteInput.getCommandsFor(localCommand, false);
 		
 		if (commands != null) {
 			frameId++;
@@ -60,7 +60,9 @@ public class LockstepPrecessor {
 	
 	
 	public byte[] getCommandsForPlayer(int playerId) {
+		//remote player got
 		int lastDeliveredFrameNumber = remoteInput.getLastDeliveredFrameNumber(playerId);
+		//local player got
 		int lastReceivedFrameNumber = remoteInput.getLastReceivedFrameNumber(playerId);
 		byte[] lastReceivedFrameNumberBytes = ByteBuffer.allocate(4).putInt(lastReceivedFrameNumber).array();
 
@@ -71,6 +73,9 @@ public class LockstepPrecessor {
 		commandBytes.add(lastReceivedFrameNumberBytes[3]);
 		
 		Array<BaseCommandInterface> commands = localInputStorage.getCommandsAfter(lastDeliveredFrameNumber);
+		
+		//localInputStorage.removeOld(lastDeliveredFrameNumber);
+		
 		for (BaseCommandInterface command : commands) {
 			byte[] bytes = command.getBytes();
 			for (byte b : bytes) {
