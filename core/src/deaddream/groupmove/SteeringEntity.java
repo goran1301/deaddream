@@ -204,8 +204,8 @@ public class SteeringEntity implements Steerable<Vector2> {
 				
 				
 				//ToDo 1 for protector, 2 for moth   
-				steeringLinear.x *= getMaxLinearSpeed() * 2;
-				steeringLinear.y *= getMaxLinearSpeed() * 2;
+				steeringLinear.x *= getMaxLinearSpeed() * 1;
+				steeringLinear.y *= getMaxLinearSpeed() * 1;
 				steeringLinear.limit(getMaxLinearSpeed());
 			//}
 			//steeringLinear.limit(getMaxLinearSpeed());
