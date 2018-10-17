@@ -123,10 +123,10 @@ public class ClientScreen implements Screen{
 						}catch(Exception e){
 							
 						}
-						doUpdate = !doUpdate;
+						
 				}
 				
-				
+				doUpdate = !doUpdate;
 				
 				
 				

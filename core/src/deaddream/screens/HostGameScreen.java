@@ -101,10 +101,10 @@ public class HostGameScreen implements Screen {
 							   }catch(Exception e) {
 								   
 							   }
-							   doUpdate = !doUpdate;
+							   
 						 }
 				    	
-					    
+				    	doUpdate = !doUpdate;
 					    
 					    game.render(delta);
 					    
