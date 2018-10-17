@@ -99,6 +99,6 @@ public class LockstepPrecessor {
 	}
 	
 	public boolean isTechPaused() {
-		return getStepLatency() > 10 || getLatency() > 10;
+		return Math.abs(getStepLatency()) > 10 || Math.abs(getLatency()) > 10;
 	}
 }

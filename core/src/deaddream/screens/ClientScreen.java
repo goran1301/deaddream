@@ -26,6 +26,8 @@ public class ClientScreen implements Screen{
 	
 	private UDPClientTransmission client;
 	
+	private boolean doUpdate = false;
+	
 	public ClientScreen(DeadDream utils) {
 		this.gameUtilities = utils;
 	}
@@ -97,26 +99,34 @@ public class ClientScreen implements Screen{
 			try{
 				
 				//System.out.println("Client update");
-				if(!game.techPaused())
-				game.updateLocalInput(game.updateLocalPlyerInput());
 				
-				Array<byte[]> remoteCommands = client.exchange(game.getCommandsForPlayer(0));
 				
-				if (remoteCommands.size > 0) {
-					if (remoteCommands.get(0).length > 100 || game.techPaused() || game.getStepLatency() > 10)
-					System.out.println("CLIENT GOT PACKAGE LENGTH " + remoteCommands.get(0).length + " stepLatency " + game.getStepLatency() + " pause " + game.techPaused());
+				if (doUpdate) {
+					if(!game.techPaused())
+						game.updateLocalInput(game.updateLocalPlyerInput());
+						
+						
+						Array<byte[]> remoteCommands = client.exchange(game.getCommandsForPlayer(0));
+						
+						if (remoteCommands.size > 0) {
+							if (remoteCommands.get(0).length > 100 || game.techPaused() || game.getStepLatency() > 10)
+							System.out.println("CLIENT GOT PACKAGE LENGTH " + remoteCommands.get(0).length + " stepLatency " + game.getStepLatency() + " pause " + game.techPaused());
+						}
+						
+						
+						try{
+							game.updateRemoteInput(remoteCommands);
+							game.update(delta);
+							while (game.updateRemoteInput()){
+								game.update(delta);
+							}
+						}catch(Exception e){
+							
+						}
+						doUpdate = !doUpdate;
 				}
 				
 				
-				try{
-					game.updateRemoteInput(remoteCommands);
-					game.update(delta);
-					while (game.updateRemoteInput()){
-						game.update(delta);
-					}
-				}catch(Exception e){
-					
-				}
 				
 				
 				

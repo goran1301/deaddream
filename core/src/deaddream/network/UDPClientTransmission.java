@@ -18,8 +18,8 @@ public class UDPClientTransmission {
 	public UDPClientTransmission() throws Exception {
 		port = 9999;
 		//adress = InetAddress.getByName("188.233.56.194");
-		//adress = InetAddress.getByName("the-twilightfox.ddns.net");
-		adress = InetAddress.getLocalHost();
+		adress = InetAddress.getByName("the-twilightfox.ddns.net");
+		//adress = InetAddress.getLocalHost();
 		socket = new DatagramSocket();		
 		receiveBuffer = new Array<DatagramPacket>();
 	}

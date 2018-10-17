@@ -270,7 +270,7 @@ public class Game {
 				delta = command.getDelta();
 			}
 		}
-		choosedDelta = 1/60f;//delta;
+		choosedDelta = 1/30f;//delta;
 	}
 	
 	public int getStepLatency() {

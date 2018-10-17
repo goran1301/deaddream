@@ -26,6 +26,8 @@ public class HostGameScreen implements Screen {
 	
 	private UDPServerTransmission server;
 	
+	private boolean doUpdate = false;
+	
 	public HostGameScreen(DeadDream utils) {
 		this.gameUtilities = utils;
 	}
@@ -74,28 +76,34 @@ public class HostGameScreen implements Screen {
 		server.transferCheck();
 		if (server.isTransferDone()){
 			 if (server != null) {
+				 
+				 
 				    try{
-				    	if(!game.techPaused())
-					    game.updateLocalInput(game.updateLocalPlyerInput());
-					   
-					    Array<byte[]> remoteCommands = server.exchange(game.getCommandsForPlayer(1));
-					    
-					    
-					    if (remoteCommands.size > 0) {
-							if (remoteCommands.get(0).length > 100 || game.techPaused() || game.getStepLatency() > 10)
-							System.out.println("HOST GOT PACKAGE LENGTH " + remoteCommands.get(0).length + " stepLatency " + game.getStepLatency() + " pause " + game.techPaused());
-						}
-					    
-					    
-					   try {
-						    game.updateRemoteInput(remoteCommands);
-						    game.update(delta);
-						    while (game.updateRemoteInput()) {
-						    	game.update(delta);
-		     			    }
-					   }catch(Exception e) {
-						   
-					   }
+				    	if (doUpdate) {
+				    		if(!game.techPaused())
+							    game.updateLocalInput(game.updateLocalPlyerInput());
+							   
+							    Array<byte[]> remoteCommands = server.exchange(game.getCommandsForPlayer(1));
+							    
+							    
+							    if (remoteCommands.size > 0) {
+									if (remoteCommands.get(0).length > 100 || game.techPaused() || game.getStepLatency() > 10)
+									System.out.println("HOST GOT PACKAGE LENGTH " + remoteCommands.get(0).length + " stepLatency " + game.getStepLatency() + " pause " + game.techPaused());
+								}
+							    
+							    
+							   try {
+								    game.updateRemoteInput(remoteCommands);
+								    game.update(delta);
+								    while (game.updateRemoteInput()) {
+								    	game.update(delta);
+				     			    }
+							   }catch(Exception e) {
+								   
+							   }
+							   doUpdate = !doUpdate;
+						 }
+				    	
 					    
 					    
 					    game.render(delta);
