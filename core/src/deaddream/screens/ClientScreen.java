@@ -109,13 +109,9 @@ public class ClientScreen implements Screen{
 				
 				
 				try{
-					boolean update = false;
-					while (game.updateRemoteInput(remoteCommands)){
-						update = true;
-						game.update(delta);
-					}
-					
-					if (!update) {
+					game.updateRemoteInput(remoteCommands);
+					game.update(delta);
+					while (game.updateRemoteInput()){
 						game.update(delta);
 					}
 				}catch(Exception e){

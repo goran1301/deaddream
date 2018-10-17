@@ -88,15 +88,11 @@ public class HostGameScreen implements Screen {
 					    
 					    
 					   try {
-						   boolean updated = false;
-						    while (game.updateRemoteInput(remoteCommands)) {
-						    	updated = true;
+						    game.updateRemoteInput(remoteCommands);
+						    game.update(delta);
+						    while (game.updateRemoteInput()) {
 						    	game.update(delta);
 		     			    }
-						    
-						    if (!updated) {
-						    	game.update(delta);
-						    }
 					   }catch(Exception e) {
 						   
 					   }
