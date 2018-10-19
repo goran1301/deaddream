@@ -47,12 +47,19 @@ public abstract class Unit extends Actor implements Disableable {
 	private Vector2 destinationPoint;
 	protected SteeringEntity steering;
 	protected float speed = 0;
+	protected int positionWeight = 0;
+	protected int weight;
 	
 	public Unit(World world, Sprite staticTexture, Sprite staticNormalTexture, float x, float y, float angle) {
 		this.staticTexture = staticTexture;
 		this.staticNormalTexture = staticNormalTexture;
 		this.createUnit(world, x, y, angle);
 		movementController = movementControllerFactory();
+		//weight = 2;//(int) Math.ceil(getLargestSize() / Constants.PPM);
+	}
+	
+	public void setPositionWeight(int weight){
+		positionWeight = weight;
 	}
 	
 	public float getFlockRadius() {
@@ -302,6 +309,7 @@ public abstract class Unit extends Actor implements Disableable {
 				movementController.update(delta);
 			}
 			if (movementController.isMoving() || steering != null) {
+				steering.setBlock(positionWeight <= weight);
 				if (isMoving()) {
 					steering.updateVelocity(movementController.getVelocity());
 					steering.setAngle(movementController.getAngle());
@@ -355,6 +363,10 @@ public abstract class Unit extends Actor implements Disableable {
 	
 	public void setSteeringEntity(SteeringEntity entity) {
 		this.steering = entity;
+	}
+	
+	public int getWeight() {
+		return weight;
 	}
 	
 }

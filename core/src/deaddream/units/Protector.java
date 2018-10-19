@@ -39,6 +39,7 @@ public final class Protector extends Unit {
 		super(world, staticTexture, staticNormalTexture, x, y, angle);
 		staticTexture.setSize(width, height);
 		setSize(width, height);
+		weight = 2;
 		
 	}
 

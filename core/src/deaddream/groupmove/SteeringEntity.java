@@ -43,6 +43,8 @@ public class SteeringEntity implements Steerable<Vector2> {
 	
 	ProximityBase proximity;
 	
+	private boolean block;
+	
 	float angle = 0;
 
 	public SteeringEntity(Unit unit) {
@@ -60,6 +62,10 @@ public class SteeringEntity implements Steerable<Vector2> {
 	public void updateVelocity(Vector2 velocity) {
 		this.velocity.x = velocity.x;
 		this.velocity.y = velocity.y;
+	}
+	
+	public void setBlock(boolean block) {
+		this.block = block;
 	}
 	
 	@Override
@@ -176,6 +182,8 @@ public class SteeringEntity implements Steerable<Vector2> {
 		this.steeringBehavior = steeringBehavior;
 	}
 	
+	
+	
 	public void update(float delta) {
 		orientation = this.vectorToAngle(velocity);
 		/*ProximityCallback<Vector2> callback = new ProximityCallback<Vector2>() {
@@ -189,8 +197,8 @@ public class SteeringEntity implements Steerable<Vector2> {
 		proximity.findNeighbors(callback);*/
 		//System.out.println("PROXIMITY AGENTS COUNT: " + String.valueOf(proximity.getAgents().size));
 		//System.out.println("PROXIMITY AGENTS COUNT: " + String.valueOf(proximity.findNeighbors(callback)));
-		
-		if (steeringBehavior != null) {
+		Vector2 position = unit.getBody().getPosition();
+		if (steeringBehavior != null && !block) {
 			steeringBehavior.calculateSteering(steeringOutput);
 			
 			//if (steeringOutput.linear.len() == 0) {
@@ -219,15 +227,28 @@ public class SteeringEntity implements Steerable<Vector2> {
 			resultVector.x *= delta;
 			resultVector.y *= delta;
 			
-			Vector2 position = unit.getBody().getPosition();
+			//Vector2 position = unit.getBody().getPosition();
 			position.x += resultVector.x;
 			position.y += resultVector.y;
 			//orientation = steeringOutput.angular;
 			//float newOrientation = vectorToAngle(velocity);
 			//float newAng = (newOrientation - orientation) * delta; // this is superfluous if independentFacing is always true
 			
-			unit.getBody().setTransform(position, angle + steeringOutput.angular * maxAngularSpeed * delta);			
+			unit.getBody().setTransform(position, angle + steeringOutput.angular * maxAngularSpeed * delta);	 		
+		}else {
+			resultVector.x = velocity.x;
+			resultVector.y = velocity.y;
+			//resultVector.limit(getMaxLinearSpeed());
+			resultVector.x *= delta;
+			resultVector.y *= delta;
+			
+			//Vector2 position = unit.getBody().getPosition();
+			position.x += resultVector.x;
+			position.y += resultVector.y;
+			
+			unit.getBody().setTransform(position, angle);
 		}
+		
 	}
 	
 	public void test(float delta) {

@@ -149,6 +149,8 @@ public class Game {
 			//System.out.println("DELTA IS " + String.valueOf(delta));
 			InputManager inputManager = (InputManager)currentPlayer.getController();
 			inputManager.updateDelta(delta);
+			
+			mapManager.getPathFinder().update(players);
 			//System.out.println("FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()));
 			GdxAI.getTimepiece().update(choosedDelta);
 			//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));

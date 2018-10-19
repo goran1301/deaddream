@@ -23,6 +23,7 @@ public class Month extends Unit {
 		super(world, staticTexture, staticNormalTexture, x, y, angle);
 		staticTexture.setSize(width, height);
 		setSize(width, height);
+		weight = 3;
 	}
 
 	@Override
