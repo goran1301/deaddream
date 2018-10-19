@@ -23,6 +23,8 @@ public class GameplayScreen implements Screen {
 	
 	private Array<byte[]> remoteCommands = new Array<byte[]>();
 	
+	boolean updateLogic = true;
+	
 	public GameplayScreen(final DeadDream gameUtilities) {
 		this.gameUtilities = gameUtilities;
 	}
@@ -57,10 +59,14 @@ public class GameplayScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		game.update(delta);
-		game.render(delta);
 		game.updateLocalInput(game.updateLocalPlyerInput());
 		game.updateRemoteInput(remoteCommands);
+		if (updateLogic) {
+			game.update(delta);
+		}
+		updateLogic = !updateLogic;
+		game.render(1/30);
+		
 		//game.clearCommands();	
 	}
 

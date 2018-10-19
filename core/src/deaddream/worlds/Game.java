@@ -154,7 +154,7 @@ public class Game {
 			//System.out.println("CURRENT AI TIME: " + String.valueOf(GdxAI.getTimepiece().getTime()));
 			groupMoveController.update();
 			
-			world.step(1/60f, 6, 2);
+			world.step(1/30f, 6, 2);
 			stage.act(choosedDelta);
 		}
 		//world.step(1/60f, 6, 2);
